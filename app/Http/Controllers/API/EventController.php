@@ -20,6 +20,8 @@ class EventController extends Controller
         $stkUser = $request->query('stkUser');
         $summary = $this->eventService->getEventSummary($stkUser);
 
-        return response()->json($summary, 200);
+        return response()->json([
+            'data' => $summary
+        ], 200);
     }
 }
