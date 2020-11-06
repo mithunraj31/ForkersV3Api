@@ -28,6 +28,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
 
+        Route::get('/driveSummary', [DeviceController::class, 'driveSummery']);
     });
 
     // Event APIs

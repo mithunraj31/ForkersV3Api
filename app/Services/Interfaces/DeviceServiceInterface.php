@@ -10,4 +10,5 @@ interface DeviceServiceInterface
      * @return array
      */
     public function getAllDevice();
+
 }
