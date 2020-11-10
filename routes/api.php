@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
 use Illuminate\Http\Request;
@@ -34,6 +34,13 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'events'], function () {
 
         Route::get('/summary', [EventController::class, 'getEventSummary']);
+
+    });
+
+    // Video APIs
+    Route::group(['prefix' => 'videos'], function () {
+
+        Route::post('/', [VideoController::class, 'store']);
 
     });
 });
