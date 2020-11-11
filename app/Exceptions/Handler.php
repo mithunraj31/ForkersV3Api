@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Carbon\Exceptions\InvalidFormatException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use InvalidArgumentException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -41,7 +42,8 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof NotFoundResourceException) {
+        if ($exception instanceof NotFoundResourceException
+        || $exception instanceof ModelNotFoundException) {
             return response()->json(['message' => 'Data not found.'], 404);
         } else if ($exception instanceof InvalidFormatException) {
             return response()->json(['message' => $exception->message], 500);

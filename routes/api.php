@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
+use App\Http\Controllers\CameraController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +28,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'devices'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
-
+        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
     });
 
     // Event APIs
