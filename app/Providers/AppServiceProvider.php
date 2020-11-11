@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\DTOs\StonkamAccessTokenDto;
+use App\Services\CameraService;
 use App\Services\EventService;
+use App\Services\Interfaces\CameraServiceInterface;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
@@ -33,7 +35,8 @@ class AppServiceProvider extends ServiceProvider
         //services
         StonkamServiceInterface::class => StonkamService::class,
         DeviceServiceInterface::class => StonkamDeviceService::class,
-        EventServiceInterface::class => EventService::class
+        EventServiceInterface::class => EventService::class,
+        CameraServiceInterface::class => CameraService::class
     ];
 
 
