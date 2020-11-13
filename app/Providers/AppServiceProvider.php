@@ -9,8 +9,10 @@ use App\Services\Interfaces\CameraServiceInterface;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
+use App\Services\Interfaces\VideoServiceInterface;
 use App\Services\StonkamDeviceService;
 use App\Services\StonkamService;
+use App\Services\VideoService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,8 +22,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    public $bindings = [
-    ];
+    public $bindings = [];
 
     /**
      * All of the container singletons that should be registered.
@@ -36,7 +37,8 @@ class AppServiceProvider extends ServiceProvider
         StonkamServiceInterface::class => StonkamService::class,
         DeviceServiceInterface::class => StonkamDeviceService::class,
         EventServiceInterface::class => EventService::class,
-        CameraServiceInterface::class => CameraService::class
+        CameraServiceInterface::class => CameraService::class,
+        VideoServiceInterface::class => VideoService::class
     ];
 
 
