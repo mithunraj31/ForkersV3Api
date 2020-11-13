@@ -28,6 +28,11 @@ class VideoController extends Controller
      */
     public function store(Request $request)
     {
+
+    }
+
+    public function createEventVideos(Request $request)
+    {
         $validateVideoData = $request->validate([
             'event_id' => 'required',
             'urls' => 'required',
