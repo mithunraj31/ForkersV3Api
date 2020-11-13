@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
+use App\Http\Controllers\CameraController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,12 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/summary', [EventController::class, 'getEventSummary']);
         Route::post('/{eventId}/videos', [VideoController::class, 'createEventVideos']);
+    });
+
+     // Event APIs
+     Route::group(['prefix' => 'videos'], function () {
+
+        Route::post('/', [VideoController::class, 'store']);
     });
 
 });

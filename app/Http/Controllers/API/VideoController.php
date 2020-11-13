@@ -20,7 +20,7 @@ class VideoController extends Controller
     public function __construct(StonkamServiceInterface $stonkamService, VideoServiceInterface $videoService)
     {
         $this->stonkamService = $stonkamService;
-        $this->$videoService = $videoService;
+        $this->videoService = $videoService;
     }
 
     /**
@@ -50,7 +50,7 @@ class VideoController extends Controller
     }
 
 
-    public function createEventVideos(Request $request)
+    public function createEventVideos($evenId, Request $request)
     {
         $validateVideoData = $request->validate([
             'event_id' => 'required',
