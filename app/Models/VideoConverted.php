@@ -14,6 +14,17 @@ class VideoConverted extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'url',
+        'id',
+        'url'
     ];
+
+    public function setUrlAttribute($url)
+    {
+        $this->attributes['url'] = $url;
+    }
+
+    public function setIdAttribute($id)
+    {
+        $this->attributes['id'] = $id;
+    }
 }

@@ -19,4 +19,24 @@ class Video extends Model
         'username',
         'device_id',
     ];
+
+    public function setEventIdAttribute($id)
+    {
+        $this->attributes['event_id'] = $id;
+    }
+
+    public function setUrlAttribute($url)
+    {
+        $this->attributes['url'] = $url;
+    }
+
+    public function setUserNameAttribute($userName)
+    {
+        $this->attributes['username'] = $userName;
+    }
+
+    public function setDeviceIdAttribute($id)
+    {
+        $this->attributes['device_id'] = $id;
+    }
 }

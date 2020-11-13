@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Camera;
 use App\Services\Interfaces\CameraServiceInterface;
 use Illuminate\Http\Request;
 

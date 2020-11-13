@@ -2,16 +2,13 @@
 
 namespace App\Services\Interfaces;
 
+use App\Models\DTOs\VideoDto;
+
 interface VideoServiceInterface
 {
     /**
      * the method saves the video url and concated video url ,
-     * @param video[]
-     * @return status
+     * @param VideoDto
      */
-    public function saveVideo($validateVideoData);
-
-    public function updateVideo($validateVideoData);
-
-    public function getAllVideos($request);
+    public function saveVideo(VideoDto $model);
 }
