@@ -27,6 +27,8 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'devices'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
+        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
+        Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
     });
 
     // Event APIs
