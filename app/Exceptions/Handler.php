@@ -44,13 +44,17 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof NotFoundResourceException
         || $exception instanceof ModelNotFoundException) {
-            return response()->json(['message' => 'Data not found.'], 404);
+            $message = 'Data not found.';
+            if ($exception->getMessage()) {
+                $message = $exception->getMessage();
+            }
+            return response()->json(['message' => $message], 404);
         } else if ($exception instanceof InvalidFormatException) {
-            return response()->json(['message' => $exception->message], 500);
+            return response()->json(['message' => $exception->getMessage()], 500);
         } else if ($exception instanceof InvalidArgumentException) {
-            return response()->json(['message' => $exception->message], 400);
+            return response()->json(['message' => $exception->getMessage()], 400);
         } else if ($exception instanceof StonkamResultIsFailedException) {
-            return response()->json(['message' => $exception->message], 500);
+            return response()->json(['message' => $exception->getMessage()], 500);
         }
 
         return parent::render($request, $exception);

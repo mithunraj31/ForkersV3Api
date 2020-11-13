@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Exceptions\StonkamResultIsFailedException;
 use App\Models\DTOs\StonkamAccessTokenDto;
 use App\Models\DTOs\VideoMaker;
+use App\Models\MakeVideoWaitingQueue;
 use App\Services\Interfaces\StonkamServiceInterface;
-use Exception;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -45,14 +45,14 @@ class StonkamService implements StonkamServiceInterface
         }
 
         // check video's duration time.
-        $timeLimit = (int) config('make_video_time_limit');
+        $timeLimit =  config('stonkam.make_video_time_limit');
         $timeDiff = $maker->endDateTime->diffInMinutes($maker->beginDateTime);
         if ($timeDiff > $timeLimit) {
             throw new InvalidArgumentException("Video's duration time is more than $timeLimit minutes.");
         }
 
         $username = $maker->stonkamUsername;
-        $sessionId = $this->refreshAccessToken();
+        $sessionId = 0;//$this->refreshAccessToken();
 
         if (!isset($username)) {
             $username = config('stonkam.auth.admin.username');
@@ -67,12 +67,18 @@ class StonkamService implements StonkamServiceInterface
         ];
 
         $response = Http::post($endpoint, $data);
-
-        if (!$response->ok()) {
-            throw new NotFoundResourceException('Device is Offline.');
-        }
-
         $content =  $response->json();
+        if (!$response->ok()) {
+            $errorCode = (int) $content['ErrorCode'];
+            $errorMessage = 'Something went wrong.';
+            // device is offline
+            if ($errorCode ==  1010017) {
+                $this->pushRequestToMakeVideoWaitingQueue($maker);
+                $errorMessage = 'Device is Offline.';
+            }
+
+            throw new NotFoundResourceException($errorMessage);
+        }
 
         // check result is not success
         // https://stackoverflow.com/a/15075609
@@ -82,8 +88,24 @@ class StonkamService implements StonkamServiceInterface
 
         return [
             'eventId' => $content['EventId'],
-            'videoId' => $content['videoId'],
+            'videoId' => $content['VideoId'],
         ];
+    }
+
+    public function checkWaitingQueue($id)
+    {
+        $makers = MakeVideoWaitingQueue::where('device_id', '=', $id)->get();
+        $collections = $makers->map(function ($m) {
+            $maker = new VideoMaker;
+            $maker->stonkamUsername = $m->username;
+            $maker->beginDateTime = $m->beginDatetime;
+            $maker->endDateTime = $m->endDatetime;
+            $maker->deviceId = $m->deviceId;
+
+            $m->delete();
+            return $maker;
+        });
+        return $collections;
     }
 
     private function requestAccessToken()
@@ -103,5 +125,16 @@ class StonkamService implements StonkamServiceInterface
         }
 
         return 0;
+    }
+
+    private function pushRequestToMakeVideoWaitingQueue(VideoMaker $maker)
+    {
+        $data = [
+            'device_id' => $maker->deviceId,
+            'begin_datetime' => $maker->getBeginDateTimeUtc()->format('Y-m-d H:i:s'),
+            'end_datetime' => $maker->getEndDateTimeUtc()->format('Y-m-d H:i:s'),
+            'username' =>  $maker->stonkamUsername
+        ];
+        MakeVideoWaitingQueue::insert($data);
     }
 }

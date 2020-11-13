@@ -17,4 +17,9 @@ interface StonkamServiceInterface
      *
      */
     public function makeVideo(VideoMaker $maker);
+
+    /**
+     * @return Illuminate\Support\Collection;
+     */
+    public function checkWaitingQueue($id);
 }
