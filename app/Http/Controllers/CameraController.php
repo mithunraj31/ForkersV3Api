@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Camera;
 use App\Models\DTOs\CameraDto;
 use App\Services\Interfaces\CameraServiceInterface;
 use Illuminate\Http\Request;
@@ -24,14 +23,18 @@ class CameraController extends Controller
      */
     public function store(Request $request)
     {
-        $validateVideoData = $request->validate([
+        $validateCameraData = $request->validate([
             'rotation' => 'required',
             'ch' => 'required',
             'device_id' => 'required|exists:App\Models\Device,device_id',
         ]);
-        $camera = new Camera($request->all());
+        $camera = new CameraDto();
+        $camera->deviceId = $validateCameraData['device_id'];
+        $camera->ch = $validateCameraData['ch'];
+        $camera->rotation = $validateCameraData['rotation'];
 
         $this->cameraService->create($camera);
+        return response(['message' => 'Success!'], 200);
     }
 
     /**
@@ -40,9 +43,9 @@ class CameraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Camera $camera)
+    public function show($cameraId)
     {
-        return  $this->cameraService->findById($camera);
+        return response([$this->cameraService->findById($cameraId)], 200);
     }
 
     /**
@@ -52,18 +55,21 @@ class CameraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Camera $camera)
+    public function update(Request $request, $cameraId)
     {
 
-        $validateVideoData = $request->validate([
+        $validateCameraData = $request->validate([
             'rotation' => 'required',
             'ch' => 'required',
             'device_id' => 'required|exists:App\Models\Device,device_id',
         ]);
-        $camera->device_id = $request->device_id;
-        $camera->ch = $request->ch;
-        $camera->rotation = $request->rotation;
-        return  $this->cameraService->update($camera);
+        $camera = new CameraDto();
+        $camera->id = $cameraId;
+        $camera->deviceId = $validateCameraData['device_id'];
+        $camera->ch = $validateCameraData['ch'];
+        $camera->rotation = $validateCameraData['rotation'];
+        $this->cameraService->update($camera);
+        return response(['message' => 'Success!'], 200);
     }
 
     /**
@@ -72,9 +78,10 @@ class CameraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Camera $camera)
+    public function destroy($cameraId)
     {
-        return  $this->cameraService->delete($camera);
+        $this->cameraService->delete($cameraId);
+        return response(['message' => 'Success!'], 200);
     }
 
     public function getCameraByDeviceId($deviceId)
@@ -83,6 +90,6 @@ class CameraController extends Controller
 
         return response()->json([
             'data' => $cameras
-        ]);
+        ], 200);
     }
 }

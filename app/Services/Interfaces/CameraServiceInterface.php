@@ -2,18 +2,17 @@
 
 namespace App\Services\Interfaces;
 
-use App\Models\Camera;
 use App\Models\DTOs\CameraDto;
 
 interface CameraServiceInterface
 {
-    public function create(Camera $model);
+    public function create(CameraDto $model);
 
-    public function update(Camera $model);
+    public function update(CameraDto $model);
 
-    public function findById(Camera $model);
+    public function findById($cameraId);
 
-    public function findByDeviceId(Camera $model);
+    public function findByDeviceId($deviceId);
 
-    public function delete(Camera $model);
+    public function delete($cameraId);
 }
