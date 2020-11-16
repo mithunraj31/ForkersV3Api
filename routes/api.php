@@ -3,6 +3,8 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
+use App\Models\Event;
+use Illuminate\Foundation\Console\EventCacheCommand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,7 +36,7 @@ Route::group(['prefix' => 'v1'], function () {
     // Event APIs
     Route::group(['prefix' => 'events'], function () {
 
+        Route::get('/', [EventController::class, 'getEventsByDeviceId']);
         Route::get('/summary', [EventController::class, 'getEventSummary']);
-
     });
 });

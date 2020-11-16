@@ -24,4 +24,17 @@ class EventController extends Controller
             'data' => $summary
         ], 200);
     }
+    public function getEventsByDeviceId(Request $request)
+    {
+        $deviceId = $request->query('deviceId');
+        $start = $request->query('start');
+        $end = $request->query('end');
+        if ($deviceId && $start && $end) {
+            $events = $this->eventService->getEventsByDeviceIdAndTimeRange($deviceId,$start,$end);
+            return response(['data'=> $events],200);
+        } else {
+            return response(["message"=> "Invalid request"],400);
+        }
+
+    }
 }
