@@ -51,6 +51,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/', [CameraController::class, 'store']);
         Route::put('/{camera}', [CameraController::class, 'update']);
         Route::delete('/{camera}', [CameraController::class, 'destroy']);
-        Route::get('/{camera}', [CameraController::class, 'getCameraByDeviceId']);
+        Route::get('/{camera}', [CameraController::class, 'show']);
+        Route::get('device/{device}', [CameraController::class, 'getCameraByDeviceId']);
     });
 });

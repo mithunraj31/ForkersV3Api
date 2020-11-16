@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Camera;
+use App\Models\DTOs\CameraDto;
 use App\Services\Interfaces\CameraServiceInterface;
 use Exception;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -14,9 +15,9 @@ class CameraService implements CameraServiceInterface
         $model->save();
     }
 
-    public function update($request, Camera $model)
+    public function update(Camera $model)
     {
-        $model->update($request->all());
+        $model->update();
         return response(['message' => 'Success!'], 200);
     }
 

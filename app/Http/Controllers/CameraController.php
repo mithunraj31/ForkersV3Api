@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Camera;
+use App\Models\DTOs\CameraDto;
 use App\Services\Interfaces\CameraServiceInterface;
 use Illuminate\Http\Request;
 
@@ -59,8 +60,10 @@ class CameraController extends Controller
             'ch' => 'required',
             'device_id' => 'required|exists:App\Models\Device,device_id',
         ]);
-        $camera = new Camera($request->all());
-        return  $this->cameraService->update($request, $camera);
+        $camera->device_id = $request->device_id;
+        $camera->ch = $request->ch;
+        $camera->rotation = $request->rotation;
+        return  $this->cameraService->update($camera);
     }
 
     /**
