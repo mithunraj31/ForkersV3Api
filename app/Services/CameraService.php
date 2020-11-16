@@ -20,7 +20,7 @@ class CameraService implements CameraServiceInterface
 
     public function update(CameraDto $model)
     {
-        $camera = Camera::find($model->id);
+        $camera = $this->findById($model->id);
         $camera->device_id = $model->deviceId;
         $camera->rotation = $model->rotation;
         $camera->ch = $model->ch;
@@ -29,11 +29,11 @@ class CameraService implements CameraServiceInterface
 
     public function findById($cameraId)
     {
-        $cameras =  Camera::where('id', '=', $cameraId)->get();
-        if ($cameras->count() == 0) {
+        $camera =  Camera::find($cameraId);
+        if ($camera == null) {
             throw new NotFoundResourceException();
         }
-        return $cameras;
+        return $camera;
     }
 
 
@@ -48,6 +48,7 @@ class CameraService implements CameraServiceInterface
 
     public function delete($cameraId)
     {
-        Camera::where('id', '=', $cameraId)->delete();
+        $camera = $this->findById($cameraId);
+        $camera->delete();
     }
 }

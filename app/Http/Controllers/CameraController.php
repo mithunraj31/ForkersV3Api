@@ -45,7 +45,10 @@ class CameraController extends Controller
      */
     public function show($cameraId)
     {
-        return response([$this->cameraService->findById($cameraId)], 200);
+        $camera = $this->cameraService->findById($cameraId);
+        return response([
+            'data' => $camera
+        ], 200);
     }
 
     /**
