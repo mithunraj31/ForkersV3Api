@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Carbon\Exceptions\InvalidFormatException;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use InvalidArgumentException;
@@ -43,7 +44,7 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof NotFoundResourceException
-        || $exception instanceof ModelNotFoundException) {
+            || $exception instanceof ModelNotFoundException) {
             $message = 'Data not found.';
             if ($exception->getMessage()) {
                 $message = $exception->getMessage();
@@ -53,7 +54,8 @@ class Handler extends ExceptionHandler
             return response()->json(['message' => $exception->getMessage()], 500);
         } else if ($exception instanceof InvalidArgumentException) {
             return response()->json(['message' => $exception->getMessage()], 400);
-        } else if ($exception instanceof StonkamResultIsFailedException) {
+        } else if ($exception instanceof StonkamResultIsFailedException
+            || $exception instanceof Exception) {
             return response()->json(['message' => $exception->getMessage()], 500);
         }
 

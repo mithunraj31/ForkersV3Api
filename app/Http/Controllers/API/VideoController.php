@@ -9,6 +9,7 @@ use App\Services\Interfaces\StonkamServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\Interfaces\VideoServiceInterface;
+use Illuminate\Support\Facades\Validator;
 
 class VideoController extends Controller
 {
@@ -50,9 +51,10 @@ class VideoController extends Controller
     }
 
 
-    public function createEventVideos($evenId, Request $request)
+    public function addEventVideos(Request $request, $eventId)
     {
-        $validateVideoData = $request->validate([
+        $payload = $request->all();
+        Validator::make($payload, [
             'event_id' => 'required',
             'urls' => 'required',
             'username' => 'required|exists:App\Models\User,stk_user',
