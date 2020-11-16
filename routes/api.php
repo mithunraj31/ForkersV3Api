@@ -44,4 +44,13 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{video}', [VideoController::class, 'update']);
         Route::delete('/{video}', [VideoController::class, 'destroy']);
     });
+
+    // Camera APIs
+    Route::group(['prefix' => 'cameras'], function () {
+
+        Route::post('/', [CameraController::class, 'store']);
+        Route::put('/{camera}', [CameraController::class, 'update']);
+        Route::delete('/{camera}', [CameraController::class, 'destroy']);
+        Route::get('/{camera}', [CameraController::class, 'getCameraByDeviceId']);
+    });
 });

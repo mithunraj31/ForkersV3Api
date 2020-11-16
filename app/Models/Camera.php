@@ -13,5 +13,12 @@ class Camera extends Model
 
     protected $table = 'camera';
 
-    protected $fillable = ['*'];
+    public $timestamps = false;
+
+    protected $fillable = [
+        'id',
+        'device_id',
+        'rotation',
+        'ch'
+    ];
 }

@@ -9,25 +9,22 @@ use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class CameraService implements CameraServiceInterface
 {
-    public function create($model)
+    public function create(Camera $model)
     {
-        throw new Exception('Not implemented');
+        $model->save();
     }
 
-    public function update($model)
+    public function update($request, Camera $model)
     {
-        throw new Exception('Not implemented');
+        $model->update($request->all());
+        return response(['message' => 'Success!'], 200);
     }
 
-    public function findById($id)
+    public function findById(Camera $model)
     {
-        throw new Exception('Not implemented');
+        return $model;
     }
 
-    public function findAll()
-    {
-        throw new Exception('Not implemented');
-    }
 
     public function findByDeviceId($deviceId)
     {
@@ -38,8 +35,9 @@ class CameraService implements CameraServiceInterface
         return $cameras;
     }
 
-    public function delete($id)
+    public function delete(Camera $model)
     {
-        throw new Exception('Not implemented');
+        $model->delete();
+        return response(['message' => 'Success!'], 200);
     }
 }

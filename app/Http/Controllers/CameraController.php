@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Camera;
 use App\Services\Interfaces\CameraServiceInterface;
 use Illuminate\Http\Request;
 
@@ -15,16 +16,6 @@ class CameraController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -32,7 +23,14 @@ class CameraController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validateVideoData = $request->validate([
+            'rotation' => 'required',
+            'ch' => 'required',
+            'device_id' => 'required|exists:App\Models\Device,device_id',
+        ]);
+        $camera = new Camera($request->all());
+
+        $this->cameraService->create($camera);
     }
 
     /**
@@ -41,9 +39,9 @@ class CameraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Camera $camera)
     {
-        //
+        return  $this->cameraService->findById($camera);
     }
 
     /**
@@ -53,9 +51,16 @@ class CameraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Camera $camera)
     {
-        //
+
+        $validateVideoData = $request->validate([
+            'rotation' => 'required',
+            'ch' => 'required',
+            'device_id' => 'required|exists:App\Models\Device,device_id',
+        ]);
+        $camera = new Camera($request->all());
+        return  $this->cameraService->update($request, $camera);
     }
 
     /**
@@ -64,9 +69,9 @@ class CameraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Camera $camera)
     {
-        //
+        return  $this->cameraService->delete($camera);
     }
 
     public function getCameraByDeviceId($deviceId)
