@@ -20,11 +20,10 @@ class CameraService implements CameraServiceInterface
 
     public function update(CameraDto $model)
     {
-        $camera = new Camera();
+        $camera = Camera::find($model->id);
         $camera->device_id = $model->deviceId;
         $camera->rotation = $model->rotation;
         $camera->ch = $model->ch;
-        $camera->id = $model->id;
         $camera->update();
     }
 
