@@ -29,19 +29,20 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
         Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
+        Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
     });
 
     // Event APIs
     Route::group(['prefix' => 'events'], function () {
 
         Route::get('/summary', [EventController::class, 'getEventSummary']);
-
+        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 
-    // Video APIs
-    Route::group(['prefix' => 'videos'], function () {
+     // Event APIs
+     Route::group(['prefix' => 'videos'], function () {
 
         Route::post('/', [VideoController::class, 'store']);
-
     });
+
 });
