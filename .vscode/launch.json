@@ -9,7 +9,7 @@
             "type": "php",
             "request": "launch",
             "pathMappings": {
-                "/home/vagrant/code/forkers-v3": "${workspaceRoot}"
+                "/home/vagrant/code/forkers-v3-api": "${workspaceRoot}"
             },
             "port": 9000
         },

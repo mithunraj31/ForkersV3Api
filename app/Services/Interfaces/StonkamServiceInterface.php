@@ -2,6 +2,8 @@
 
 namespace App\Services\Interfaces;
 
+use App\Models\DTOs\VideoMaker;
+
 interface StonkamServiceInterface
 {
     /**
@@ -10,4 +12,9 @@ interface StonkamServiceInterface
      * @return long authenticated session id.
      */
     public function refreshAccessToken();
+
+    /**
+     *
+     */
+    public function makeVideo(VideoMaker $maker);
 }
