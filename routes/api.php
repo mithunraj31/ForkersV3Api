@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
+use App\Http\Controllers\API\OperatorController;
 use App\Models\Event;
 use Illuminate\Foundation\Console\EventCacheCommand;
 use Illuminate\Http\Request;
@@ -38,5 +39,11 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/', [EventController::class, 'getEventsByDeviceId']);
         Route::get('/summary', [EventController::class, 'getEventSummary']);
+    });
+
+    // Operator APIs
+    Route::group(['prefix' => 'operators'], function () {
+
+        Route::get('/{operatorId}/driveSummary', [OperatorController::class, 'getDriveSummery']);
     });
 });

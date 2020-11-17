@@ -6,7 +6,9 @@ use App\Models\DTOs\StonkamAccessTokenDto;
 use App\Services\EventService;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
+use App\Services\Interfaces\OperatorServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
+use App\Services\OperatorService;
 use App\Services\StonkamDeviceService;
 use App\Services\StonkamService;
 use Illuminate\Support\ServiceProvider;
@@ -33,7 +35,8 @@ class AppServiceProvider extends ServiceProvider
         //services
         StonkamServiceInterface::class => StonkamService::class,
         DeviceServiceInterface::class => StonkamDeviceService::class,
-        EventServiceInterface::class => EventService::class
+        EventServiceInterface::class => EventService::class,
+        OperatorServiceInterface::class => OperatorService::class
     ];
 
 
