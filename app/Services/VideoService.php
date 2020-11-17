@@ -6,8 +6,7 @@ use App\Models\DTOs\VideoDto;
 use App\Models\Video;
 use App\Models\VideoConverted;
 use App\Services\Interfaces\VideoServiceInterface;
-use Illuminate\Database\QueryException;
-use InvalidArgumentException;
+
 
 class VideoService implements VideoServiceInterface
 {
@@ -18,33 +17,19 @@ class VideoService implements VideoServiceInterface
 
     public function saveVideo(VideoDto $model)
     {
-        try {
-            $videoConverted = new VideoConverted;
-            $videoConverted->id = $model->eventId;
-            $videoConverted->url = $model->convertedVideoUrl;
-
-            $videoConverted->save();
-        } catch(QueryException $exception) {
-            $message = 'Could not save converted video.';
-            if ($exception->getCode() == '23000') {
-                $eventId = $model->eventId;
-                $message = "Converted video with event ID:$eventId is already exists.";
-            }
-
-            throw new InvalidArgumentException($message);
-        }
-
-        $videos = [];
-
         foreach ($model->videoUrls as $url) {
-            $videos[] = [
-                'device_id' => $model->deviceId,
-                'event_id' => $model->eventId,
-                'url' => $url,
-                'username' => $model->username,
-            ];
+            $video = new Video;
+            $video->deviceId = $model->deviceId;
+            $video->eventId = $model->eventId;
+            $video->url = $url;
+            $video->username = $model->username;
+            $video->save();
         }
 
-        Video::insert($videos);
+        $videoConverted = new VideoConverted;
+        $videoConverted->id = $model->eventId;
+        $videoConverted->url = $model->convertedVideoUrl;
+
+        $videoConverted->save();
     }
 }

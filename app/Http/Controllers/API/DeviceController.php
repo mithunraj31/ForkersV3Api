@@ -4,22 +4,15 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Services\Interfaces\DeviceServiceInterface;
-use App\Services\Interfaces\StonkamServiceInterface;
-use Exception;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
     private DeviceServiceInterface $deviceService;
 
-    private StonkamServiceInterface $stonkamService;
-
-    public function __construct(
-        DeviceServiceInterface $deviceService,
-        StonkamServiceInterface $stonkamService)
+    public function __construct(DeviceServiceInterface $deviceService)
     {
         $this->deviceService = $deviceService;
-        $this->stonkamService = $stonkamService;
     }
 
     public function index(Request $request)
@@ -37,21 +30,5 @@ class DeviceController extends Controller
                 'total' => count($devices)
             ]
         ];
-    }
-
-    public function doWaitingQueue($deiviceId)
-    {
-        $makers = $this->stonkamService->checkWaitingQueue($deiviceId);
-
-        if ($makers->count() != 0) {
-            $makers->each(function ($maker) {
-                try {
-                    $this->stonkamService->makeVideo($maker);
-                } catch (Exception $e) {}
-
-            });
-        }
-
-        return response([], 200);
     }
 }

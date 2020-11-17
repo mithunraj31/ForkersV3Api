@@ -3,31 +3,39 @@
 namespace App\Services;
 
 use App\Models\Camera;
+use App\Models\DTOs\CameraDto;
 use App\Services\Interfaces\CameraServiceInterface;
-use Exception;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class CameraService implements CameraServiceInterface
 {
-    public function create($model)
+    public function create(CameraDto $model)
     {
-        throw new Exception('Not implemented');
+        $camera = new Camera();
+        $camera->device_id = $model->deviceId;
+        $camera->rotation = $model->rotation;
+        $camera->ch = $model->ch;
+        $camera->save();
     }
 
-    public function update($model)
+    public function update(CameraDto $model)
     {
-        throw new Exception('Not implemented');
+        $camera = $this->findById($model->id);
+        $camera->device_id = $model->deviceId;
+        $camera->rotation = $model->rotation;
+        $camera->ch = $model->ch;
+        $camera->update();
     }
 
-    public function findById($id)
+    public function findById($cameraId)
     {
-        throw new Exception('Not implemented');
+        $camera =  Camera::find($cameraId);
+        if ($camera == null) {
+            throw new NotFoundResourceException();
+        }
+        return $camera;
     }
 
-    public function findAll()
-    {
-        throw new Exception('Not implemented');
-    }
 
     public function findByDeviceId($deviceId)
     {
@@ -38,8 +46,9 @@ class CameraService implements CameraServiceInterface
         return $cameras;
     }
 
-    public function delete($id)
+    public function delete($cameraId)
     {
-        throw new Exception('Not implemented');
+        $camera = $this->findById($cameraId);
+        $camera->delete();
     }
 }
