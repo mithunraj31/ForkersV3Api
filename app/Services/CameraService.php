@@ -56,6 +56,7 @@ class CameraService implements CameraServiceInterface
     public function delete($cameraId)
     {
         $camera = $this->findById($cameraId);
+        Log::info('Deleting camera data', (array)  $camera);
         $camera->delete();
         Log::info("Deleted camera by ID $cameraId");
     }
