@@ -5,17 +5,20 @@ namespace App\Services;
 use App\Models\Camera;
 use App\Models\DTOs\CameraDto;
 use App\Services\Interfaces\CameraServiceInterface;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class CameraService implements CameraServiceInterface
 {
     public function create(CameraDto $model)
     {
+        Log::info('Creating camera', $model->toArray());
         $camera = new Camera();
         $camera->device_id = $model->deviceId;
         $camera->rotation = $model->rotation;
         $camera->ch = $model->ch;
         $camera->save();
+        Log::info('Camera has been created');
     }
 
     public function update(CameraDto $model)

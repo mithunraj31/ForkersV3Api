@@ -4,7 +4,7 @@ namespace App\Models\DTOs;
 
 use Carbon\Carbon;
 
-class StonkamAccessTokenDto
+class StonkamAccessTokenDto extends DtoBase
 {
     private $accessToken;
 

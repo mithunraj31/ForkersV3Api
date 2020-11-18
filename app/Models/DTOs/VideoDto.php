@@ -3,7 +3,7 @@
 
 namespace App\Models\DTOs;
 
-class VideoDto
+class VideoDto extends DtoBase
 {
     public $convertedVideoUrl;
 
