@@ -42,7 +42,7 @@ class StonkamDeviceService implements DeviceServiceInterface
         ]);
 
         if (!$response->ok()) {
-            Log::warning('Some problem in getting the devices');
+            Log::warning('Device not found');
             throw new NotFoundResourceException();
         }
         Log::info('All devices is fetched successfully');
@@ -66,7 +66,7 @@ class StonkamDeviceService implements DeviceServiceInterface
             'DeviceList' => $deviceIdCollections->all()
         ];
         $sessionId = $this->stonkamService->refreshAccessToken();
-        $endpoint = config('stonkam.hostname') . "/GetDevicesGps/" . count($devices) . "?CmsClientId=0&IsNeedPush=0&SessionId=$sessionId";
+        $endpoint = config('stonkam.hostname') . '/GetDevicesGps/' . count($devices) . "?CmsClientId=0&IsNeedPush=0&SessionId=$sessionId";
         Log::info('Post request is sent for stonkam  "/GetDevicesGps/"');
         $response = Http::post($endpoint, $data);
 
@@ -75,7 +75,7 @@ class StonkamDeviceService implements DeviceServiceInterface
             throw new NotFoundResourceException();
         }
 
-        Log::info('Device location received successfully');
+        Log::info('Device location is fetched successfully');
         $content = $response->json();
         return $content['DevicesGps'];
     }
@@ -83,8 +83,7 @@ class StonkamDeviceService implements DeviceServiceInterface
     private function mapDevicesToArray($devices, $deviceLocations): Collection
     {
         $locations = collect($deviceLocations)->keyBy('DeviceId');
-
-        return collect($devices)->map(function ($device) use ($locations) {
+        $mappedDevices = collect($devices)->map(function ($device) use ($locations) {
             $deviceId = $device['DeviceId'];
             $deviceGps = $locations->get($deviceId);
             return [
@@ -111,7 +110,9 @@ class StonkamDeviceService implements DeviceServiceInterface
                 'active' => $device['IsActive'],
                 'online' => $device['IsOnline'],
             ];
-            Log::info('Mapping devices to array is successful');
+
         });
+        Log::info('Mapping devices to array is successful');
+        return $mappedDevices;
     }
 }
