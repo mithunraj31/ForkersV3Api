@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Exceptions\StonkamResultIsFailedException;
 use App\Models\DTOs\StonkamAccessTokenDto;
 use App\Models\DTOs\VideoMaker;
+use App\Models\DeviceQueue;
+use App\Models\MakeVideoWaitingQueue;
 use App\Services\Interfaces\StonkamServiceInterface;
 use Exception;
 use Illuminate\Support\Facades\Http;
@@ -116,5 +118,22 @@ class StonkamService implements StonkamServiceInterface
         }
         Log::warning('Somethinng went wrong in receiving the access token');
         return 0;
+    }
+
+
+    public function checkWaitingQueue($id)
+    {
+        $makers = MakeVideoWaitingQueue::where('device_id', '=', $id)->get();
+        $collections = $makers->map(function ($m) {
+            $maker = new VideoMaker;
+            $maker->stonkamUsername = $m->username;
+            $maker->beginDateTime = $m->beginDatetime;
+            $maker->endDateTime = $m->endDatetime;
+            $maker->deviceId = $m->deviceId;
+
+            $m->delete();
+            return $maker;
+        });
+        return $collections;
     }
 }
