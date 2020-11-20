@@ -54,7 +54,9 @@ class Handler extends ExceptionHandler
         } else if ($exception instanceof StonkamResultIsFailedException) {
             return response()->json(['message' => $exception->getMessage()], 500);
         } else if ($exception instanceof Exception) {
-            Log::error('unknown error please look up at previous line');
+            $requestMethod = request()->getMethod();
+            $requestUri = request()->getRequestUri();
+            Log::error("Unknown error, Request $requestMethod $requestUri", (array) request()->all());
             return response()->json(['message' => 'Something went wrong'], 500);
         }
 
