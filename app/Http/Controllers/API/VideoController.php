@@ -67,7 +67,6 @@ class VideoController extends Controller
             'device_id' => 'required|exists:App\Models\Device,device_id',
             'converted_url' => 'required',
         ]);
-        Log::info('vi');
         $video = new VideoDto();
         $video->deviceId = $request->device_id;
         $video->eventId = $request->event_id;

@@ -16,7 +16,7 @@ class EventService implements EventServiceInterface
      */
     public function getEventSummary($stkUser = null)
     {
-        Log::info('Getting Event summary foe user', $stkUser);
+        Log::info('Getting Event summary of user');
         return Event::getEventSummary($stkUser);
     }
 }

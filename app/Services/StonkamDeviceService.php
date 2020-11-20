@@ -7,6 +7,7 @@ use App\Services\Interfaces\StonkamServiceInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Illuminate\Support\Facades\Log;
 
 class StonkamDeviceService implements DeviceServiceInterface
 {
@@ -17,28 +18,34 @@ class StonkamDeviceService implements DeviceServiceInterface
         $this->stonkamService = $stonkamService;
     }
 
+
     public function getAllDevice()
     {
+        Log::info('Getting all device informations');
         $devices = $this->getAllDevicesFromStonkam();
 
         $deviceLocations = $this->getDeviceLocations($devices);
 
+        Log::info('Mapping devices to array');
         return $this->mapDevicesToArray($devices, $deviceLocations);
     }
 
     private function getAllDevicesFromStonkam()
     {
+        Log::info('Getting all device informatons from stonkam');
         $sessionId = $this->stonkamService->refreshAccessToken();
 
-        $endpoint = config('stonkam.hostname').'/GetDeviceList/10000';
+        $endpoint = config('stonkam.hostname') . '/GetDeviceList/10000';
         $response = Http::get($endpoint, [
             'SessionId' => $sessionId,
             'User' => config('stonkam.stk_user')
         ]);
 
         if (!$response->ok()) {
+            Log::warning('Some problem in getting the devices');
             throw new NotFoundResourceException();
         }
+        Log::info('All devices is fetched successfully');
         $content = $response->json();
         if (!$content['DeviceList'] || count($content['DeviceList']) == 0) {
             return [];
@@ -49,8 +56,9 @@ class StonkamDeviceService implements DeviceServiceInterface
 
     private function getDeviceLocations($devices)
     {
+        Log::info('Getting the device location');
         $deviceIdCollections = collect($devices)->map(function ($device) {
-            return [ 'DeviceId' => $device['DeviceId'] ];
+            return ['DeviceId' => $device['DeviceId']];
         });
 
         $data = [
@@ -58,13 +66,16 @@ class StonkamDeviceService implements DeviceServiceInterface
             'DeviceList' => $deviceIdCollections->all()
         ];
         $sessionId = $this->stonkamService->refreshAccessToken();
-        $endpoint = config('stonkam.hostname')."/GetDevicesGps/".count($devices)."?CmsClientId=0&IsNeedPush=0&SessionId=$sessionId";
+        $endpoint = config('stonkam.hostname') . "/GetDevicesGps/" . count($devices) . "?CmsClientId=0&IsNeedPush=0&SessionId=$sessionId";
+        Log::info('Post request is sent for stonkam  "/GetDevicesGps/"');
         $response = Http::post($endpoint, $data);
 
         if (!$response->ok()) {
+            Log::warning('Something went wrong while fetching the location of device');
             throw new NotFoundResourceException();
         }
 
+        Log::info('Device location received successfully');
         $content = $response->json();
         return $content['DevicesGps'];
     }
@@ -100,6 +111,7 @@ class StonkamDeviceService implements DeviceServiceInterface
                 'active' => $device['IsActive'],
                 'online' => $device['IsOnline'],
             ];
+            Log::info('Mapping devices to array is successful');
         });
     }
 }
