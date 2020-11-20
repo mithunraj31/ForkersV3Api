@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DTOs\VideoDto;
 use Illuminate\Http\Request;
 use App\Services\Interfaces\VideoServiceInterface;
+use Illuminate\Log\Logger;
+use Illuminate\Support\Facades\Log;
 
 class VideoController extends Controller
 {
@@ -35,13 +37,15 @@ class VideoController extends Controller
             'device_id' => 'required|exists:App\Models\Device,device_id',
             'converted_url' => 'required',
         ]);
-
+        Log::info('vi');
         $video = new VideoDto();
         $video->deviceId = $request->device_id;
         $video->eventId = $request->event_id;
         $video->videoUrls = $request->urls;
         $video->username = $request->username;
         $video->convertedVideoUrl = $request->converted_url;
+
+
 
         $this->videoService->saveVideo($video);
 
