@@ -43,15 +43,15 @@ class StonkamService implements StonkamServiceInterface
 
     public function makeVideo(VideoMaker $maker)
     {
-        Log::info('making video for the requested time range', $maker->beginDateTime, '-', $maker->endDateTime);
+        Log::info('making video for the requested time range '.$maker->beginDateTime.' - '.$maker->endDateTime);
         // check video time range.
         if ($maker->beginDateTime->isAfter($maker->endDateTime)) {
-            Log::warning("Time range is invalid", $maker->beginDateTime, '-', $maker->endDateTime);
+            Log::warning('Time range is invalid'.$maker->beginDateTime.' - '.$maker->endDateTime);
             throw new InvalidArgumentException('DateTime range invalid.');
         }
 
         // check video's duration time.
-        $timeLimit = (int) config('make_video_time_limit');
+        $timeLimit = 5;
         $timeDiff = $maker->endDateTime->diffInMinutes($maker->beginDateTime);
         if ($timeDiff > $timeLimit) {
             Log::warning("Video's duration time is more than $timeLimit minutes.");
@@ -72,7 +72,7 @@ class StonkamService implements StonkamServiceInterface
             'EndTime' => $maker->getEndDateTimeUtc()->format('Y-m-d H:i:s'),
             'DeviceId' => $maker->deviceId,
         ];
-        Log::info('stonkam api called to upload the video for device id', $maker->deviceId, 'with user name', $username);
+        Log::info('stonkam api called to upload the video for device id '.$maker->deviceId.' with user name '.$username);
         $response = Http::post($endpoint, $data);
 
         if (!$response->ok()) {
@@ -85,13 +85,13 @@ class StonkamService implements StonkamServiceInterface
         // check result is not success
         // https://stackoverflow.com/a/15075609
         if (!filter_var($content['Result'], FILTER_VALIDATE_BOOLEAN)) {
-            Log::warning('Device is online but cannot upload the video the reason is ', $content['Reason']);
+            Log::warning('Device is online but cannot upload the video the reason is '.$content['Reason']);
             throw new StonkamResultIsFailedException($content['Reason']);
         }
 
         return [
             'eventId' => $content['EventId'],
-            'videoId' => $content['videoId'],
+            'videoId' => $content['VideoId'],
         ];
 
         Log::info('Video making is successful');
