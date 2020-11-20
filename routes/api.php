@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\API\CameraController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
-use App\Http\Controllers\CameraController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

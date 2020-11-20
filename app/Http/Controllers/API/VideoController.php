@@ -9,7 +9,6 @@ use App\Services\Interfaces\StonkamServiceInterface;
 use Illuminate\Http\Request;
 use App\Services\Interfaces\VideoServiceInterface;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class VideoController extends Controller
 {
@@ -47,7 +46,9 @@ class VideoController extends Controller
         $maker->endDateTime =  Carbon::parse($validatedData['end_datetime']);
 
         $result = $this->stonkamService->makeVideo($maker);
-        return response($result);
+        return response()->json([
+            'data' => $result
+        ], 200);
     }
 
 

@@ -7,7 +7,6 @@ use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class DeviceController extends Controller
 {
@@ -32,14 +31,14 @@ class DeviceController extends Controller
 
         $pageItems = $devices->forPage($page, $perPage);
 
-        return [
+        return response()->json([
             'data' => $pageItems,
             'meta' => [
                 'current_page' => $page,
                 'per_page' => $perPage,
                 'total' => count($devices)
             ]
-        ];
+        ], 200);
     }
 
     public function doWaitingQueue($deviceId)
@@ -47,7 +46,6 @@ class DeviceController extends Controller
         $makers = $this->stonkamService->checkWaitingQueue($deviceId);
 
         if ($makers->count() != 0) {
-            Log::info('Making video for the queued device');
             $makers->each(function ($maker) {
                 try {
                     $this->stonkamService->makeVideo($maker);
@@ -56,6 +54,6 @@ class DeviceController extends Controller
             });
         }
 
-        return response([], 200);
+        return response()->json([], 200);
     }
 }
