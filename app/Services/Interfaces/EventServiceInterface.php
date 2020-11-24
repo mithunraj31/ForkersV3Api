@@ -11,5 +11,6 @@ interface EventServiceInterface
      * @return mixed number of each event.
      */
     public function getEventSummary($stkUser = null);
+
     public function getEventsByDeviceIdAndTimeRange($deviceId, $start, $end);
 }

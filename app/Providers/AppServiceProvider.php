@@ -13,7 +13,6 @@ use App\Services\Interfaces\OperatorServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
-use App\Services\StonkamDeviceService;
 use App\Services\StonkamService;
 use App\Services\VideoService;
 use Illuminate\Support\ServiceProvider;

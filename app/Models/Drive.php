@@ -16,14 +16,9 @@ class Drive extends Model
         // declare types of regular
         $startEngine = 2;
         $stopEngine = 3;
-        $normal = 1;
         $registerDriver = 4;
-        $StartTime = date('h:i:sa');
         $regularData = DB::table('drive')->where('device_id', '=', $deviceId)->whereBetween('time', [$startTime, $endTime])->orderBy('time', 'asc')->get();
-        $EndTime = date('h:i:sa');
 
-        $first = 0;
-        $second = 0;
         $driveDataArray = [];
         for ($j = 0; count($regularData) > $j; $j++) {
             $rData = $regularData[$j];
@@ -125,6 +120,5 @@ class Drive extends Model
         }
 
         return $driveDataArray;
-        // return $regularData;
     }
 }

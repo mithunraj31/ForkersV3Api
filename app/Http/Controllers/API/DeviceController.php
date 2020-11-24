@@ -58,7 +58,7 @@ class DeviceController extends Controller
         return response()->json([], 200);
     }
 
-    public function driveSummery(Request $request,$deviceId)
+    public function driveSummery(Request $request, $deviceId)
     {   // context start with 3 end with 2. no in context data
         // return DeviceService::getDriveSummary(2003270003, '2020-10-14 00:00:00','2020-11-02 00:00:00');
         $start = $request->query('start');

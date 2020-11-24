@@ -21,7 +21,6 @@ class DeviceService implements DeviceServiceInterface
         $this->stonkamService = $stonkamService;
     }
 
-
     public function getAllDevice()
     {
         Log::info('Getting all device informations');

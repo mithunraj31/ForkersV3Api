@@ -48,13 +48,13 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/{operatorId}/driveSummary', [OperatorController::class, 'getDriveSummery']);
         Route::get('/{operatorId}/events', [OperatorController::class, 'getOperatorEvents']);
-        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 
-    // Event APIs
+    // Video APIs
     Route::group(['prefix' => 'videos'], function () {
 
         Route::post('/', [VideoController::class, 'store']);
+        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 
     // Camera APIs
