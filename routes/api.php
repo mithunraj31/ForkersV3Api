@@ -1,11 +1,10 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\OperatorController;
-use App\Models\Event;
-use Illuminate\Foundation\Console\EventCacheCommand;
+use App\Http\Controllers\CameraController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +32,8 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/{deviceId}/driveSummary', [DeviceController::class, 'driveSummery']);
         Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
+        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
+        Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
     });
 
     // Event APIs
@@ -47,5 +48,22 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/{operatorId}/driveSummary', [OperatorController::class, 'getDriveSummery']);
         Route::get('/{operatorId}/events', [OperatorController::class, 'getOperatorEvents']);
+        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
+    });
+
+    // Event APIs
+    Route::group(['prefix' => 'videos'], function () {
+
+        Route::post('/', [VideoController::class, 'store']);
+    });
+
+    // Camera APIs
+    Route::group(['prefix' => 'cameras'], function () {
+
+        Route::post('/', [CameraController::class, 'store']);
+        Route::put('/{camera}', [CameraController::class, 'update']);
+        Route::delete('/{camera}', [CameraController::class, 'destroy']);
+        Route::get('/{camera}', [CameraController::class, 'show']);
+        Route::get('device/{device}', [CameraController::class, 'getCameraByDeviceId']);
     });
 });

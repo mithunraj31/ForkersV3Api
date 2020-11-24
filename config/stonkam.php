@@ -10,5 +10,6 @@ return [
             'version' => env('STONKAM_AUTH_ADMIN_VERSION'),
             'authtype' => env('STONKAM_AUTH_ADMIN_AUTHTYPE')
         ]
-    ]
+    ],
+    'make_video_time_limit' => env('STONKAM_MAKE_VIDEO_TIME_LIMIE_MINUTE'),
 ];
