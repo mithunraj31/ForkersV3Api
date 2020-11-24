@@ -3,7 +3,7 @@
 
 namespace App\Models\DTOs;
 
-class CameraDto
+class CameraDto extends DtoBase
 {
     public $id;
 

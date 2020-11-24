@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Event;
 use App\Services\Interfaces\EventServiceInterface;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EventService implements EventServiceInterface
 {
@@ -16,6 +17,7 @@ class EventService implements EventServiceInterface
      */
     public function getEventSummary($stkUser = null)
     {
+        Log::info('Getting Event summary of user');
         return Event::getEventSummary($stkUser);
     }
 
