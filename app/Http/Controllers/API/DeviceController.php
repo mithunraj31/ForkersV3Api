@@ -33,14 +33,26 @@ class DeviceController extends Controller
         ];
     }
 
-    public function driveSummery(Request $request)
+    public function driveSummery(Request $request,$deviceId)
     {   // context start with 3 end with 2. no in context data
         // return DeviceService::getDriveSummary(2003270003, '2020-10-14 00:00:00','2020-11-02 00:00:00');
-        $deviceId = $request->query('deviceId');
         $start = $request->query('start');
         $end = $request->query('end');
         if ($deviceId && $start && $end) {
-            return DeviceService::getDriveSummary($deviceId, $start, $end);
+            $driveSummery = $this->deviceService->getDriveSummary($deviceId,$start,$end);
+            return response($driveSummery,200);
+        } else {
+            return response(["message"=> "Invalid request"],400);
+        }
+    }
+
+    public function getRoute(Request $request, $deviceId)
+    {
+        $start = $request->query('start');
+        $end = $request->query('end');
+        if ($deviceId && $start && $end) {
+            $route = $this->deviceService->getRoute($deviceId,$start,$end);
+            return response($route,200);
         } else {
             return response(["message"=> "Invalid request"],400);
         }

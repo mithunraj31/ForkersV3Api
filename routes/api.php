@@ -31,7 +31,8 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
 
-        Route::get('/driveSummary', [DeviceController::class, 'driveSummery']);
+        Route::get('/{deviceId}/driveSummary', [DeviceController::class, 'driveSummery']);
+        Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
     });
 
     // Event APIs
@@ -45,5 +46,6 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'operators'], function () {
 
         Route::get('/{operatorId}/driveSummary', [OperatorController::class, 'getDriveSummery']);
+        Route::get('/{operatorId}/events', [OperatorController::class, 'getOperatorEvents']);
     });
 });

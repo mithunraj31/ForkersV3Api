@@ -60,15 +60,15 @@ class Drive extends Model
             // when engine off is after the context
             if ($rData->type == 2) {
                 $isInContext = false;
-                if($key!=count($regularData) - 1)
-                for ($i = $key + 1; count($regularData) - 1 > $i; $i++) {
-                    if ($regularData[$i]->type == 3) {
-                        $isInContext = true;
+                if ($key != count($regularData) - 1)
+                    for ($i = $key + 1; count($regularData) - 1 > $i; $i++) {
+                        if ($regularData[$i]->type == 3) {
+                            $isInContext = true;
+                        }
                     }
-                }
                 if (!$isInContext) {
                     $c = count($regularData);
-                    for ($i = $key+1 ; $c> $i; $i++) {
+                    for ($i = $key + 1; $c > $i; $i++) {
                         unset($regularData[$i]);
                     }
                     $driveData = [
@@ -94,8 +94,11 @@ class Drive extends Model
                     "engine_stoped_at" => null
                 ];
                 $driverData = [];
-                for ($i = $key + 1; $i < count($regularData) && $regularData[$i]->type != 3; $i++) {
-                    if ($regularData[$i]->type == 4) {
+                for ($i = $key; $i < count($regularData) && $regularData[$i]->type != 3; $i++) {
+                    if (
+                        $regularData[$i]->type == 4 ||
+                        ($regularData[$i]->type == 2 && $regularData[$i]->driver_id != "")
+                    ) {
                         if (count($driverData) > 0) {
                             $driverData[count($driverData) - 1]["drive_ended_at"] = $regularData[$i]->time;
                         }

@@ -11,4 +11,8 @@ interface DeviceServiceInterface
      */
     public function getAllDevice();
 
+    public function getDriveSummary($deviceId, $start, $end);
+
+    public function getRoute($deviceId, $start, $end);
+
 }

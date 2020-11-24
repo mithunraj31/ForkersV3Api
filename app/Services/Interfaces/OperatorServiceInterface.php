@@ -11,4 +11,6 @@ interface OperatorServiceInterface
      */
     public function getDriveSummery($operatorId, $startTime, $endTime);
 
+
+    public function getOperatorEvents($operatorId, $startTime, $endTime);
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Drive;
 use App\Services\Interfaces\OperatorServiceInterface;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 
 class OperatorService implements OperatorServiceInterface
@@ -38,33 +39,78 @@ class OperatorService implements OperatorServiceInterface
                 }
             }
             // when engine off is after the context
-            if ($rData->type == $registerDriver && $rData->driver_id == $operatorId && $key == count($regularData) - 1) {
-                $driveData = [
-                    "drive_started_at" => $rData->time,
-                    "drive_stoped_at" => null
-                ];
-                $postfixData = DB::table('drive')->where([['device_id', '=', $operatorId], ['time', '>', $endTime]])->orderBy('time', 'asc')->first();;
-                if ($postfixData) {
-                    array_push($regularData, $postfixData);
+            if ($rData->type == $registerDriver && $rData->driver_id == $operatorId) {
+                $isAfterContext = true;
+                if ($key == (count($regularData) - 1)) {
+                    $isAfterContext = true;
                 } else {
 
-                    array_push($driveDataArray, $driveData);
+                    for ($j = $key + 1; $j < count($regularData); $j++) {
+                        if ($regularData[$j]->driver_id == $operatorId) {
+                            $isAfterContext = false;
+                            break;
+                        }
+                    }
+                }
+
+                if ($isAfterContext) {
+                    $driveData = [
+                        "drive_started_at" => $rData->time,
+                        "drive_stoped_at" => null
+                    ];
+                    $postfixData = DB::table('drive')->where([['driver_id', '=', $operatorId], ['time', '>', $endTime]])->orderBy('time', 'asc')->first();;
+                    if ($postfixData) {
+                        $regularData->push($postfixData);
+                    } else {
+
+                        array_push($driveDataArray, $driveData);
+                    }
                 }
             }
             // when engine on and off are in context
-            if ($key != (count($regularData) - 1) && $rData->type == $registerDriver && $rData->driver_id == $operatorId) {
+            if ($key != (count($regularData) - 1) &&
+            ($rData->type == $registerDriver || $rData->driver_id != "")&&
+            $rData->driver_id == $operatorId) {
                 $driveData = [
                     "drive_started_at" => $rData->time,
-                    "drive_stoped_at" => null
+                    "drive_stoped_at" => null,
+                    "device_id" => $rData->device_id
                 ];
-                $driverData = [];
 
-                $driveData['drive_stoped_at'] = $regularData[$key + 1]->time;
+                for ($i = $key + 1; $i < count($regularData); $i++) {
+                    if ($regularData[$i]->driver_id == $operatorId) {
+                        $driveData['drive_stoped_at'] = $regularData[$i]->time;
+                        break;
+                    }
+                }
                 array_push($driveDataArray, $driveData);
             }
         }
-
-        return $driveDataArray;
+        $duration = $this->calculateDriveDuration($driveDataArray);
+        return ["data"=>$driveDataArray, "duration"=>$duration];
         // return $regularData;
+    }
+
+    public function getOperatorEvents($operatorId, $start, $end)
+    {
+        return $operatorEvents = DB::table('event')->where([['driver_id', '=', $operatorId]])->whereBetween('time', [$start, $end])->orderBy('time', 'desc')->get();
+    }
+
+    private function calculateDriveDuration($drives)
+    {
+        if ($drives && count($drives) > 0) {
+            $duration = 0;
+            foreach ($drives as $key => $drive) {
+                if ($drive["drive_started_at"]&& $drive["drive_stoped_at"]) {
+                    $start = strtotime($drive["drive_started_at"]);
+                    $end = strtotime($drive["drive_stoped_at"]);
+                    $d = $end-$start;
+                    $duration += $d;
+                 }
+            }
+            return $duration;
+        } else {
+            return 0;
+        }
     }
 }
