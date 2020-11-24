@@ -6,7 +6,6 @@ use App\Exceptions\StonkamResultIsFailedException;
 use App\Models\DTOs\StonkamAccessTokenDto;
 use App\Models\DTOs\VideoMaker;
 use App\Services\Interfaces\StonkamServiceInterface;
-use Exception;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -24,9 +23,11 @@ class StonkamService implements StonkamServiceInterface
 
     public function refreshAccessToken()
     {
-        if ($this->stonkamAccessToken->getAccessToken() == null
+        if (
+            $this->stonkamAccessToken->getAccessToken() == null
             || $this->stonkamAccessToken->getAccessToken() == 0
-            || now()->isAfter($this->stonkamAccessToken->getExipreDateTime())) {
+            || now()->isAfter($this->stonkamAccessToken->getExipreDateTime())
+        ) {
             $accessToken = $this->requestAccessToken();
             $this->stonkamAccessToken->setAccessToken($accessToken);
 
@@ -58,7 +59,7 @@ class StonkamService implements StonkamServiceInterface
             $username = config('stonkam.auth.admin.username');
         }
 
-        $endpoint = config('stonkam.hostname')."/SetUploadVideoTime/100?UserName=$username&SessionId=$sessionId";
+        $endpoint = config('stonkam.hostname') . "/SetUploadVideoTime/100?UserName=$username&SessionId=$sessionId";
 
         $data = [
             'BeginTime' => $maker->getBeginDateTimeUtc()->format('Y-m-d H:i:s'),
@@ -88,7 +89,7 @@ class StonkamService implements StonkamServiceInterface
 
     private function requestAccessToken()
     {
-        $endpoint = config('stonkam.hostname').'/RecordDataAuthentication/100';
+        $endpoint = config('stonkam.hostname') . '/RecordDataAuthentication/100';
         $data = [
             'UserName' => config('stonkam.auth.admin.username'),
             'Password' => config('stonkam.auth.admin.password'),
