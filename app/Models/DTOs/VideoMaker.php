@@ -3,7 +3,7 @@ namespace App\Models\DTOs;
 
 use Carbon\Carbon;
 
-class VideoMaker
+class VideoMaker extends DtoBase
 {
     public string $stonkamUsername;
 
