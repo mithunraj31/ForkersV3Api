@@ -22,7 +22,7 @@ class OperatorController extends Controller
             $driveSummery = $this->operatorService->getDriveSummery($opertorId, $start, $end);
             return response($driveSummery,200);
         } else {
-            return response(["message" => "Invalid request"], 400);
+            return response(['message' => 'Invalid request'], 400);
         }
     }
     public function getOperatorEvents(Request $request, $opertorId)
@@ -31,9 +31,9 @@ class OperatorController extends Controller
         $end = $request->query('end');
         if ($opertorId && $start && $end) {
             $events = $this->operatorService->getOperatorEvents($opertorId, $start, $end);
-            return ["data" => $events];
+            return ['data' => $events];
         } else {
-            return response(["message" => "Invalid request"], 400);
+            return response(['message' => 'Invalid request'], 400);
         }
     }
 }

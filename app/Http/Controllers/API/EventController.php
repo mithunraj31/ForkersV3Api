@@ -33,7 +33,7 @@ class EventController extends Controller
             $events = $this->eventService->getEventsByDeviceIdAndTimeRange($deviceId,$start,$end);
             return response(['data'=> $events],200);
         } else {
-            return response(["message"=> "Invalid request"],400);
+            return response(['message'=> 'Invalid request'],400);
         }
 
     }

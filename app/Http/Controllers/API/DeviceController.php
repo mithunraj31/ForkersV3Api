@@ -67,7 +67,7 @@ class DeviceController extends Controller
             $driveSummery = $this->deviceService->getDriveSummary($deviceId,$start,$end);
             return response($driveSummery,200);
         } else {
-            return response(["message"=> "Invalid request"],400);
+            return response(['message'=> 'Invalid request'],400);
         }
     }
 
@@ -79,7 +79,7 @@ class DeviceController extends Controller
             $route = $this->deviceService->getRoute($deviceId,$start,$end);
             return response($route,200);
         } else {
-            return response(["message"=> "Invalid request"],400);
+            return response(['message'=> 'Invalid request'],400);
         }
     }
 }
