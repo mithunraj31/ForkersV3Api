@@ -123,25 +123,25 @@ class DeviceService implements DeviceServiceInterface
     {
         $drives = Drive::getDriveSummary($deviceId, $startTime, $endTime);
         $durations = $this->calculatDuration($drives);
-        return ["data" => $drives, "duration" => $durations];
+        return ['data' => $drives, 'duration' => $durations];
     }
     private function calculatDuration($drives)
     {
-        $duration = ["engine" => 0, "drive" => 0];
+        $duration = ['engine' => 0, 'drive' => 0];
 
         foreach ($drives as $drive) {
-            if ($drive["engine_started_at"] && $drive["engine_stoped_at"]) {
-                $start = strtotime($drive["engine_started_at"]);
-                $end = strtotime($drive["engine_stoped_at"]);
+            if ($drive['engine_started_at'] && $drive['engine_stoped_at']) {
+                $start = strtotime($drive['engine_started_at']);
+                $end = strtotime($drive['engine_stoped_at']);
                 $d = $end - $start;
-                $duration["engine"] += $d;
+                $duration['engine'] += $d;
 
-                foreach ($drive["driver_data"] as $driver) {
-                    if ($driver["drive_start_at"] && $driver["drive_ended_at"]) {
-                        $startd = strtotime($driver["drive_start_at"]);
-                        $endd = strtotime($driver["drive_ended_at"]);
+                foreach ($drive['driver_data'] as $driver) {
+                    if ($driver['drive_start_at'] && $driver['drive_ended_at']) {
+                        $startd = strtotime($driver['drive_start_at']);
+                        $endd = strtotime($driver['drive_ended_at']);
                         $dd = $endd - $startd;
-                        $duration["drive"] += $dd;
+                        $duration['drive'] += $dd;
                     }
                 }
             }
@@ -159,13 +159,13 @@ class DeviceService implements DeviceServiceInterface
                  where('datetime', 'between',[$startDate,$endDate])->
                  limit(10000)->
                  get();
-        return ["data" => $data];
+        return ['data' => $data];
     }
 
     private function formatDate($date){
         $newDate = new DateTime($date);
         $dateStr = $newDate->format('Y-m-d H:i:s');
-        $dateStr = str_replace(" ","T",$dateStr)."Z";
+        $dateStr = str_replace(' ','T',$dateStr).'Z';
         return $dateStr;
     }
 }

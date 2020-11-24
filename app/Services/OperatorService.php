@@ -26,8 +26,8 @@ class OperatorService implements OperatorServiceInterface
             // when engine start is before the context
             if ($key == 0 && $rData->type == $stopEngine && $rData->driver_id == $operatorId) {
                 $driveData = [
-                    "drive_started_at" => null,
-                    "drive_stoped_at" => $rData->time,
+                    'drive_started_at' => null,
+                    'drive_stoped_at' => $rData->time,
                 ];
                 $prefixData = DB::table('drive')->where([['device_id', '=', $operatorId], ['time', '<', $startTime], ['type', '=', $registerDriver]])->orderBy('time', 'desc')->first();
                 if ($prefixData) {
@@ -55,8 +55,8 @@ class OperatorService implements OperatorServiceInterface
 
                 if ($isAfterContext) {
                     $driveData = [
-                        "drive_started_at" => $rData->time,
-                        "drive_stoped_at" => null
+                        'drive_started_at' => $rData->time,
+                        'drive_stoped_at' => null
                     ];
                     $postfixData = DB::table('drive')->where([['driver_id', '=', $operatorId], ['time', '>', $endTime]])->orderBy('time', 'asc')->first();;
                     if ($postfixData) {
@@ -69,12 +69,12 @@ class OperatorService implements OperatorServiceInterface
             }
             // when engine on and off are in context
             if ($key != (count($regularData) - 1) &&
-            ($rData->type == $registerDriver || $rData->driver_id != "")&&
+            ($rData->type == $registerDriver || $rData->driver_id != '')&&
             $rData->driver_id == $operatorId) {
                 $driveData = [
-                    "drive_started_at" => $rData->time,
-                    "drive_stoped_at" => null,
-                    "device_id" => $rData->device_id
+                    'drive_started_at' => $rData->time,
+                    'drive_stoped_at' => null,
+                    'device_id' => $rData->device_id
                 ];
 
                 for ($i = $key + 1; $i < count($regularData); $i++) {
@@ -87,7 +87,7 @@ class OperatorService implements OperatorServiceInterface
             }
         }
         $duration = $this->calculateDriveDuration($driveDataArray);
-        return ["data"=>$driveDataArray, "duration"=>$duration];
+        return ['data'=>$driveDataArray, 'duration'=>$duration];
         // return $regularData;
     }
 
@@ -101,9 +101,9 @@ class OperatorService implements OperatorServiceInterface
         if ($drives && count($drives) > 0) {
             $duration = 0;
             foreach ($drives as $key => $drive) {
-                if ($drive["drive_started_at"]&& $drive["drive_stoped_at"]) {
-                    $start = strtotime($drive["drive_started_at"]);
-                    $end = strtotime($drive["drive_stoped_at"]);
+                if ($drive['drive_started_at']&& $drive['drive_stoped_at']) {
+                    $start = strtotime($drive['drive_started_at']);
+                    $end = strtotime($drive['drive_stoped_at']);
                     $d = $end-$start;
                     $duration += $d;
                  }
