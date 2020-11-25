@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Services\DeviceService;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use Exception;
@@ -55,5 +56,30 @@ class DeviceController extends Controller
         }
 
         return response()->json([], 200);
+    }
+
+    public function driveSummery(Request $request, $deviceId)
+    {   // context start with 3 end with 2. no in context data
+        // return DeviceService::getDriveSummary(2003270003, '2020-10-14 00:00:00','2020-11-02 00:00:00');
+        $start = $request->query('start');
+        $end = $request->query('end');
+        if ($deviceId && $start && $end) {
+            $driveSummery = $this->deviceService->getDriveSummary($deviceId,$start,$end);
+            return response($driveSummery,200);
+        } else {
+            return response(['message'=> 'Invalid request'],400);
+        }
+    }
+
+    public function getRoute(Request $request, $deviceId)
+    {
+        $start = $request->query('start');
+        $end = $request->query('end');
+        if ($deviceId && $start && $end) {
+            $route = $this->deviceService->getRoute($deviceId,$start,$end);
+            return response($route,200);
+        } else {
+            return response(['message'=> 'Invalid request'],400);
+        }
     }
 }

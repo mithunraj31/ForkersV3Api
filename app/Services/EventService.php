@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Event;
 use App\Services\Interfaces\EventServiceInterface;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class EventService implements EventServiceInterface
@@ -18,5 +19,10 @@ class EventService implements EventServiceInterface
     {
         Log::info('Getting Event summary of user');
         return Event::getEventSummary($stkUser);
+    }
+
+    public function getEventsByDeviceIdAndTimeRange($deviceId, $start, $end)
+    {
+        return DB::table('event')->where([['device_id','=',$deviceId]])->whereBetween('time', [$start, $end])->orderBy('time', 'asc')->get();
     }
 }
