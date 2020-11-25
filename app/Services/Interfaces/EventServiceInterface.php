@@ -11,4 +11,10 @@ interface EventServiceInterface
      * @return mixed number of each event.
      */
     public function getEventSummary($stkUser = null);
+
+
+
+    public function findAll($perPage, $stkUser = null);
+
+    public function findById($eventId);
 }

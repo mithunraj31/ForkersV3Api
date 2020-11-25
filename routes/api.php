@@ -36,6 +36,8 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'events'], function () {
 
         Route::get('/summary', [EventController::class, 'getEventSummary']);
+        Route::get('/', [EventController::class, 'getAllEvent']);
+        Route::get('/{eventId}', [EventController::class, 'getEventById']);
         Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 

@@ -9,8 +9,6 @@ class Camera extends Model
 {
     use HasFactory;
 
-    use HasFactory;
-
     protected $table = 'camera';
 
     public $timestamps = false;
