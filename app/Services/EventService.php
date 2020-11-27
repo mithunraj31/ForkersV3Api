@@ -3,13 +3,11 @@
 namespace App\Services;
 
 use App\Models\DTOs\EventDto;
-use App\Models\DTOs\EventFilterDto;
 use App\Models\DTOs\SensorValueDto;
 use App\Models\DTOs\VideoDto;
 use App\Models\Event;
 use App\Models\VideoConverted;
 use App\Services\Interfaces\EventServiceInterface;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
@@ -58,23 +56,23 @@ class EventService implements EventServiceInterface
                 $filter->getStartDateTimeUtc()->format('Y-m-d H:i:s'),
                 $filter->getEndDateTimeUtc()->format('Y-m-d H:i:s'),
             ]);
+        } else {
+            $perPage = 15;
+            if ($filter->perPage) {
+                $perPage = $filter->perPage;
+            }
+
+            $pageNumber = 0;
+            if ($filter->page) {
+                $pageNumber = $filter->page;
+            }
+
+            $queryBuilder->paginate($perPage, ['*'], 'page', $pageNumber);
         }
 
         if ($filter->stkUser) {
             $queryBuilder->where('username', '=', $filter->stkUser);
         }
-
-        $perPage = 15;
-        if ($filter->perPage) {
-            $perPage = $filter->perPage;
-        }
-
-        $pageNumber = 0;
-        if ($filter->page) {
-            $pageNumber = $filter->page;
-        }
-
-        $queryBuilder->paginate($perPage, ['*'], 'page', $pageNumber);
 
         return $queryBuilder->orderBy('time', $filter->orderBy);
     }
