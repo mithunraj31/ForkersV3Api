@@ -10,6 +10,13 @@ class Device extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'device_id';
+
     protected $table = 'device';
     /**
      * The attributes that are mass assignable.
@@ -32,4 +39,9 @@ class Device extends Model
         'is_active',
         'stk_user',
     ];
+
+    public function events()
+    {
+        return $this->hasMany('App\Models\Event');
+    }
 }

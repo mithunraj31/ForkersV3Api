@@ -9,6 +9,13 @@ class VideoConverted extends Model
 {
     use HasFactory;
 
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
     protected $table = 'video_converted';
 
     public $timestamps = false;
@@ -26,5 +33,10 @@ class VideoConverted extends Model
     public function setIdAttribute($id)
     {
         $this->attributes['id'] = $id;
+    }
+
+    public function event()
+    {
+        return $this->belongsTo('App\Models\Event');
     }
 }

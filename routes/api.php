@@ -39,7 +39,7 @@ Route::group(['prefix' => 'v1'], function () {
     // Event APIs
     Route::group(['prefix' => 'events'], function () {
 
-        Route::get('/', [EventController::class, 'getEventsByDeviceId']);
+        Route::get('/', [EventController::class, 'getEvents']);
         Route::get('/summary', [EventController::class, 'getEventSummary']);
     });
 
