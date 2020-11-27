@@ -25,21 +25,9 @@ class DeviceController extends Controller
 
     public function index(Request $request)
     {
-        $page = $request->query('page') ? (int)$request->query('page') : 1;
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-
         $devices = $this->deviceService->getAllDevice();
 
-        $pageItems = $devices->forPage($page, $perPage);
-
-        return response()->json([
-            'data' => $pageItems,
-            'meta' => [
-                'current_page' => $page,
-                'per_page' => $perPage,
-                'total' => count($devices)
-            ]
-        ], 200);
+        return response()->json($devices, 200);
     }
 
     public function doWaitingQueue($deviceId)
