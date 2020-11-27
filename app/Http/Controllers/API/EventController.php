@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\DTOs\EventFilterDto;
 use App\Services\Interfaces\EventServiceInterface;
 use Illuminate\Http\Request;
 
@@ -24,17 +25,20 @@ class EventController extends Controller
             'data' => $summary
         ], 200);
     }
-    public function getEventsByDeviceId(Request $request)
-    {
-        $deviceId = $request->query('deviceId');
-        $start = $request->query('start');
-        $end = $request->query('end');
-        if ($deviceId && $start && $end) {
-            $events = $this->eventService->getEventsByDeviceIdAndTimeRange($deviceId,$start,$end);
-            return response(['data'=> $events],200);
-        } else {
-            return response(['message'=> 'Invalid request'],400);
-        }
 
+    public function getEvents(Request $request)
+    {
+        $filter = new EventFilterDto();
+
+        $filter->deviceId = $request->query('deviceId');
+        $filter->page = $request->query('page');
+        $filter->perPage = $request->query('perPage');
+        $filter->setStartDateTimeFromString((string) $request->query('start'));
+        $filter->setEndDateTimeFromString((string) $request->query('end'));
+
+        $events = $this->eventService->getAllEvent($filter);
+        return response()->json([
+            'data' => $events
+        ], 200);
     }
 }

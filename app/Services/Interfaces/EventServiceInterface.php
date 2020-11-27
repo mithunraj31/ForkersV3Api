@@ -12,5 +12,5 @@ interface EventServiceInterface
      */
     public function getEventSummary($stkUser = null);
 
-    public function getEventsByDeviceIdAndTimeRange($deviceId, $start, $end);
+    public function getAllEvent($filter);
 }
