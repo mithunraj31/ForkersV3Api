@@ -39,11 +39,11 @@ class EventService implements EventServiceInterface
 
     public function findVideoById($eventId)
     {
-        $video =  VideoConverted::where('id', '=', $eventId)->get();
+        $video =  VideoConverted::where('id', '=', $eventId)->first();
         if ($video == null) {
             throw new NotFoundResourceException();
         }
-        return $video;
+        return config('app.s3') . '/' . $video['url'];
     }
 
     public function getAllEvent($filter)
@@ -107,7 +107,9 @@ class EventService implements EventServiceInterface
 
             $model->id = $event['id'];
 
-            $model->deviceId = $event['event_id'];
+            $model->eventId = $event['event_id'];
+
+            $model->deviceId = $event['device_id'];
 
             $model->driverId = $event['driver_id'];
 
@@ -148,13 +150,13 @@ class EventService implements EventServiceInterface
             $video = new VideoDto;
 
             $video->videoUrls = collect($event['videos'])->map(function ($v) {
-                return $v['url'];
+                return config('app.s3') . '/' . $v['url'];
             });
 
             $convertedVideo = VideoConverted::where('id', '=', $event['event_id'])->first();
 
             if ($convertedVideo) {
-                $video->convertedVideoUrl = $convertedVideo['url'];
+                $video->convertedVideoUrl = config('app.s3') . '/' . $convertedVideo['url'];
             }
 
             $model->video = $video;
