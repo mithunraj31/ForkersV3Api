@@ -12,11 +12,10 @@ interface EventServiceInterface
      */
     public function getEventSummary($stkUser = null);
 
-
-
-    public function findAll($perPage, $stkUser = null);
-
     public function findById($eventId);
 
     public function findVideoById($eventId);
+
+
+    public function getAllEvent($filter);
 }

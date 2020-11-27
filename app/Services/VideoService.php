@@ -6,7 +6,7 @@ use App\Models\DTOs\VideoDto;
 use App\Models\Video;
 use App\Models\VideoConverted;
 use App\Services\Interfaces\VideoServiceInterface;
-
+use Illuminate\Support\Facades\Log;
 
 class VideoService implements VideoServiceInterface
 {
@@ -17,6 +17,7 @@ class VideoService implements VideoServiceInterface
 
     public function saveVideo(VideoDto $model)
     {
+        Log::info('Saving video', $model->toArray());
         foreach ($model->videoUrls as $url) {
             $video = new Video;
             $video->deviceId = $model->deviceId;
@@ -25,11 +26,16 @@ class VideoService implements VideoServiceInterface
             $video->username = $model->username;
             $video->save();
         }
+        Log::info('Video saving is successful');
+
+        Log::info('Saving converted video url');
 
         $videoConverted = new VideoConverted;
         $videoConverted->id = $model->eventId;
         $videoConverted->url = $model->convertedVideoUrl;
 
         $videoConverted->save();
+
+        Log::info('Converted video is saved successfully');
     }
 }

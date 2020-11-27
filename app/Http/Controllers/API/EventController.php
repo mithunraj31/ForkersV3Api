@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\DTOs\EventFilterDto;
 use App\Services\Interfaces\EventServiceInterface;
 use Illuminate\Http\Request;
 
@@ -25,16 +26,6 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function getAllEvent(Request $request)
-    {
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-        $stkUser = $request->query('stkUser');
-        $summary = $this->eventService->findAll($perPage, $stkUser);
-
-        return response()->json([
-            'data' => $summary
-        ], 200);
-    }
 
     public function getEventById($eventId)
     {
@@ -51,6 +42,21 @@ class EventController extends Controller
 
         return response()->json([
             'data' => $summary
+        ], 200);
+    }
+    public function getEvents(Request $request)
+    {
+        $filter = new EventFilterDto();
+
+        $filter->deviceId = $request->query('deviceId');
+        $filter->page = $request->query('page');
+        $filter->perPage = $request->query('perPage');
+        $filter->setStartDateTimeFromString((string) $request->query('start'));
+        $filter->setEndDateTimeFromString((string) $request->query('end'));
+
+        $events = $this->eventService->getAllEvent($filter);
+        return response()->json([
+            'data' => $events
         ], 200);
     }
 }
