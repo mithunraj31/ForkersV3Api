@@ -17,4 +17,6 @@ interface EventServiceInterface
     public function findAll($perPage, $stkUser = null);
 
     public function findById($eventId);
+
+    public function findVideoById($eventId);
 }

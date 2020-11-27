@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Event;
+use App\Models\VideoConverted;
 use App\Services\Interfaces\EventServiceInterface;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -22,7 +23,6 @@ class EventService implements EventServiceInterface
 
     public function findAll($perPage, $stkUser = null)
     {
-        // Event::all()->paginate($perPage);
         return DB::table('event')->paginate($perPage);
     }
 
@@ -34,5 +34,14 @@ class EventService implements EventServiceInterface
             throw new NotFoundResourceException();
         }
         return $event;
+    }
+
+    public function findVideoById($eventId)
+    {
+        $video =  VideoConverted::where('id', '=', $eventId)->get();
+        if ($video == null) {
+            throw new NotFoundResourceException();
+        }
+        return $video;
     }
 }

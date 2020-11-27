@@ -44,4 +44,13 @@ class EventController extends Controller
             'data' => $summary
         ], 200);
     }
+
+    public function getEventVideoById($eventId)
+    {
+        $summary = $this->eventService->findVideoById($eventId);
+
+        return response()->json([
+            'data' => $summary
+        ], 200);
+    }
 }
