@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/', [EventController::class, 'getEvents']);
         Route::get('/summary', [EventController::class, 'getEventSummary']);
+        Route::get('/{eventId}', [EventController::class, 'getEventById']);
+        Route::get('/video/{eventId}', [EventController::class, 'getEventVideoById']);
+        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 
     // Operator APIs

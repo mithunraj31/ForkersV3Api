@@ -10,6 +10,7 @@ use App\Models\VideoConverted;
 use App\Services\Interfaces\EventServiceInterface;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class EventService implements EventServiceInterface
 {
@@ -25,12 +26,32 @@ class EventService implements EventServiceInterface
         return Event::getEventSummary($stkUser);
     }
 
+
+
+    public function findById($eventId)
+    {
+        $event =  Event::where('event_id', '=', $eventId)->get();
+        if ($event == null) {
+            throw new NotFoundResourceException();
+        }
+        return $event;
+    }
+
+    public function findVideoById($eventId)
+    {
+        $video =  VideoConverted::where('id', '=', $eventId)->first();
+        if ($video == null) {
+            throw new NotFoundResourceException();
+        }
+        return config('app.s3') . '/' . $video['url'];
+    }
+
     public function getAllEvent($filter)
     {
         Log::info('Getting all events');
         $queryBuilder = $this->getEventQueryBuilder($filter);
 
-        $results = $queryBuilder->with([ 'device','cameras', 'videos'])->get();
+        $results = $queryBuilder->with(['device', 'cameras', 'videos'])->get();
 
         return $this->mapDaoToDto($results);
     }
@@ -44,8 +65,10 @@ class EventService implements EventServiceInterface
             $queryBuilder->where('device_id', '=', $filter->deviceId);
         }
 
-        if ($filter->startDatetime != null
-            && $filter->endDateTime != null) {
+        if (
+            $filter->startDatetime != null
+            && $filter->endDateTime != null
+        ) {
             // check video time range.
             if ($filter->startDatetime->isAfter($filter->endDateTime)) {
                 Log::warning('Time range is invalid  ');
@@ -77,13 +100,16 @@ class EventService implements EventServiceInterface
         return $queryBuilder->orderBy('time', $filter->orderBy);
     }
 
-    private function mapDaoToDto($results) {
+    private function mapDaoToDto($results)
+    {
         $events = $results->map(function ($event) {
             $model = new EventDto;
 
             $model->id = $event['id'];
 
-            $model->deviceId = $event['event_id'];
+            $model->eventId = $event['event_id'];
+
+            $model->deviceId = $event['device_id'];
 
             $model->driverId = $event['driver_id'];
 
@@ -124,13 +150,13 @@ class EventService implements EventServiceInterface
             $video = new VideoDto;
 
             $video->videoUrls = collect($event['videos'])->map(function ($v) {
-                return $v['url'];
+                return config('app.s3') . '/' . $v['url'];
             });
 
-            $convertedVideo = VideoConverted::where('id', '=' , $event['event_id'])->first();
+            $convertedVideo = VideoConverted::where('id', '=', $event['event_id'])->first();
 
             if ($convertedVideo) {
-                $video->convertedVideoUrl = $convertedVideo['url'];
+                $video->convertedVideoUrl = config('app.s3') . '/' . $convertedVideo['url'];
             }
 
             $model->video = $video;

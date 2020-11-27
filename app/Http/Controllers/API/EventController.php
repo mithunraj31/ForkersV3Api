@@ -26,6 +26,24 @@ class EventController extends Controller
         ], 200);
     }
 
+
+    public function getEventById($eventId)
+    {
+        $summary = $this->eventService->findById($eventId);
+
+        return response()->json([
+            'data' => $summary
+        ], 200);
+    }
+
+    public function getEventVideoById($eventId)
+    {
+        $summary = $this->eventService->findVideoById($eventId);
+
+        return response()->json([
+            'data' => $summary
+        ], 200);
+    }
     public function getEvents(Request $request)
     {
         $filter = new EventFilterDto();
