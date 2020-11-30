@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
         || $exception instanceof ModelNotFoundException) {
             return response()->json(['message' => 'Data not found.'], 404);
         } else if ($exception instanceof InvalidFormatException) {
-            return response()->json(['message' => $exception->getMessage()], 500);
+            return response()->json(['message' => $exception->getMessage()], 400);
         } else if ($exception instanceof InvalidArgumentException) {
             return response()->json(['message' => $exception->getMessage()], 400);
         } else if ($exception instanceof StonkamResultIsFailedException) {
@@ -57,7 +57,7 @@ class Handler extends ExceptionHandler
             $requestMethod = request()->getMethod();
             $requestUri = request()->getRequestUri();
             Log::error("Unknown error, Request $requestMethod $requestUri", (array) request()->all());
-            return response()->json(['message' => 'Something went wrong'], 500);
+            return $exception;
         }
 
         return parent::render($request, $exception);

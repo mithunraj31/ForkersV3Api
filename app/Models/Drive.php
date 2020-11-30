@@ -121,4 +121,8 @@ class Drive extends Model
 
         return $driveDataArray;
     }
+
+    public static function getDevices(){
+        return DB::table('drive')->orderBy('time','desc')->groupBy('device_id')->get();
+    }
 }
