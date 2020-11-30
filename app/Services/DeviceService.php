@@ -7,20 +7,34 @@ use App\Models\Drive;
 use App\Models\Regular;
 use App\Services\Interfaces\DeviceServiceInterface;
 use BaoPham\DynamoDb\RawDynamoDbQuery;
+use App\Services\Interfaces\StonkamServiceInterface;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
+use Illuminate\Support\Facades\Log;
 use DateTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DeviceService implements DeviceServiceInterface
 {
+    private StonkamServiceInterface $stonkamService;
+
+    public function __construct(StonkamServiceInterface $stonkamService)
+    {
+        $this->stonkamService = $stonkamService;
+    }
+
     // return device list with online offline status and location
     // when loacation is not available in drive data get from regular data
     public function getAllDevice()
     {
+        //Please dont remove commented code.. needed for further testing.
+
         $sort = Drive::orderBy('time', 'DESC');
-        $time1 = new Datetime('NOW');
+        // $time1 = new Datetime('NOW');
         $devices = DB::table(DB::raw("({$sort->toSql()}) as d"))->groupBy('device_id')->get();
-        $time2 = new Datetime('NOW');
+        // $time2 = new Datetime('NOW');
         $endTime = '2020-11-10 05:44:39';
         $startTime = '2020-11-10 04:44:39';
         $l = "select * from `regular` where `latitude` != 0 and time > '$startTime' and time < '$endTime' order by `time` desc";
@@ -29,10 +43,10 @@ class DeviceService implements DeviceServiceInterface
         // $time4 = new Datetime('NOW');
         $endTime = '2020-11-10T05:44:39Z';
         $startTime = '2020-11-10T04:44:39Z';
-        $time3 = new Datetime('NOW');
+        // $time3 = new Datetime('NOW');
         $locationDynamo = Regular::where('datetime', 'between', [$startTime, $endTime])->where('lat', 'not_contains', '0.0')->limit(10000)->get();
         $locationDynamo->sortByDesc('datetime');
-        $time4 = new Datetime('NOW');
+        // $time4 = new Datetime('NOW');
         $onlineCount = 0;
         $offlineCount = 0;
         foreach ($devices as $device) {
@@ -58,6 +72,103 @@ class DeviceService implements DeviceServiceInterface
 
         $meta = ['online_count' => $onlineCount, 'offline_count' => $offlineCount];
         return ['data' => $devices, 'meta' => $meta];
+    }
+
+    public function getAllDeviceStonkam()
+    {
+        Log::info('Getting all device informations');
+        $devices = $this->getAllDevicesFromStonkam();
+
+        $deviceLocations = $this->getDeviceLocations($devices);
+
+        Log::info('Mapping devices to array');
+        return $this->mapDevicesToArray($devices, $deviceLocations);
+    }
+
+    private function getAllDevicesFromStonkam()
+    {
+        Log::info('Getting all device informatons from stonkam');
+        $sessionId = $this->stonkamService->refreshAccessToken();
+
+        $endpoint = config('stonkam.hostname') . '/GetDeviceList/10000';
+        $response = Http::get($endpoint, [
+            'SessionId' => $sessionId,
+            'User' => config('stonkam.stk_user')
+        ]);
+
+        if (!$response->ok()) {
+            Log::warning('Device not found');
+            throw new NotFoundResourceException();
+        }
+        Log::info('All devices is fetched successfully');
+        $content = $response->json();
+        if (!$content['DeviceList'] || count($content['DeviceList']) == 0) {
+            return [];
+        }
+
+        return $content['DeviceList'];
+    }
+
+    private function getDeviceLocations($devices)
+    {
+        Log::info('Getting the device location');
+        $deviceIdCollections = collect($devices)->map(function ($device) {
+            return ['DeviceId' => $device['DeviceId']];
+        });
+
+        $data = [
+            'UserName' => config('stonkam.auth.admin.username'),
+            'DeviceList' => $deviceIdCollections->all()
+        ];
+        $sessionId = $this->stonkamService->refreshAccessToken();
+        $endpoint = config('stonkam.hostname') . '/GetDevicesGps/' . count($devices) . "?CmsClientId=0&IsNeedPush=0&SessionId=$sessionId";
+        Log::info('Post request is sent for stonkam  "/GetDevicesGps/"');
+        $response = Http::post($endpoint, $data);
+
+        if (!$response->ok()) {
+            Log::warning('Something went wrong while fetching the location of device');
+            throw new NotFoundResourceException();
+        }
+
+        Log::info('Device location is fetched successfully');
+        $content = $response->json();
+        return $content['DevicesGps'];
+    }
+
+    private function mapDevicesToArray($devices, $deviceLocations): Collection
+    {
+        $locations = collect($deviceLocations)->keyBy('DeviceId');
+        $mappedDevices = collect($devices)->map(function ($device) use ($locations) {
+            $deviceId = $device['DeviceId'];
+            $deviceGps = $locations->get($deviceId);
+            return [
+                'id' => $deviceId,
+                'location' => [
+                    'lat' => $deviceGps != null ? $deviceGps['Latitude'] : '0.000000',
+                    'lng' => $deviceGps != null ? $deviceGps['Longitude'] : '0.000000',
+                ],
+                'detail' => [
+                    'plate_number' => $device['PlateNumber'],
+                    'device_id' => $deviceId,
+                    'scan_code' => $device['ScanCode'],
+                    'channel_number' => $device['ChannelNumber'],
+                    'group_name' => $device['GroupName'],
+                    'tcp_server_addr' => $device['TcpServerAddr'],
+                    'tcp_stream_out_port' => $device['TcpStreamOutPort'],
+                    'udp_server_addr' => $device['UdpServerAddr'],
+                    'udp_stream_out_port' => $device['UdpStreamOutPort'],
+                    'net_type' => $device['NetType'],
+                    'device_type' => $device['DeviceType'],
+                    'is_active' => $device['IsActive'],
+                    'is_online' => $device['IsOnline'],
+                ],
+                'active' => $device['IsActive'],
+                'online' => $device['IsOnline'],
+            ];
+
+        });
+        Log::info('Mapping devices to array is successful');
+        return $mappedDevices;
     }
 
     public function getDriveSummary($deviceId, $startTime, $endTime)

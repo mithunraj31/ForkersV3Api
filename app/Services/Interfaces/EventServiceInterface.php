@@ -11,5 +11,11 @@ interface EventServiceInterface
      * @return mixed number of each event.
      */
     public function getEventSummary($stkUser = null);
-    public function getEventsByDeviceIdAndTimeRange($deviceId, $start, $end);
+
+    public function findById($eventId);
+
+    public function findVideoById($eventId);
+
+
+    public function getAllEvent($filter);
 }

@@ -12,9 +12,7 @@ class OperatorService implements OperatorServiceInterface
     public function getDriveSummery($operatorId, $startTime, $endTime)
     {
         // declare types of regular
-        $startEngine = 2;
         $stopEngine = 3;
-        $normal = 1;
         $registerDriver = 4;
         $regularData = DB::table('drive')->whereBetween('time', [$startTime, $endTime])->orderBy('time', 'asc')->get();
 
@@ -93,7 +91,7 @@ class OperatorService implements OperatorServiceInterface
 
     public function getOperatorEvents($operatorId, $start, $end)
     {
-        return $operatorEvents = DB::table('event')->where([['driver_id', '=', $operatorId]])->whereBetween('time', [$start, $end])->orderBy('time', 'desc')->get();
+        return DB::table('event')->where([['driver_id', '=', $operatorId]])->whereBetween('time', [$start, $end])->orderBy('time', 'desc')->get();
     }
 
     private function calculateDriveDuration($drives)

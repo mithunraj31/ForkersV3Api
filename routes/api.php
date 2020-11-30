@@ -39,8 +39,11 @@ Route::group(['prefix' => 'v1'], function () {
     // Event APIs
     Route::group(['prefix' => 'events'], function () {
 
-        Route::get('/', [EventController::class, 'getEventsByDeviceId']);
+        Route::get('/', [EventController::class, 'getEvents']);
         Route::get('/summary', [EventController::class, 'getEventSummary']);
+        Route::get('/{eventId}', [EventController::class, 'getEventById']);
+        Route::get('/video/{eventId}', [EventController::class, 'getEventVideoById']);
+        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 
     // Operator APIs
@@ -48,13 +51,13 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/{operatorId}/driveSummary', [OperatorController::class, 'getDriveSummery']);
         Route::get('/{operatorId}/events', [OperatorController::class, 'getOperatorEvents']);
-        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 
-    // Event APIs
+    // Video APIs
     Route::group(['prefix' => 'videos'], function () {
 
         Route::post('/', [VideoController::class, 'store']);
+        Route::post('/{eventId}/videos', [VideoController::class, 'addEventVideos']);
     });
 
     // Camera APIs

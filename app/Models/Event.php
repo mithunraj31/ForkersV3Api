@@ -78,4 +78,24 @@ class Event extends Model
             'button' => (int) $result->button,
         ];
     }
+
+    public function device()
+    {
+        return $this->belongsTo('App\Models\Device', 'device_id', 'device_id');
+    }
+
+    public function cameras()
+    {
+        return $this->hasMany('App\Models\Camera', 'device_id', 'device_id');
+    }
+
+    public function videos()
+    {
+        return $this->hasMany('App\Models\Video', 'event_id', 'video_id');
+    }
+
+    public function video_converted()
+    {
+        return $this->hasOne('App\Models\VideoConverted', 'id', 'event_id');
+    }
 }
