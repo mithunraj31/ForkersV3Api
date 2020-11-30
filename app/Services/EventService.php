@@ -51,9 +51,13 @@ class EventService implements EventServiceInterface
         Log::info('Getting all events');
         $queryBuilder = $this->getEventQueryBuilder($filter);
 
-        $results = $queryBuilder->with(['device', 'cameras', 'videos'])->get();
 
-        return $this->mapDaoToDto($results);
+        $results = $queryBuilder->with(['device', 'cameras', 'videos'])->get();
+        $paginator = $queryBuilder->paginate();
+        return [
+            'data' => $this->mapDaoToDto($results),
+            'total' => $paginator->total()
+        ];
     }
 
     private function getEventQueryBuilder($filter)
@@ -82,12 +86,12 @@ class EventService implements EventServiceInterface
         } else {
             $perPage = 15;
             if ($filter->perPage) {
-                $perPage = $filter->perPage;
+                $perPage = (int) $filter->perPage;
             }
 
             $pageNumber = 0;
             if ($filter->page) {
-                $pageNumber = $filter->page;
+                $pageNumber = (int) $filter->page;
             }
 
             $queryBuilder->paginate($perPage, ['*'], 'page', $pageNumber);
