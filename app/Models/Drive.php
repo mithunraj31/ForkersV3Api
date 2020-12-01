@@ -55,12 +55,14 @@ class Drive extends Model
             // when engine off is after the context
             if ($rData->type == 2) {
                 $isInContext = false;
-                if ($key != count($regularData) - 1)
-                    for ($i = $key + 1; count($regularData) - 1 > $i; $i++) {
+                if ($key != count($regularData) - 1) {
+                    for ($i = $key + 1; count($regularData) > $i; $i++) {
                         if ($regularData[$i]->type == 3) {
                             $isInContext = true;
+                            break;
                         }
                     }
+                }
                 if (!$isInContext) {
                     $c = count($regularData);
                     for ($i = $key + 1; $c > $i; $i++) {
@@ -122,7 +124,8 @@ class Drive extends Model
         return $driveDataArray;
     }
 
-    public static function getDevices(){
-        return DB::table('drive')->orderBy('time','desc')->groupBy('device_id')->get();
+    public static function getDevices()
+    {
+        return DB::table('drive')->orderBy('time', 'desc')->groupBy('device_id')->get();
     }
 }
