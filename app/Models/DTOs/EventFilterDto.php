@@ -4,7 +4,7 @@ namespace App\Models\DTOs;
 
 use Carbon\Carbon;
 
-class EventFilterDto
+class EventFilterDto extends DtoBase
 {
     public $deviceId;
 
@@ -16,7 +16,7 @@ class EventFilterDto
 
     public $perPage;
 
-    public $orderBy = 'asc';
+    public $orderBy = 'desc';
 
     public $stkUser;
 

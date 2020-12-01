@@ -16,7 +16,7 @@ use DateTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class DeviceService implements DeviceServiceInterface
+class DeviceService extends ServiceBase implements DeviceServiceInterface
 {
     private StonkamServiceInterface $stonkamService;
 

@@ -14,7 +14,7 @@ class EventDto extends DtoBase
 
     public $type;
 
-    public SensorValueDto $sensorValue;
+    public $sensorValue;
 
     public $videoId;
 
@@ -22,7 +22,7 @@ class EventDto extends DtoBase
 
     public $username;
 
-    public VideoDto $video;
+    public $video;
 
     /**
      * CameraDto

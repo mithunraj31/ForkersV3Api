@@ -53,15 +53,18 @@ class EventController extends Controller
         $model->perPage = $request->query('perPage');
         $model->driverId = $request->query('driverId');
         $model->stkUser = $request->query('stkUser');
+        $orderBy = $request->query('orderBy');
+        if ($orderBy) {
+            $model->orderBy = $orderBy;
+        }
+
         $model->setStartDateTimeFromString((string) $request->query('start'));
         $model->setEndDateTimeFromString((string) $request->query('end'));
 
 
         $events = $this->eventService->getAllEvent($model);
         $total = $this->eventService->count($model);
-        return response()->json([
-            'data' => $events,
-            'total' => $total
-        ], 200);
+
+        return response($events, 200);
     }
 }
