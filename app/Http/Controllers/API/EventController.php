@@ -55,8 +55,10 @@ class EventController extends Controller
         $filter->setEndDateTimeFromString((string) $request->query('end'));
 
         $events = $this->eventService->getAllEvent($filter);
+        $total = $this->eventService->count($filter);
         return response()->json([
-            'data' => $events
+            'data' => $events,
+            'total' => $total
         ], 200);
     }
 }
