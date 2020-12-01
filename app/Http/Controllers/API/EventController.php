@@ -65,6 +65,9 @@ class EventController extends Controller
         $events = $this->eventService->getAllEvent($model);
         $total = $this->eventService->count($model);
 
-        return response($events, 200);
+        return response()->json([
+            'data' => $events,
+            'total' => $total
+        ], 200);
     }
 }
