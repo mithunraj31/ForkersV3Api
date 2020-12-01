@@ -20,6 +20,8 @@ class EventFilterDto
 
     public $stkUser;
 
+    public $driverId;
+
     public function setStartDateTimeFromString(string $dateTimeStr)
     {
         if ($dateTimeStr != null && $dateTimeStr != '') {

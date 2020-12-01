@@ -77,6 +77,10 @@ class EventService implements EventServiceInterface
             $queryBuilder->where('device_id', '=', $filter->deviceId);
         }
 
+        if ($filter->driverId) {
+            $queryBuilder->where('driver_id', '=', $filter->driverId);
+        }
+
         if (
             $filter->startDatetime != null
             && $filter->endDateTime != null
