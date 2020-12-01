@@ -53,17 +53,25 @@ class EventService implements EventServiceInterface
 
 
         $results = $queryBuilder->with(['device', 'cameras', 'videos'])->get();
+
+        return $this->mapDaoToDto($results);
+    }
+
+    public function count($filter)
+    {
+        $queryBuilder = $this->getEventQueryBuilder($filter);
         $paginator = $queryBuilder->paginate();
-        return [
-            'data' => $this->mapDaoToDto($results),
-            'total' => $paginator->total()
-        ];
+        return $paginator->total();
     }
 
     private function getEventQueryBuilder($filter)
     {
         Log::info('Creating query builder');
         $queryBuilder = (new Event())->newQuery();
+
+        if ($filter == null) {
+            return $queryBuilder;
+        }
 
         if ($filter->deviceId) {
             $queryBuilder->where('device_id', '=', $filter->deviceId);
