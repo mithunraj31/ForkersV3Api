@@ -8,11 +8,12 @@ use App\Models\DTOs\VideoDto;
 use App\Models\Event;
 use App\Models\VideoConverted;
 use App\Services\Interfaces\EventServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
-class EventService implements EventServiceInterface
+class EventService extends ServiceBase implements EventServiceInterface
 {
     /**
      * the method give summary of device event,
@@ -77,6 +78,10 @@ class EventService implements EventServiceInterface
             $queryBuilder->where('device_id', '=', $filter->deviceId);
         }
 
+        if ($filter->driverId) {
+            $queryBuilder->where('driver_id', '=', $filter->driverId);
+        }
+
         if (
             $filter->startDatetime != null
             && $filter->endDateTime != null
@@ -129,7 +134,9 @@ class EventService implements EventServiceInterface
 
             $model->videoId = $event['video_id'];
 
-            $model->time = $event['time'];
+            $eventTime = Carbon::createFromFormat('Y-m-d H:i:s', $event['time'], 'UTC');
+            $eventTime->setTimezone('JST');
+            $model->time = $eventTime->format('Y-m-d H:i:s');
 
             $model->username = $event['username'];
 
@@ -157,7 +164,7 @@ class EventService implements EventServiceInterface
 
             $sensorValue->speed = $event['speed'];
 
-            $model->sensorValue = $sensorValue;
+            $model->sensorValue = $sensorValue->toArray();
 
             $video = new VideoDto;
 
@@ -171,12 +178,12 @@ class EventService implements EventServiceInterface
                 $video->convertedVideoUrl = config('app.s3') . '/' . $convertedVideo['url'];
             }
 
-            $model->video = $video;
+            $model->video = $video->toArray();
 
             $model->numberOfCameras = collect($event['cameras'])->count();
 
-            return $model;
+            return $model->toArray();
         });
-        return $events;
+        return $this->snakeCase($events->toArray());
     }
 }

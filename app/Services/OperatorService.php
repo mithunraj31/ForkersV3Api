@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Drive;
 use App\Services\Interfaces\OperatorServiceInterface;
-use DateTime;
 use Illuminate\Support\Facades\DB;
 
-class OperatorService implements OperatorServiceInterface
+class OperatorService extends ServiceBase implements OperatorServiceInterface
 {
     public function getDriveSummery($operatorId, $startTime, $endTime)
     {

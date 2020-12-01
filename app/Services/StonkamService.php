@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
-class StonkamService implements StonkamServiceInterface
+class StonkamService extends ServiceBase implements StonkamServiceInterface
 {
 
     private StonkamAccessTokenDto $stonkamAccessToken;
