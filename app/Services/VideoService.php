@@ -8,7 +8,7 @@ use App\Models\VideoConverted;
 use App\Services\Interfaces\VideoServiceInterface;
 use Illuminate\Support\Facades\Log;
 
-class VideoService implements VideoServiceInterface
+class VideoService extends ServiceBase implements VideoServiceInterface
 {
     /**
      * the method saves the video url and cocated video url ,
