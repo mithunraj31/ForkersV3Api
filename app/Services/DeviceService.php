@@ -51,7 +51,7 @@ class DeviceService implements DeviceServiceInterface
         $offlineCount = 0;
         foreach ($devices as $device) {
             // $location = $locationDevices->where('device_id', '=', $device->device_id);
-            $location = $locationDynamo->where('device','=',$device->device_id);
+            $location = $locationDynamo->where('device', '=', $device->device_id);
             if ($location->count() > 0) {
                 // $device->latitude = $location->first()->latitude;
                 // $device->longitude = $location->first()->longitude;
@@ -165,7 +165,6 @@ class DeviceService implements DeviceServiceInterface
                 'active' => $device['IsActive'],
                 'online' => $device['IsOnline'],
             ];
-
         });
         Log::info('Mapping devices to array is successful');
         return $mappedDevices;
@@ -173,9 +172,11 @@ class DeviceService implements DeviceServiceInterface
 
     public function getDriveSummary($deviceId, $startTime, $endTime)
     {
-        $drives = Drive::getDriveSummary($deviceId, $startTime, $endTime);
-        $durations = $this->calculatDuration($drives);
-        return ['data' => $drives, 'duration' => $durations];
+        // $drives = Drive::getDriveSummary($deviceId, $startTime, $endTime);
+        $drives = $this->getDriveSummaryByDynamo($deviceId, $startTime, $endTime);
+        // $durations = $this->calculatDuration($drives);
+        // return ['data' => $drives, 'duration' => $durations];
+        return $drives;
     }
     private function calculatDuration($drives)
     {
@@ -203,16 +204,29 @@ class DeviceService implements DeviceServiceInterface
 
     public function getRoute($deviceId, $start, $end)
     {
-        $regular = new Regular();
+
         $startDate = $this->formatDate($start);
         $endDate = $this->formatDate($end);
-        $data = $regular->where('device', $deviceId)->where('lat', 'not_contains', '0.0')->where('datetime', 'between', [$startDate, $endDate])->limit(10000)->get();
+        $time1 = new Datetime('NOW');
+        $data = Regular::where('device', $deviceId)
+            ->where('datetime', 'between', [$startDate, $endDate])
+            ->where('lat', '!=', '0.0')
+            ->limit(10000)->toDynamoDbQuery();
+        $time2 = new Datetime('NOW');
         return ['data' => $data];
     }
 
     private function formatDate($date)
     {
         $newDate = new DateTime($date);
+        $dateStr = $newDate->format('Y-m-d H:i:s');
+        $dateStr = str_replace(' ', 'T', $dateStr) . 'Z';
+        return $dateStr;
+    }
+    private function addFormatDate($date,$seconds)
+    {
+        $newDate = new DateTime($date);
+        $newDate->modify("+1$seconds second");
         $dateStr = $newDate->format('Y-m-d H:i:s');
         $dateStr = str_replace(' ', 'T', $dateStr) . 'Z';
         return $dateStr;
@@ -238,5 +252,151 @@ class DeviceService implements DeviceServiceInterface
         }
         $meta = ['online_count' => $onlineCount, 'offline_count' => $offlineCount];
         return ['data' => $deviceList, 'meta' => $meta];
+    }
+
+    private function getDriveSummaryByDynamo($deviceId, $startTime, $endTime)
+    {
+        // declare types of regular
+        $startEngine = 2;
+        $stopEngine = 3;
+        $registerDriver = 4;
+        // get regular data
+        $startDate = $this->formatDate($startTime);
+        $endDate = $this->formatDate($endTime);
+        $regularData = $this->getRegularByTimeRange($deviceId, $startDate, $endDate);
+        if ($regularData->count() > 0) {
+            // when start with not engine start
+            if ($regularData[0]->type != $startEngine) {
+                //get first start engine from dynamo
+                $tempQueryStartDate = $regularData[0]->datetime;
+                $startData = $this->getRegularStart($deviceId, $tempQueryStartDate);
+                if ($startData->count() > 0) {
+                    // remove garbage values
+                    $tempQueryStartDate = $startData[0]->datetime;
+                    $tempQueryStopDate = $regularData[0]->datetime;
+                    for ($i = 0; $i < $regularData->count() && $regularData[$i]->type != $stopEngine; $i++) {
+                        $tempQueryStopDate = $regularData[$i]->datetime;
+                        // unset($regularData[$i]);
+                        $regularData->forget($i);
+                    }
+                    //get all previous Data until it ends
+
+                    $prefixData =  $this->getRegularByTimeRange($deviceId, $tempQueryStartDate, $tempQueryStopDate);
+                    // concat new data
+                    $regularData = $this->concatCollection($prefixData, $regularData);
+                }
+            }
+            // when end is not Engine Stop
+            if ($regularData[$regularData->count() - 1]->type != $stopEngine) {
+                // get last stop engine from dynamo
+                $tempQueryStopDate = $regularData[$regularData->count() - 1]->datetime;
+                $stopData = $this->getRegularEnd($deviceId, $tempQueryStopDate);
+
+                if ($stopData->count() > 0) {
+                    // remove Garbage values
+                    $tempQueryStartDate = $regularData[$regularData->count() - 1]->datetime;
+                    $tempQueryStopDate = $stopData[0]->datetime;
+
+                    // get all post data
+                    $postfixData = $this->getRegularByTimeRange($deviceId, $this->addFormatDate($tempQueryStartDate,1), $tempQueryStopDate);
+                    // Concat data
+                    $regularData = $this->concatCollection($regularData, $postfixData);
+                }
+            }
+            // populate Drive Data
+            $driveData = $this->populateDriveData($regularData);
+            return $driveData;
+        } else {
+            return [];
+        }
+    }
+
+    private function concatCollection($firstCollection, $secondCollection)
+    {
+        foreach ($secondCollection as $regular) {
+            $firstCollection->push($regular);
+        }
+        return $firstCollection;
+    }
+    private function getRegularByTimeRange($deviceId, $startTime, $endTime)
+    {
+        return Regular::where(['device' => $deviceId])
+            ->where('datetime', 'between', [$startTime, $endTime])
+            ->where('type', '!=', '1')
+            ->limit(10000)->get();
+    }
+    private function getRegularStart($deviceId, $time)
+    {
+        return Regular::where(['device' => $deviceId])
+            ->where('datetime', '<', $time)
+            ->where('type', '2')
+            ->decorate(function (RawDynamoDbQuery $raw) {
+                // desc order
+                $raw->query['ScanIndexForward'] = false;
+            })
+            ->limit(1)->get();
+    }
+    private function getRegularEnd($deviceId, $time)
+    {
+        return Regular::where(['device' => $deviceId])
+            ->where('datetime', '>', $time)
+            ->where('type', '3')
+            ->limit(1000)->get();
+    }
+    private function populateDriveData($regularData)
+    {
+        $driveSummary = [];
+        $i = 0;
+        foreach ($regularData as $i => $regular) {
+            // $rData = $regularData->getOne($i);
+            //Start engine
+            if($i==62){
+                $k=0;
+            }
+            if ($regular->type == 2) {
+                $engineStart = new Datetime($regular->datetime);
+                $driveData = [
+                    'engine_started_at' => $engineStart->format('Y-m-d H:i:s'),
+                    'engine_stoped_at' => null
+                ];
+                $driverData = [];
+
+                foreach ($regularData as $j => $subRegular) {
+                    if ($j >= $i) {
+                        $dd = [
+                            'driver_id' => null,
+                            'drive_start_at' => null,
+                            'drive_ended_at' => null
+                        ];
+                        if (($subRegular->type == 2 || $subRegular->type == 4) && $subRegular->driverId != "") {
+                            $dd = [
+                                'driver_id' => $subRegular->driverId,
+                                'drive_start_at' => $subRegular->datetime,
+                                'drive_ended_at' => null
+                            ];
+                            if (count($driverData) > 0) {
+                                $driverData[count($driverData) - 1]['drive_ended_at'] = $subRegular->datetime;
+                            }
+                            array_push($driverData, $dd);
+                        }
+                        if ($subRegular->type == 3) {
+                            if (count($driverData) > 0) {
+                                $driverData[count($driverData) - 1]['drive_ended_at'] = $subRegular->datetime;
+                            }
+                            $driveData['engine_stoped_at'] = $subRegular->datetime;
+                            $driveData['driver_data'] = $driverData;
+                            array_push($driveSummary, $driveData);
+                            break;
+                        }
+                        // last data and end is not found
+                        if ($j == ($regularData->count() - 1) && $subRegular->type != 3) {
+                            $driveData['driver_data'] = $driverData;
+                            array_push($driveSummary, $driveData);
+                        }
+                    }
+                }
+            }
+        }
+        return $driveSummary;
     }
 }
