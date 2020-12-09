@@ -15,16 +15,16 @@ class CreateDriveTable extends Migration
     {
         Schema::create('drive', function (Blueprint $table) {
             $table->id();
-            $table->string('device_id');
-            $table->string('user_name');
-            $table->datetime('time');
-            $table->integer('type');
-            $table->string('driver_id');
-            $table->integer('status');
-            $table->float('direction');
-            $table->float('speed');
-            $table->float('latitude');
-            $table->float('longitude');
+            $table->string('device_id', 45)->nullable();
+            $table->string('user_name', 45)->nullable();
+            $table->datetime('time')->nullable();
+            $table->integer('type')->nullable();
+            $table->string('driver_id', 45)->nullable();
+            $table->integer('status')->nullable();
+            $table->float('direction')->nullable();
+            $table->float('speed')->nullable();
+            $table->float('latitude')->nullable();
+            $table->float('longitude')->nullable();
         });
     }
 

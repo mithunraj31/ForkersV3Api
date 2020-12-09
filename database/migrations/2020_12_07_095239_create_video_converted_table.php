@@ -14,7 +14,7 @@ class CreateVideoConvertedTable extends Migration
     public function up()
     {
         Schema::create('video_converted', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary();
             $table->mediumText('url');
         });
     }

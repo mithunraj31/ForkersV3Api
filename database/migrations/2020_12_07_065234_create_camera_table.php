@@ -14,10 +14,15 @@ class CreateCameraTable extends Migration
     public function up()
     {
         Schema::create('camera', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->string('device_id');
-            $table->integer('rotation');
+            $table->integer('rotation')->default('0');
             $table->string('ch');
+        });
+
+        Schema::table('camera', function (Blueprint $table) {
+            $table->string('device_id', 50)->nullable()->change();
+            $table->string('ch', 2)->nullable()->change();
         });
     }
 

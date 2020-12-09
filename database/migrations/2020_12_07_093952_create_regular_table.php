@@ -15,16 +15,16 @@ class CreateRegularTable extends Migration
     {
         Schema::create('regular', function (Blueprint $table) {
             $table->id();
-            $table->string('device_id');
-            $table->string('username');
-            $table->datetime('time');
-            $table->integer('type');
-            $table->string('driver_id');
-            $table->integer('status');
-            $table->float('direction');
-            $table->float('speed');
-            $table->float('latitude');
-            $table->float('longitude');
+            $table->string('device_id', 45)->nullable();
+            $table->string('username', 45)->nullable();
+            $table->datetime('time')->nullable();
+            $table->integer('type')->nullable();
+            $table->string('driver_id', 45)->nullable();
+            $table->integer('status')->nullable();
+            $table->float('direction')->nullable();
+            $table->float('speed')->nullable();
+            $table->float('latitude')->nullable();
+            $table->float('longitude')->nullable();
         });
     }
 

@@ -14,25 +14,25 @@ class CreateEventTable extends Migration
     public function up()
     {
         Schema::create('event', function (Blueprint $table) {
-            $table->id();
-            $table->string('event_id');
-            $table->string('device_id');
-            $table->string('driver_id');
+            $table->increments('id');
+            $table->uuid('event_id', 128);
+            $table->string('device_id', 45);
+            $table->string('driver_id', 45)->nullable();
             $table->integer('type');
-            $table->float('latitude');
-            $table->float('longitude');
-            $table->float('gx');
-            $table->float('gy');
-            $table->float('gz');
-            $table->float('roll');
-            $table->float('pitch');
-            $table->float('yaw');
-            $table->integer('status');
-            $table->float('direction');
-            $table->float('speed');
-            $table->string('video_id');
-            $table->datetime('time');
-            $table->string('username');
+            $table->float('latitude')->nullable();
+            $table->float('longitude')->nullable();
+            $table->float('gx')->nullable();
+            $table->float('gy')->nullable();
+            $table->float('gz')->nullable();
+            $table->float('roll')->nullable();
+            $table->float('pitch')->nullable();
+            $table->float('yaw')->nullable();
+            $table->integer('status')->nullable();
+            $table->float('direction')->nullable();
+            $table->float('speed')->nullable();
+            $table->string('video_id', 128)->nullable();
+            $table->datetime('time')->nullable();
+            $table->string('username')->nullable();
         });
     }
 
