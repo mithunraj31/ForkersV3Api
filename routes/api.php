@@ -5,6 +5,7 @@ use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\OperatorController;
+use App\Http\Controllers\DriverController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -67,5 +68,15 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{camera}', [CameraController::class, 'update']);
         Route::delete('/{camera}', [CameraController::class, 'destroy']);
         Route::get('/{camera}', [CameraController::class, 'show']);
+    });
+
+    // Driver APIs
+    Route::group(['prefix' => 'drivers'], function () {
+
+        Route::post('/', [DriverController::class, 'store']);
+        Route::put('/{driver}', [DriverController::class, 'update']);
+        Route::delete('/{driver}', [DriverController::class, 'destroy']);
+        Route::get('/{driver}', [DriverController::class, 'show']);
+        Route::get('/', [DriverController::class, 'index']);
     });
 });
