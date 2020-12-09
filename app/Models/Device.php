@@ -2,20 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Device extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'device_id';
 
     protected $table = 'device';
     /**
@@ -28,16 +21,10 @@ class Device extends Model
         'scan_code',
         'channel_number',
         'group_name',
-        'tcp_server_addr',
-        'tcp_stream_out_port',
-        'udp_server_addr',
-        'udp_stream_out_port',
-        'net_type',
         'device_type',
-        'create_time',
-        'update_time',
         'is_active',
         'stk_user',
+        'stk_device'
     ];
 
     public function events()

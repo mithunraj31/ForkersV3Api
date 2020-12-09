@@ -2,48 +2,51 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    protected $table = 'user';
-
+    protected $table = 'users';
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name',
-        'email',
         'first_name',
         'last_name',
-        'password',
+        'username',
+        'customer_id',
         'role_id',
-        'stk_user'
-
+        'owner_id'
     ];
+    public function owner()
+    {
+        return $this->belongsTo('App\User', 'owner_id');
+    }
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    public function role()
+    {
+        return $this->belongsTo('App\Role', 'role_id');
+    }
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function customer()
+    {
+        return $this->belongsTo('App\Customer', 'customer_id');
+    }
+
+    public function sysRoles()
+    {
+        return $this->hasMany('App\SysRole');
+    }
+    public function userGroups()
+    {
+        return $this->hasMany('App\UserGroup');
+    }
+
 }
