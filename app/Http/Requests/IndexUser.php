@@ -19,15 +19,15 @@ class IndexUser extends FormRequest
     public function authorize()
     {
         //check whether the user is logged in
-        if(!Auth::check()) return false;
+        // if(!Auth::check()) return false;
 
         //check whether user is admin
-        if(UserValidator::isAdmin()) return true;
+        // if(UserValidator::isAdmin()) return true;
 
         //check whether user has relevent privileges
 
-        return AuthValidator::isPrivileged(ResourceType::User,AccessType::View);
-
+        // return AuthValidator::isPrivileged(ResourceType::User,AccessType::View);
+        return true;
     }
 
     /**
