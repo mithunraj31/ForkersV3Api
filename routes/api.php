@@ -3,9 +3,11 @@
 use App\Http\Controllers\API\CameraController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
+use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\OperatorController;
-use App\Http\Controllers\DriverController;
+use App\Http\Controllers\API\RfidController;
+use App\Http\Controllers\API\RfidHistoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,5 +80,20 @@ Route::group(['prefix' => 'v1'], function () {
         Route::delete('/{driver}', [DriverController::class, 'destroy']);
         Route::get('/{driver}', [DriverController::class, 'show']);
         Route::get('/', [DriverController::class, 'index']);
+    });
+
+    // RFID APIs
+    Route::group(['prefix' => 'rfid'], function () {
+
+        Route::post('/', [RfidController::class, 'store']);
+        Route::put('/{id}', [RfidController::class, 'update']);
+        Route::delete('/{id}', [RfidController::class, 'destroy']);
+        Route::get('/{id}', [RfidController::class, 'show']);
+        Route::get('/', [RfidController::class, 'index']);
+    });
+
+    // RFID History APIs
+    Route::group(['prefix' => 'rfid'], function () {
+        Route::post('/history', [RfidHistoryController::class, 'store']);
     });
 });
