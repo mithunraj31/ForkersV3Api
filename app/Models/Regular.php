@@ -6,5 +6,5 @@ use BaoPham\DynamoDb\DynamoDbModel;
 
 class Regular extends DynamoDbModel
 {
-    protected $table = 'forkers_rd_location_dev';
+    protected $table = 'forkers_dev';
 }
