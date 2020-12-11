@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\DeviceService;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
+use App\Utils\CollectionUtility;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -26,8 +27,9 @@ class DeviceController extends Controller
     public function index(Request $request)
     {
         $devices = $this->deviceService->getAllDevice();
-
-        return response()->json($devices, 200);
+        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
+        $result = CollectionUtility::paginate($devices, $perPage);
+        return response($result, 200);
     }
 
     public function doWaitingQueue($deviceId)

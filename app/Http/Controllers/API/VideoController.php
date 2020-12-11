@@ -64,8 +64,8 @@ class VideoController extends Controller
         $validateVideoData = $request->validate([
             'event_id' => 'required',
             'urls' => 'required',
-            'username' => 'required|exists:App\Models\User,stk_user',
-            'device_id' => 'required|exists:App\Models\Device,device_id',
+            'username' => 'required',
+            'device_id' => 'required',
             'converted_url' => 'required',
         ]);
         $video = new VideoDto();

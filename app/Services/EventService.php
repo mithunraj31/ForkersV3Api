@@ -135,7 +135,6 @@ class EventService extends ServiceBase implements EventServiceInterface
             $model->videoId = $event['video_id'];
 
             $eventTime = Carbon::createFromFormat('Y-m-d H:i:s', $event['time'], 'UTC');
-            $eventTime->setTimezone('JST');
             $model->time = $eventTime->format('Y-m-d H:i:s');
 
             $model->username = $event['username'];
