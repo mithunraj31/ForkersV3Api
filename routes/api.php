@@ -4,6 +4,7 @@ use App\Http\Controllers\API\CameraController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
+use App\Http\Controllers\API\GroupController;
 use App\Http\Controllers\API\OperatorController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
@@ -78,11 +79,35 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/',[UserController::class, 'store']);
         Route::put('/{user}',[UserController::class, 'update']);
     });
-    // User API
+    // Role API
     Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
         Route::get('/' , [RoleController::class, 'index']);
         Route::get('/{role}', [RoleController::class, 'show']);
         Route::post('/',[RoleController::class, 'store']);
         Route::put('/{role}',[RoleController::class, 'update']);
+    });
+
+    // Role API
+    Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
+        Route::get('/' , [RoleController::class, 'index']);
+        Route::get('/{role}', [RoleController::class, 'show']);
+        Route::post('/',[RoleController::class, 'store']);
+        Route::put('/{role}',[RoleController::class, 'update']);
+    });
+
+    // Group API
+    Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
+        Route::get('/' , [GroupController::class, 'index']);
+        Route::get('/{group}', [GroupController::class, 'show']);
+        Route::post('/',[GroupController::class, 'store']);
+        Route::put('/{group}',[GroupController::class, 'update']);
+    });
+
+     // API
+     Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
+        Route::get('/' , [GroupController::class, 'index']);
+        Route::get('/{group}', [GroupController::class, 'show']);
+        Route::post('/',[GroupController::class, 'store']);
+        Route::put('/{group}',[GroupController::class, 'update']);
     });
 });
