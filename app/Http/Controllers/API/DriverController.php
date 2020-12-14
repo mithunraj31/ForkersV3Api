@@ -136,8 +136,6 @@ class DriverController extends Controller
         $drivers = $this->driverService->findRegularDataByDriverId($driverId);
         $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
         $result = CollectionUtility::paginate($drivers, $perPage);
-        return response()->json([
-            'data' => $result
-        ], 200);
+        return response($result, 200);
     }
 }
