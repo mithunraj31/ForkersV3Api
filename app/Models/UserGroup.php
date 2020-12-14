@@ -15,14 +15,14 @@ class UserGroup extends Model
 
     public function group()
     {
-        return $this->belongsTo('App\Group','group_id');
+        return $this->belongsTo('App\Models\Group','group_id');
     }
     public function user()
     {
-        return $this->belongsTo('App\User','user_id');
+        return $this->belongsTo('App\Models\User','user_id');
     }
     public function owner()
     {
-        return $this->belongsTo('App\User','owner_id');
+        return $this->belongsTo('App\Models\User','owner_id');
     }
 }

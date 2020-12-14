@@ -12,21 +12,21 @@ class Role extends Model
 
     public function Users()
     {
-        return $this->hasMany('App\role');
+        return $this->hasMany('App\Models\role');
     }
 
     public function Customer()
     {
-        return $this->belongsTo("App\Customer", "customer_id");
+        return $this->belongsTo("App\Models\Customer", "customer_id");
     }
 
     public function Owner()
     {
-        return $this->belongsTo("App\User", "owner_id");
+        return $this->belongsTo("App\Models\User", "owner_id");
     }
 
     public function Privileges()
     {
-        return $this->hasMany("App\RoleResource","role_id");
+        return $this->hasMany("App\Models\RoleResource","role_id");
     }
 }

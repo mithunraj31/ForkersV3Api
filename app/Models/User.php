@@ -30,26 +30,26 @@ class User extends Authenticatable
     ];
     public function owner()
     {
-        return $this->belongsTo('App\User', 'owner_id');
+        return $this->belongsTo('App\Models\User', 'owner_id');
     }
 
     public function role()
     {
-        return $this->belongsTo('App\Role', 'role_id');
+        return $this->belongsTo('App\Models\Role', 'role_id');
     }
 
     public function customer()
     {
-        return $this->belongsTo('App\Customer', 'customer_id');
+        return $this->belongsTo('App\Models\Customer', 'customer_id');
     }
 
     public function sysRoles()
     {
-        return $this->hasMany('App\SysRole');
+        return $this->hasMany('App\Models\SysRole');
     }
     public function userGroups()
     {
-        return $this->hasMany('App\UserGroup');
+        return $this->hasMany('App\Models\UserGroup');
     }
     static function createUser($validatedUser)
     {

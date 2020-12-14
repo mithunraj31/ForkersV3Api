@@ -12,6 +12,6 @@ class Customer extends Model
 
     public function owner()
     {
-        return $this->belongsTo('App\user','owner_id');
+        return $this->belongsTo('App\Models\User','owner_id');
     }
 }

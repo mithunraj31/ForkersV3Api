@@ -5,6 +5,7 @@ use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\OperatorController;
+use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -72,6 +73,16 @@ Route::group(['prefix' => 'v1'], function () {
 
     // User API
     Route::group(['prefix' => 'users'], function () {
-        Route::get('/' , [UserController::class, 'index']);
+        Route::middleware('auth:api')->get('/' , [UserController::class, 'index']);
+        Route::get('/{user}', [UserController::class, 'show']);
+        Route::post('/',[UserController::class, 'store']);
+        Route::put('/{user}',[UserController::class, 'update']);
+    });
+    // User API
+    Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
+        Route::get('/' , [RoleController::class, 'index']);
+        Route::get('/{role}', [RoleController::class, 'show']);
+        Route::post('/',[RoleController::class, 'store']);
+        Route::put('/{role}',[RoleController::class, 'update']);
     });
 });

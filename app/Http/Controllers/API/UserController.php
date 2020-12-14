@@ -20,7 +20,7 @@ class UserController extends Controller
 {
     public function show(User $user): UserResource
     {
-        return new UserResource($user->load('owner', 'role', 'customer', 'sysRoles', 'groups'));
+        return new UserResource($user->load('owner', 'role', 'customer', 'sysRoles', 'userGroups'));
     }
 
     public function index(IndexUser $request): UserResourceCollection

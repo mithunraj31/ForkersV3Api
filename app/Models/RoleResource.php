@@ -22,11 +22,11 @@ class RoleResource extends Model
 
     public function Owner()
     {
-        return $this->belongsTo('App\User', "owner_id");
+        return $this->belongsTo('App\Models\User', "owner_id");
     }
 
     public function Role()
     {
-        return $this->belongsTo('App\Role','role_id');
+        return $this->belongsTo('App\Models\Role','role_id');
     }
 }

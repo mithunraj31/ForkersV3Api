@@ -23,22 +23,22 @@ class Group extends Model
 
     public function children()
     {
-       return $this->hasMany('App\Group','parent_id');
+       return $this->hasMany('App\Models\Group','parent_id');
     }
     public function parent()
     {
-       return $this->belongsTo('App\Group','parent_id');
+       return $this->belongsTo('App\Models\Group','parent_id');
     }
     public function owner()
     {
-       return $this->belongsTo('App\User','owner_id');
+       return $this->belongsTo('App\Models\User','owner_id');
     }
     public function customer()
     {
-       return $this->belongsTo('App\Customer','customer_id');
+       return $this->belongsTo('App\Models\Customer','customer_id');
     }
     public function users()
     {
-        return $this->belongsToMany('App\User','user_group','group_id', 'user_id');
+        return $this->belongsToMany('App\Models\User','user_group','group_id', 'user_id');
     }
 }
