@@ -46,17 +46,28 @@ class EventController extends Controller
     }
     public function getEvents(Request $request)
     {
-        $filter = new EventFilterDto();
+        $model = new EventFilterDto;
 
-        $filter->deviceId = $request->query('deviceId');
-        $filter->page = $request->query('page');
-        $filter->perPage = $request->query('perPage');
-        $filter->setStartDateTimeFromString((string) $request->query('start'));
-        $filter->setEndDateTimeFromString((string) $request->query('end'));
+        $model->deviceId = $request->query('deviceId');
+        $model->page = $request->query('page');
+        $model->perPage = $request->query('perPage');
+        $model->driverId = $request->query('driverId');
+        $model->stkUser = $request->query('stkUser');
+        $orderBy = $request->query('orderBy');
+        if ($orderBy) {
+            $model->orderBy = $orderBy;
+        }
 
-        $events = $this->eventService->getAllEvent($filter);
+        $model->setStartDateTimeFromString((string) $request->query('start'));
+        $model->setEndDateTimeFromString((string) $request->query('end'));
+
+
+        $events = $this->eventService->getAllEvent($model);
+        $total = $this->eventService->count($model);
+
         return response()->json([
-            'data' => $events
+            'data' => $events,
+            'total' => $total
         ], 200);
     }
 }

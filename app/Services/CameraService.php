@@ -8,7 +8,7 @@ use App\Services\Interfaces\CameraServiceInterface;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
-class CameraService implements CameraServiceInterface
+class CameraService extends ServiceBase implements CameraServiceInterface
 {
     public function create(CameraDto $model)
     {

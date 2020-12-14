@@ -8,6 +8,7 @@ use App\Http\Controllers\API\GroupController;
 use App\Http\Controllers\API\OperatorController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\DriverController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -88,17 +89,28 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     // Group API
-    Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'groups', 'middleware' => 'auth:api'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::get('/{group}', [GroupController::class, 'show']);
         Route::post('/', [GroupController::class, 'store']);
         Route::put('/{group}', [GroupController::class, 'update']);
     });
+
     // Customer API
-    Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
-        Route::get('/', [GroupController::class, 'index']);
-        Route::get('/{customer}', [GroupController::class, 'show']);
+    // Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
+    //     Route::get('/', [GroupController::class, 'index']);
+    //     Route::get('/{customer}', [GroupController::class, 'show']);
         // Route::post('/', [GroupController::class, 'store']);
         // Route::put('/{customer}', [GroupController::class, 'update']);
+    //});
+
+    // Driver APIs
+    Route::group(['prefix' => 'drivers'], function () {
+
+        Route::post('/', [DriverController::class, 'store']);
+        Route::put('/{driver}', [DriverController::class, 'update']);
+        Route::delete('/{driver}', [DriverController::class, 'destroy']);
+        Route::get('/{driver}', [DriverController::class, 'show']);
+        Route::get('/', [DriverController::class, 'index']);
     });
 });

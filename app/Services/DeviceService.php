@@ -6,17 +6,15 @@ use App\Models\Device;
 use App\Models\Drive;
 use App\Models\Regular;
 use App\Services\Interfaces\DeviceServiceInterface;
-use BaoPham\DynamoDb\RawDynamoDbQuery;
 use App\Services\Interfaces\StonkamServiceInterface;
+use BaoPham\DynamoDb\RawDynamoDbQuery;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Illuminate\Support\Facades\Log;
 use DateTime;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
-class DeviceService implements DeviceServiceInterface
+class DeviceService extends ServiceBase implements DeviceServiceInterface
 {
     private StonkamServiceInterface $stonkamService;
 
@@ -25,53 +23,13 @@ class DeviceService implements DeviceServiceInterface
         $this->stonkamService = $stonkamService;
     }
 
-    // return device list with online offline status and location
-    // when loacation is not available in drive data get from regular data
     public function getAllDevice()
     {
-        //Please dont remove commented code.. needed for further testing.
-
-        $sort = Drive::orderBy('time', 'DESC');
-        // $time1 = new Datetime('NOW');
-        $devices = DB::table(DB::raw("({$sort->toSql()}) as d"))->groupBy('device_id')->get();
-        // $time2 = new Datetime('NOW');
-        $endTime = '2020-11-10 05:44:39';
-        $startTime = '2020-11-10 04:44:39';
-        $l = "select * from `regular` where `latitude` != 0 and time > '$startTime' and time < '$endTime' order by `time` desc";
-        // $time3 = new Datetime('NOW');
-        // $locationDevices = DB::table(DB::raw("({$l}) as d"))->groupBy('device_id')->get();
-        // $time4 = new Datetime('NOW');
-        $endTime = '2020-11-10T05:44:39Z';
-        $startTime = '2020-11-10T04:44:39Z';
-        // $time3 = new Datetime('NOW');
-        $locationDynamo = Regular::where('datetime', 'between', [$startTime, $endTime])->where('lat', 'not_contains', '0.0')->limit(10000)->get();
-        $locationDynamo->sortByDesc('datetime');
-        // $time4 = new Datetime('NOW');
-        $onlineCount = 0;
-        $offlineCount = 0;
-        foreach ($devices as $device) {
-            // $location = $locationDevices->where('device_id', '=', $device->device_id);
-            $location = $locationDynamo->where('device', '=', $device->device_id);
-            if ($location->count() > 0) {
-                // $device->latitude = $location->first()->latitude;
-                // $device->longitude = $location->first()->longitude;
-                $device->latitude = $location->first()->lat;
-                $device->longitude = $location->first()->lng;
-            }
-
-            if ($device->type == 3) {
-                $device->online = false;
-                $offlineCount += 1;
-            } else {
-                $device->online = true;
-                $onlineCount += true;
-            }
-        }
-
-
-
-        $meta = ['online_count' => $onlineCount, 'offline_count' => $offlineCount];
-        return ['data' => $devices, 'meta' => $meta];
+        // Look SQL query at /database/migrations/2020_12_09_040748_create_latest_devices_view.php
+        $devices = Device::getLatestDevice();
+        return collect($devices)->map(function ($d) {
+            return (array) $d;
+         });
     }
 
     public function getAllDeviceStonkam()
