@@ -28,9 +28,7 @@ class DriverController extends Controller
         $drivers = $this->driverService->findAll();
         $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
         $result = CollectionUtility::paginate($drivers, $perPage);
-        return response()->json([
-            'data' => $result
-        ], 200);
+        return response($result, 200);
     }
 
     /**
@@ -44,7 +42,7 @@ class DriverController extends Controller
         $validateDriverData = $request->validate([
             'driver_id' => 'required',
             'name' => 'required',
-            'age' => 'required',
+            'dob' => 'required',
             'address' => 'required',
             'license_no' => 'required',
             'license_received_date' => 'required',
@@ -55,7 +53,7 @@ class DriverController extends Controller
         $driver = new DriverDto();
         $driver->driverId = $validateDriverData['driver_id'];
         $driver->name = $validateDriverData['name'];
-        $driver->age = $validateDriverData['age'];
+        $driver->dob = $validateDriverData['dob'];
         $driver->address = $validateDriverData['address'];
         $driver->licenseNo = $validateDriverData['license_no'];
         $driver->licenseReceivedDate = $validateDriverData['license_received_date'];
@@ -93,7 +91,7 @@ class DriverController extends Controller
         $validateDriverData = $request->validate([
             'driver_id' => 'required',
             'name' => 'required',
-            'age' => 'required',
+            'dob' => 'required',
             'address' => 'required',
             'license_no' => 'required',
             'license_received_date' => 'required',
@@ -105,7 +103,7 @@ class DriverController extends Controller
         $driver->id = $id;
         $driver->driverId = $validateDriverData['driver_id'];
         $driver->name = $validateDriverData['name'];
-        $driver->age = $validateDriverData['age'];
+        $driver->dob = $validateDriverData['dob'];
         $driver->address = $validateDriverData['address'];
         $driver->licenseNo = $validateDriverData['license_no'];
         $driver->licenseReceivedDate = $validateDriverData['license_received_date'];
@@ -133,10 +131,10 @@ class DriverController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getRegularDataByDriverId($driverId)
+    public function getRegularDataByDriverId(Request $request, $driverId)
     {
         $drivers = $this->driverService->findRegularDataByDriverId($driverId);
-        $perPage =  15;
+        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
         $result = CollectionUtility::paginate($drivers, $perPage);
         return response()->json([
             'data' => $result

@@ -9,7 +9,7 @@ class DriverDto extends DtoBase
 
     public $name;
 
-    public $age;
+    public $dob;
 
     public $address;
 

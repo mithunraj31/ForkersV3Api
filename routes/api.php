@@ -6,8 +6,6 @@ use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\OperatorController;
-use App\Http\Controllers\API\RfidController;
-use App\Http\Controllers\API\RfidHistoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +76,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{id}', [DriverController::class, 'update']);
         Route::delete('/{id}', [DriverController::class, 'destroy']);
         Route::get('/{id}', [DriverController::class, 'show']);
+        Route::get('/', [DriverController::class, 'index']);
         Route::get('/{driverId}/history', [DriverController::class, 'getRegularDataByDriverId']);
     });
 });

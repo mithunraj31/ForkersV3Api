@@ -18,7 +18,7 @@ class CreateDriverTable extends Migration
             $table->string('driver_id');
             $table->timestamps();
             $table->string('name');
-            $table->integer('age');
+            $table->date('dob');
             $table->boolean('address');
             $table->string('license_no')->unique();
             $table->date('license_received_date');

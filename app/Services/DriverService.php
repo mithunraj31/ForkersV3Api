@@ -19,7 +19,7 @@ class DriverService extends ServiceBase implements DriverServiceInterface
         $driver = new Driver();
         $driver->driver_id = $model->driverId;
         $driver->name = $model->name;
-        $driver->age = $model->age;
+        $driver->dob = $model->dob;
         $driver->address = $model->address;
         $driver->license_no = $model->licenseNo;
         $driver->license_received_date = $model->licenseReceivedDate;
@@ -36,7 +36,7 @@ class DriverService extends ServiceBase implements DriverServiceInterface
         $driver = $this->findById($model->id);
         $driver->driver_id = $model->driverId;
         $driver->name = $model->name;
-        $driver->age = $model->age;
+        $driver->dob = $model->dob;
         $driver->address = $model->address;
         $driver->license_no = $model->licenseNo;
         $driver->license_received_date = $model->licenseReceivedDate;
