@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\DTOs\DriverDto;
 use App\Services\Interfaces\DriverServiceInterface;
+use App\Utils\CollectionUtility;
 use Illuminate\Http\Request;
 
 class DriverController extends Controller
@@ -22,12 +23,13 @@ class DriverController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $drivers = $this->driverService->findAll();
-
+        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
+        $result = CollectionUtility::paginate($drivers, $perPage);
         return response()->json([
-            'data' => $drivers
+            'data' => $result
         ], 200);
     }
 
@@ -41,15 +43,25 @@ class DriverController extends Controller
     {
         $validateDriverData = $request->validate([
             'driver_id' => 'required',
-            'driver_name' => 'required',
-            'driver_status' => 'required',
-            'driver_license_no' => 'required',
+            'name' => 'required',
+            'age' => 'required',
+            'address' => 'required',
+            'license_no' => 'required',
+            'license_received_date' => 'required',
+            'license_renewal_date' => 'required',
+            'license_location' => 'required',
+            'phone_no' => 'required',
         ]);
         $driver = new DriverDto();
         $driver->driverId = $validateDriverData['driver_id'];
-        $driver->driverName = $validateDriverData['driver_name'];
-        $driver->driverStatus = $validateDriverData['driver_status'];
-        $driver->driverLicenseNo = $validateDriverData['driver_license_no'];
+        $driver->name = $validateDriverData['name'];
+        $driver->age = $validateDriverData['age'];
+        $driver->address = $validateDriverData['address'];
+        $driver->licenseNo = $validateDriverData['license_no'];
+        $driver->licenseReceivedDate = $validateDriverData['license_received_date'];
+        $driver->licenseRenewalDate = $validateDriverData['license_renewal_date'];
+        $driver->licenseLocation = $validateDriverData['license_location'];
+        $driver->phoneNo = $validateDriverData['phone_no'];
         $this->driverService->create($driver);
         return response(['message' => 'Success!'], 200);
     }
@@ -60,9 +72,9 @@ class DriverController extends Controller
      * @param  \App\Models\Driver  $driver
      * @return \Illuminate\Http\Response
      */
-    public function show($driverId)
+    public function show($id)
     {
-        $driver = $this->driverService->findById($driverId);
+        $driver = $this->driverService->findById($id);
 
         return response()->json([
             'data' => $driver
@@ -76,18 +88,30 @@ class DriverController extends Controller
      * @param  \App\Models\Driver  $driver
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $driverId)
+    public function update(Request $request, $id)
     {
         $validateDriverData = $request->validate([
-            'driver_name' => 'required',
-            'driver_status' => 'required',
-            'driver_license_no' => 'required',
+            'driver_id' => 'required',
+            'name' => 'required',
+            'age' => 'required',
+            'address' => 'required',
+            'license_no' => 'required',
+            'license_received_date' => 'required',
+            'license_renewal_date' => 'required',
+            'license_location' => 'required',
+            'phone_no' => 'required',
         ]);
         $driver = new DriverDto();
-        $driver->driverId = $driverId;
-        $driver->driverName = $validateDriverData['driver_name'];
-        $driver->driverStatus = $validateDriverData['driver_status'];
-        $driver->driverLicenseNo = $validateDriverData['driver_license_no'];
+        $driver->id = $id;
+        $driver->driverId = $validateDriverData['driver_id'];
+        $driver->name = $validateDriverData['name'];
+        $driver->age = $validateDriverData['age'];
+        $driver->address = $validateDriverData['address'];
+        $driver->licenseNo = $validateDriverData['license_no'];
+        $driver->licenseReceivedDate = $validateDriverData['license_received_date'];
+        $driver->licenseRenewalDate = $validateDriverData['license_renewal_date'];
+        $driver->licenseLocation = $validateDriverData['license_location'];
+        $driver->phoneNo = $validateDriverData['phone_no'];
         $this->driverService->update($driver);
         return response(['message' => 'Success!'], 200);
     }
@@ -98,9 +122,24 @@ class DriverController extends Controller
      * @param  \App\Models\Driver  $driver
      * @return \Illuminate\Http\Response
      */
-    public function destroy($driverId)
+    public function destroy($id)
     {
-        $this->driverService->delete($driverId);
+        $this->driverService->delete($id);
         return response(['message' => 'Success!'], 200);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getRegularDataByDriverId($driverId)
+    {
+        $drivers = $this->driverService->findRegularDataByDriverId($driverId);
+        $perPage =  15;
+        $result = CollectionUtility::paginate($drivers, $perPage);
+        return response()->json([
+            'data' => $result
+        ], 200);
     }
 }

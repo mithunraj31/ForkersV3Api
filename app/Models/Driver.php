@@ -11,12 +11,16 @@ class Driver extends Model
 
     protected $table = 'driver';
 
-    protected $primaryKey = 'driver_id';
 
     protected $fillable = [
         'driver_id',
-        'driver_name',
-        'driver_status',
-        'driver_license_no',
+        'name',
+        'age',
+        'address',
+        'license_no',
+        'license_received_date',
+        'license_renewal_date',
+        'license_location',
+        'phone_no'
     ];
 }

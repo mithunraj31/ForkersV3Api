@@ -74,26 +74,10 @@ Route::group(['prefix' => 'v1'], function () {
 
     // Driver APIs
     Route::group(['prefix' => 'drivers'], function () {
-
         Route::post('/', [DriverController::class, 'store']);
-        Route::put('/{driver}', [DriverController::class, 'update']);
-        Route::delete('/{driver}', [DriverController::class, 'destroy']);
-        Route::get('/{driver}', [DriverController::class, 'show']);
-        Route::get('/', [DriverController::class, 'index']);
-    });
-
-    // RFID APIs
-    Route::group(['prefix' => 'rfid'], function () {
-
-        Route::post('/', [RfidController::class, 'store']);
-        Route::put('/{id}', [RfidController::class, 'update']);
-        Route::delete('/{id}', [RfidController::class, 'destroy']);
-        Route::get('/{id}', [RfidController::class, 'show']);
-        Route::get('/', [RfidController::class, 'index']);
-    });
-
-    // RFID History APIs
-    Route::group(['prefix' => 'rfid'], function () {
-        Route::post('/history', [RfidHistoryController::class, 'store']);
+        Route::put('/{id}', [DriverController::class, 'update']);
+        Route::delete('/{id}', [DriverController::class, 'destroy']);
+        Route::get('/{id}', [DriverController::class, 'show']);
+        Route::get('/{driverId}/history', [DriverController::class, 'getRegularDataByDriverId']);
     });
 });

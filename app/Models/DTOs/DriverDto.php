@@ -7,9 +7,19 @@ class DriverDto extends DtoBase
 {
     public $driverId;
 
-    public $driverName;
+    public $name;
 
-    public $driverStatus;
+    public $age;
 
-    public $driverLicenseNo;
+    public $address;
+
+    public $licenseNo;
+
+    public $licenseReceivedDate;
+
+    public $licenseRenewalDate;
+
+    public $licenseLocation;
+
+    public $phoneNumber;
 }

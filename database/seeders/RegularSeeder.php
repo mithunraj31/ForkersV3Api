@@ -18,12 +18,12 @@ class RegularSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
-        foreach (range(1, 10) as $index) {
+        foreach (range(1, 5) as $index) {
             DB::table('regular')->insert([
                 ('device_id') => $faker->word,
                 ('username') => $faker->name,
-                ('driver_id') => $faker->word,
-                ('type') => $faker->randomDigit,
+                ('driver_id') => '3028569',
+                ('type') => '4',
                 ('time') => $faker->date,
                 ('status') => $faker->date,
                 ('direction') => (1),
