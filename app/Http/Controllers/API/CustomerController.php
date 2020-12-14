@@ -23,15 +23,15 @@ class CustomerController extends Controller
         $this->customerService = $customerService;
     }
 
-    public function show(Customer $customer):CustomerResource
+    public function show(Customer $customer): CustomerResource
     {
         CustomerValidator::validate();
         return new CustomerResource($customer->load('owner'));
     }
-    public function index(Request $request):CustomerResourceCollection
+    public function index(Request $request): CustomerResourceCollection
     {
         CustomerValidator::validate();
-        $perPage = $request->query('perPage')?(int)$request->query('perPage'):15;
+        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
         return new CustomerResourceCollection(Customer::with('owner')->paginate($perPage));
     }
     public function store(StoreCustomer $request)
@@ -40,6 +40,8 @@ class CustomerController extends Controller
         $customer->stk_user = $request->stk_user;
         $customer->name = $request->name;
         $customer->description = $request->description;
-        return $this->customerService->create($customer);
+        if ($this->customerService->create($customer)) {
+            return response(['message' => 'success!'], 201);
+        }
     }
 }

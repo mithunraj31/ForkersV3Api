@@ -9,6 +9,12 @@ class Customer extends Model
 {
     protected $table = 'customer';
     use SoftDeletes;
+    protected $fillable = [
+        'id',
+        'name',
+        'description',
+        'stk_user',
+    ];
 
     public function owner()
     {
