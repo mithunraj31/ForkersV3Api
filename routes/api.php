@@ -74,33 +74,31 @@ Route::group(['prefix' => 'v1'], function () {
 
     // User API
     Route::group(['prefix' => 'users'], function () {
-        Route::middleware('auth:api')->get('/' , [UserController::class, 'index']);
+        Route::middleware('auth:api')->get('/', [UserController::class, 'index']);
         Route::get('/{user}', [UserController::class, 'show']);
-        Route::post('/',[UserController::class, 'store']);
-        Route::put('/{user}',[UserController::class, 'update']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::put('/{user}', [UserController::class, 'update']);
     });
     // Role API
-    Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
-        Route::get('/' , [RoleController::class, 'index']);
+    Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [RoleController::class, 'index']);
         Route::get('/{role}', [RoleController::class, 'show']);
-        Route::post('/',[RoleController::class, 'store']);
-        Route::put('/{role}',[RoleController::class, 'update']);
-    });
-
-    // Role API
-    Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
-        Route::get('/' , [RoleController::class, 'index']);
-        Route::get('/{role}', [RoleController::class, 'show']);
-        Route::post('/',[RoleController::class, 'store']);
-        Route::put('/{role}',[RoleController::class, 'update']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::put('/{role}', [RoleController::class, 'update']);
     });
 
     // Group API
-    Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
-        Route::get('/' , [GroupController::class, 'index']);
+    Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [GroupController::class, 'index']);
         Route::get('/{group}', [GroupController::class, 'show']);
-        Route::post('/',[GroupController::class, 'store']);
-        Route::put('/{group}',[GroupController::class, 'update']);
+        Route::post('/', [GroupController::class, 'store']);
+        Route::put('/{group}', [GroupController::class, 'update']);
     });
-
+    // Customer API
+    Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [GroupController::class, 'index']);
+        Route::get('/{customer}', [GroupController::class, 'show']);
+        // Route::post('/', [GroupController::class, 'store']);
+        // Route::put('/{customer}', [GroupController::class, 'update']);
+    });
 });
