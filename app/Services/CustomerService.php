@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Exceptions\StonkamInvalidRequestException;
 use App\Models\Customer;
 use App\Models\DTOs\CustomerDto;
+use App\Models\Group;
 use App\Services\Interfaces\CustomerServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -25,9 +27,21 @@ class CustomerService implements CustomerServiceInterface{
         // create stonkam group
         $this->createGroupInStonkam($customer);
 
-        // Create user in MBEL DB
+        // Create user in Forkers
         $customerModel = new Customer($customer->toArray());
-        return $customerModel->save();
+        $customerModel->owner_id = Auth::user()->id;
+        $customerModel->save();
+
+        // Create default group in Forkers
+        $groupModel = new Group();
+        $groupModel->name = 'default';
+        $groupModel->description = 'default '.$customer->name;
+        $groupModel->customer_id = $customerModel->id;
+        $groupModel->owner_id = Auth::user()->id;
+
+        $groupModel->save();
+
+        return $customerModel;
 
     }
 
