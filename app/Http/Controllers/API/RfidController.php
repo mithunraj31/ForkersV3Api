@@ -26,7 +26,9 @@ class RfidController extends Controller
     {
         $rfid = $this->rfidService->findAll();
 
-        return response()->json($rfid, 200);
+        return response()->json([
+            'data' => $rfid, 200
+        ]);
     }
 
     /**
@@ -46,6 +48,7 @@ class RfidController extends Controller
         $rfid->rfid = $validateRfidData['rfid'];
         $rfid->rfidName = $validateRfidData['rfid_name'];
         $rfid->createdBy = $validateRfidData['created_by'];
+        $rfid->history = $request->history;
         $this->rfidService->create($rfid);
         return response(['message' => 'Success!'], 200);
     }

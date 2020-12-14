@@ -26,7 +26,9 @@ class DriverController extends Controller
     {
         $drivers = $this->driverService->findAll();
 
-        return response()->json($drivers, 200);
+        return response()->json([
+            'data' => $drivers
+        ], 200);
     }
 
     /**
