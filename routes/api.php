@@ -103,11 +103,4 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{group}',[GroupController::class, 'update']);
     });
 
-     // API
-     Route::group(['prefix' => 'roles','middleware' => 'auth:api'], function () {
-        Route::get('/' , [GroupController::class, 'index']);
-        Route::get('/{group}', [GroupController::class, 'show']);
-        Route::post('/',[GroupController::class, 'store']);
-        Route::put('/{group}',[GroupController::class, 'update']);
-    });
 });
