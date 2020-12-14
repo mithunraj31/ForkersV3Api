@@ -53,9 +53,6 @@ class Handler extends ExceptionHandler
         }
         if ($exception instanceof InvalidFormatException) {
             return response()->json(['message' => $exception->getMessage()], 400);
-
-
-            
         }
         if ($exception instanceof InvalidArgumentException) {
             return response()->json(['message' => $exception->getMessage()], 400);
@@ -71,6 +68,9 @@ class Handler extends ExceptionHandler
         }
         if($exception instanceof AuthorizationException && $request->wantsJson()) {
             return response()->json(['message' => 'This action is unauthorized!'], 403);
+        }
+        if($exception instanceof StonkamInvalidRequestException && $request->wantsJson()) {
+            return response()->json(['message' => 'stonkam->' .$exception->getMessage()], 400);
         }
         return parent::render($request, $exception);
     }

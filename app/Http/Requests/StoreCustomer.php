@@ -9,7 +9,7 @@ use App\Enum\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class StoreUser extends FormRequest
+class StoreCustomer extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class StoreUser extends FormRequest
 
         //check whether user has relevent privileges
 
-        return AuthValidator::isPrivileged(ResourceType::User, AccessType::Add);
+        return AuthValidator::isPrivileged(ResourceType::Customer, AccessType::Add);
     }
 
     /**
@@ -37,15 +37,9 @@ class StoreUser extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required|max:255',
-            'last_name' => 'required|max:255',
-            'username' => 'required|max:255|unique:user',
-            'customer_id' => 'required|exists:App\Customer,id',
-            'role_id' => 'required|exists:App\Role,id',
-            'sys_roles' => 'required',
-            'privileges' => 'required',
-            'password' => 'required',
-            'groups' => ['exists:App\Group,id']
+            'name' => 'required',
+            'description' => 'nullable',
+            'stk_user' => 'required|max:100|unique:customer'
         ];
     }
 }

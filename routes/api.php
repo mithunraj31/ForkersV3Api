@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\CameraController;
+use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
@@ -88,17 +89,17 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     // Group API
-    Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'group', 'middleware' => 'auth:api'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::get('/{group}', [GroupController::class, 'show']);
         Route::post('/', [GroupController::class, 'store']);
         Route::put('/{group}', [GroupController::class, 'update']);
     });
     // Customer API
-    Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
-        Route::get('/', [GroupController::class, 'index']);
-        Route::get('/{customer}', [GroupController::class, 'show']);
-        // Route::post('/', [GroupController::class, 'store']);
-        // Route::put('/{customer}', [GroupController::class, 'update']);
+    Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [CustomerController::class, 'index']);
+        Route::get('/{customer}', [CustomerController::class, 'show']);
+        Route::post('/', [CustomerController::class, 'store']);
+        // Route::put('/{customer}', [CustomerController::class, 'update']);
     });
 });
