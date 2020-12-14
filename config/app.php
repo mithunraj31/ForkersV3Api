@@ -231,5 +231,5 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
-    's3' => env('S3_HOST_NAME')
+    's3' => env('S3_HOSTNAME')
 ];

@@ -9,6 +9,7 @@ use App\Http\Controllers\API\GroupController;
 use App\Http\Controllers\API\OperatorController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\DriverController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -89,12 +90,13 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     // Group API
-    Route::group(['prefix' => 'group', 'middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'groups', 'middleware' => 'auth:api'], function () {
         Route::get('/', [GroupController::class, 'index']);
         Route::get('/{group}', [GroupController::class, 'show']);
         Route::post('/', [GroupController::class, 'store']);
         Route::put('/{group}', [GroupController::class, 'update']);
     });
+
     // Customer API
     Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function () {
         Route::get('/', [CustomerController::class, 'index']);

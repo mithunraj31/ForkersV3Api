@@ -16,6 +16,7 @@ interface EventServiceInterface
 
     public function findVideoById($eventId);
 
-
     public function getAllEvent($filter);
+
+    public function count($fiter);
 }

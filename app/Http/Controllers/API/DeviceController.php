@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Services\DeviceService;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
+use App\Utils\CollectionUtility;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -26,8 +26,9 @@ class DeviceController extends Controller
     public function index(Request $request)
     {
         $devices = $this->deviceService->getAllDevice();
-
-        return response()->json($devices, 200);
+        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
+        $result = CollectionUtility::paginate($devices, $perPage);
+        return response($result, 200);
     }
 
     public function doWaitingQueue($deviceId)
@@ -52,10 +53,10 @@ class DeviceController extends Controller
         $start = $request->query('start');
         $end = $request->query('end');
         if ($deviceId && $start && $end) {
-            $driveSummery = $this->deviceService->getDriveSummary($deviceId,$start,$end);
-            return response($driveSummery,200);
+            $driveSummery = $this->deviceService->getDriveSummary($deviceId, $start, $end);
+            return response($driveSummery, 200);
         } else {
-            return response(['message'=> 'Invalid request'],400);
+            return response(['message' => 'Invalid request'], 400);
         }
     }
 
@@ -64,10 +65,10 @@ class DeviceController extends Controller
         $start = $request->query('start');
         $end = $request->query('end');
         if ($deviceId && $start && $end) {
-            $route = $this->deviceService->getRoute($deviceId,$start,$end);
-            return response($route,200);
+            $route = $this->deviceService->getRoute($deviceId, $start, $end);
+            return response($route, 200);
         } else {
-            return response(['message'=> 'Invalid request'],400);
+            return response(['message' => 'Invalid request'], 400);
         }
     }
 }
