@@ -103,16 +103,15 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{customer}', [CustomerController::class, 'show']);
         Route::post('/', [CustomerController::class, 'store']);
         Route::put('/{customer}', [CustomerController::class, 'update']);
-        Route::delete('/{customer}',[CustomerController::class, 'delete']);
+        Route::delete('/{customer}', [CustomerController::class, 'delete']);
     });
 
     // Driver APIs
-    Route::group(['prefix' => 'drivers'], function () {
+    Route::group(['prefix' => 'operators'], function () {
         Route::post('/', [DriverController::class, 'store']);
         Route::put('/{id}', [DriverController::class, 'update']);
         Route::delete('/{id}', [DriverController::class, 'destroy']);
         Route::get('/{id}', [DriverController::class, 'show']);
         Route::get('/', [DriverController::class, 'index']);
-        Route::get('/{driverId}/history', [DriverController::class, 'getRegularDataByDriverId']);
     });
 });

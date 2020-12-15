@@ -40,7 +40,7 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $validateDriverData = $request->validate([
-            'driver_id' => 'required',
+            'operator_id' => 'required',
             'name' => 'required',
             'dob' => 'required',
             'address' => 'required',
@@ -51,7 +51,7 @@ class DriverController extends Controller
             'phone_no' => 'required',
         ]);
         $driver = new DriverDto();
-        $driver->driverId = $validateDriverData['driver_id'];
+        $driver->operatorId = $validateDriverData['operator_id'];
         $driver->name = $validateDriverData['name'];
         $driver->dob = $validateDriverData['dob'];
         $driver->address = $validateDriverData['address'];
@@ -89,7 +89,7 @@ class DriverController extends Controller
     public function update(Request $request, $id)
     {
         $validateDriverData = $request->validate([
-            'driver_id' => 'required',
+            'operator_id' => 'required',
             'name' => 'required',
             'dob' => 'required',
             'address' => 'required',
@@ -101,7 +101,7 @@ class DriverController extends Controller
         ]);
         $driver = new DriverDto();
         $driver->id = $id;
-        $driver->driverId = $validateDriverData['driver_id'];
+        $driver->operatorId = $validateDriverData['operator_id'];
         $driver->name = $validateDriverData['name'];
         $driver->dob = $validateDriverData['dob'];
         $driver->address = $validateDriverData['address'];
