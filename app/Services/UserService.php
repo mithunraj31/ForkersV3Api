@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\AuthValidators\AuthValidator;
 use App\AuthValidators\UserValidator;
+use App\Http\Resources\UserResource;
 use App\Models\Customer;
 use App\Models\DTOs\UserDto;
 use App\Models\Role;
@@ -114,6 +115,7 @@ class UserService implements UserServiceInterface
 
     public function findById(User $user)
     {
+        return new UserResource($user->load('owner', 'role', 'customer', 'userGroups'));
     }
 
     public function getAll()

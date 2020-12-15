@@ -44,10 +44,6 @@ class User extends Authenticatable
         return $this->belongsTo('App\Models\Customer', 'customer_id');
     }
 
-    public function sysRoles()
-    {
-        return $this->hasMany('App\Models\SysRole');
-    }
     public function userGroups()
     {
         return $this->hasMany('App\Models\UserGroup');

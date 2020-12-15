@@ -29,7 +29,7 @@ class UserController extends Controller
 
     public function show(User $user): UserResource
     {
-        return new UserResource($user->load('owner', 'role', 'customer', 'sysRoles', 'userGroups'));
+        return $this->userService->findById($user);
     }
 
     public function index(IndexUser $request): UserResourceCollection
