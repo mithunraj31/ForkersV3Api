@@ -12,12 +12,21 @@ use App\Enum\ResourceType;
 use App\Http\Requests\IndexUser;
 use App\Http\Requests\StoreUser;
 use App\Http\Requests\UpdateUser;
+use App\Models\DTOs\UserDto;
 use App\Models\User;
+use App\Services\Interfaces\UserServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    private UserServiceInterface $userService;
+
+    public function __construct(UserServiceInterface $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function show(User $user): UserResource
     {
         return new UserResource($user->load('owner', 'role', 'customer', 'sysRoles', 'userGroups'));
@@ -32,8 +41,18 @@ class UserController extends Controller
     }
 
     public function store(StoreUser $request)
-    {
-        return User::createUser($request);
+    {   $user = new UserDto();
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->username = $request->username;
+        $user->customer_id = $request->customer_id;
+        $user->role_id = $request->role_id;
+        $user->sys_role = $request->sys_role;
+        $user->password = $request->password;
+        $user->groups = $request->groups;
+
+        return $this->userService->create($user);
+
     }
     public function logs(Request $request)
     {

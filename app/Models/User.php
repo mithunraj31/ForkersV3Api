@@ -26,7 +26,8 @@ class User extends Authenticatable
         'username',
         'customer_id',
         'role_id',
-        'owner_id'
+        'owner_id',
+        'sys_role'
     ];
     public function owner()
     {
@@ -51,58 +52,13 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\UserGroup');
     }
+    public function groups()
+    {
+        return $this->belongsToMany('App\Models\Group', 'user_group', 'user_id', 'group_id')->withPivot('owner_id');;
+    }
     static function createUser($validatedUser)
     {
-        //login ass admin
-        $keycloak = Http::asForm()->post(env("KEYCLOAK_HOST") . '/auth/realms/master/protocol/openid-connect/token', [
-            'client_id' => 'admin-cli',
-            'grant_type' => 'password',
-            'username' => 'admin',
-            'password' => 'Test@2020'
-        ]);
-        $keycloak = json_decode($keycloak);
 
-        //create user in Keycloak
-        $createdResponse = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $keycloak->access_token
-        ])->post(env("KEYCLOAK_HOST") . '/auth/admin/realms/' . env("KEYCLOAK_REALM") . '/users', [
-            'firstName' => $validatedUser->first_name,
-            'lastName' => $validatedUser->last_name,
-            'email' => $validatedUser->username,
-            'username' => $validatedUser->username,
-            'enabled' => true,
-            'credentials' => array(['value' => $validatedUser->password]),
-            'attributes' => [
-                'privileges' => json_encode($validatedUser->privileges),
-                'groups' => json_encode($validatedUser->groups),
-                'sysRoles' => "[\"user\"]",
-                'stk_user' => $validatedUser->stk_user
-            ]
-        ]);
-        if ($createdResponse->status() != 201) throw new BadRequestException([$createdResponse->body()]);
-
-        //create user in database
-        $user = new User([
-            'first_name' => $validatedUser->first_name,
-            'last_name' => $validatedUser->last_name,
-            'username' => $validatedUser->username,
-            'customer_id' => $validatedUser->customer_id,
-            'owner_id' => Auth::user()->id,
-            'role_id' => $validatedUser->role_id,
-        ]);
-        $user->save();
-
-        //Add owner id for the relation
-        $ownerForRelation = Auth::user()->id;
-        $usersArray = (array)$validatedUser->groups;
-        $sync_data = [];
-        for ($i = 0; $i < count($usersArray); $i++) {
-            $sync_data[$usersArray[$i]] = ['owner_id' => $ownerForRelation];
-        }
-
-        //add groups to user
-        $user->groups()->syncWithoutDetaching($sync_data);
-        return $user->load('groups');
     }
 
     public function updateUser(User $user, $keycloakUser)

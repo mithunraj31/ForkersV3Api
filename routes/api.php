@@ -77,9 +77,9 @@ Route::group(['prefix' => 'v1'], function () {
     // User API
     Route::group(['prefix' => 'users'], function () {
         Route::middleware('auth:api')->get('/', [UserController::class, 'index']);
-        Route::get('/{user}', [UserController::class, 'show']);
-        Route::post('/', [UserController::class, 'store']);
-        Route::put('/{user}', [UserController::class, 'update']);
+        Route::middleware('auth:api')->get('/{user}', [UserController::class, 'show']);
+        Route::middleware('auth:api')->post('/', [UserController::class, 'store']);
+        Route::middleware('auth:api')->put('/{user}', [UserController::class, 'update']);
     });
     // Role API
     Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {

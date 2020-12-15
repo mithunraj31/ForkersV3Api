@@ -22,7 +22,7 @@ class StoreUser extends FormRequest
         if (!Auth::check()) return false;
 
         //check whether user is admin
-        if (UserValidator::isAdmin()) return true;
+        if (AuthValidator::isAdmin()) return true;
 
         //check whether user has relevent privileges
 
@@ -39,13 +39,12 @@ class StoreUser extends FormRequest
         return [
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
-            'username' => 'required|max:255|unique:user',
-            'customer_id' => 'required|exists:App\Models\Customer,id',
-            'role_id' => 'required|exists:App\Role,id',
-            'sys_roles' => 'required|in:admin,user',
-            'privileges' => 'required',
+            'username' => 'required|email|max:255|unique:users',
+            'customer_id' => 'exists:App\Models\Customer,id',
+            'role_id' => 'required|exists:App\Models\Role,id',
+            'sys_role' => 'in:admin,user',
             'password' => 'required',
-            'groups' => ['exists:App\Group,id']
+            'groups' => ['exists:App\Models\Group,id']
         ];
     }
 }
