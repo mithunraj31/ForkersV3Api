@@ -9,7 +9,7 @@ interface CustomerServiceInterface
 {
     public function create(CustomerDto $model);
 
-    public function update(Customer $customer);
+    public function update(CustomerDto $request,Customer $customer);
 
     public function findById(Customer $customer);
 
