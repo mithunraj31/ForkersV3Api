@@ -62,6 +62,54 @@ class UserService implements UserServiceInterface
 
     public function update(UserDto $request, User $user)
     {
+        UserValidator::updateUserValidator($request);
+
+        if ($request->role_id) {
+            $request->privileges = $this->generatePrivileges($user->role_id);
+        }
+        if ($request->customer_id) {
+            $customer = Customer::findOrFail($request->customer_id);
+            $request->stk_user = $customer->stk_user;
+        }
+        // update keyclaok
+        $this->updateKeyCloakUser($request, $user->username);
+
+        // update Forkers db
+
+        if ($request->first_name) {
+            $user->first_name = $request->first_name;
+        }
+        if ($request->last_name) {
+            $user->last_name = $request->last_name;
+        }
+        if ($request->role_id) {
+            $user->role_id = $request->role_id;
+        }
+        if ($request->customer_id) {
+            $user->customer_id = $request->customer_id;
+        }
+        if ($request->sys_role) {
+            $user->sys_role = $request->sys_role;
+        }
+        if ($request->username) {
+            $user->username = $request->username;
+        }
+
+
+        if ($user->groups) {
+            //Add owner id for the relation
+            $ownerForRelation = Auth::user()->id;
+            $usersArray = (array)$request->groups;
+            $sync_data = [];
+            for ($i = 0; $i < count($usersArray); $i++) {
+                $sync_data[$usersArray[$i]] = ['owner_id' => $ownerForRelation];
+            }
+
+            //add groups to user
+            $user->groups()->sync($sync_data);
+        }
+        $user->save();
+        return $user->load('groups');
     }
 
     public function findById(User $user)
@@ -133,5 +181,54 @@ class UserService implements UserServiceInterface
             'password' => 'Test@2020'
         ]);
         return json_decode($keycloak);
+    }
+
+    private function updateKeyCloakUser(UserDto $user, $username)
+    {
+        //login ass admin
+
+        $keycloak = $this->getKeyclaokToken();
+
+        //get user in Keycloak
+        $getUser = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $keycloak->access_token
+        ])->get(env("KEYCLOAK_HOST") . '/auth/admin/realms/' . env("KEYCLOAK_REALM") . '/users?username=' . $username);
+        if($getUser->status()!=200) throw new BadRequestException([$getUser->body()]);
+
+        $getUserId = $getUser[0]["id"];
+
+        $newUser = [];
+        if ($user->first_name) {
+            $newUser['firstName'] = $user->first_name;
+        }
+        if ($user->last_name) {
+            $newUser['lastName'] = $user->last_name;
+        }
+        if ($user->groups) {
+            $newUser['attributes']['groups'] = json_encode($user->groups);
+        }
+        if ($user->role_id) {
+            $newUser['attributes']['privileges'] = json_encode($user->privileges);
+        }
+        if ($user->customer_id) {
+            $newUser['attributes']['stk_user'] = $user->stk_user;
+        }
+        if ($user->sys_role) {
+            $newUser['attributes']['sys_role'] = $user->sys_role;
+        }
+        if ($user->password) {
+            $newUser['credentials'] = array(['value' => $user->password]);
+        }
+        if ($user->username) {
+            $newUser['username'] = $user->username;
+        }
+        if ($user->username) {
+            $newUser['email'] = $user->username;
+        }
+
+        $updateResponse = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $keycloak->access_token
+        ])->put(env("KEYCLOAK_HOST") . '/auth/admin/realms/' . env("KEYCLOAK_REALM") . '/users/' . $getUserId, $newUser);
+        if ($updateResponse->status() != 204) throw new InvalidArgumentException($updateResponse->body());
     }
 }

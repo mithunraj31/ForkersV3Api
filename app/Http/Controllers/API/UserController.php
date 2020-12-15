@@ -60,27 +60,18 @@ class UserController extends Controller
     }
     public function update(UpdateUser $request, User $user)
     {
-        $keycloakUser = (object)null;
-        if ($request->first_name) {
-            $user->first_name = $request->first_name;
-            $keycloakUser->firstName = $request->first_name;
-        }
-        if ($request->last_name) {
-            $user->last_name = $request->last_name;
-            $keycloakUser->lastName = $request->last_name;
-        }
-        if(AuthValidator::isAdmin())
-        if ($request->customer_id) $user->customer_id = $request->customer_id;
+        $newUser = new UserDto();
 
-        if(AuthValidator::isPrivileged(ResourceType::Role,AccessType::Add))
-        if ($request->role_id) $user->role_id = $request->role_id;
-
-        if($request->password){
-            $keycloakUser->credentials = array(['value'=>$request->password]);
-        }
-        return $user->updateUser($user,$request);
+        $newUser->first_name = $request->first_name;
+        $newUser->last_name = $request->last_name;
+        $newUser->groups = $request->groups;
+        $newUser->customer_id = $request->customer_id;
+        $newUser->role_id = $request->role_id;
+        $newUser->password =$request->password;
+        $newUser->username =$request->username;
 
 
+        return $this->userService->update($newUser, $user);
     }
 }
 

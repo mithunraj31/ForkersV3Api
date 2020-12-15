@@ -38,9 +38,10 @@ class UpdateUser extends FormRequest
         return [
             'first_name' => 'max:255',
             'last_name' => 'max:255',
-            'customer_id' => 'exists:App\Customer,id',
-            'role_id' => 'exists:App\Role,id',
-            'groups' => ['exists:App\Group,id']
+            'customer_id' => 'exists:App\Models\Customer,id',
+            'username' => 'email|unique:users,username',
+            'role_id' => 'exists:App\Models\Role,id',
+            'groups' => ['exists:App\Models\Group,id']
         ];
     }
 }
