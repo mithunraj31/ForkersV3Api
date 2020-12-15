@@ -6,6 +6,7 @@ use App\Enum\SysRole;
 use App\Exceptions\NoPrivilageException;
 use App\Models\Customer;
 use App\Models\DTOs\UserDto;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class UserValidator
@@ -76,6 +77,19 @@ class UserValidator
         if ($user->sys_role == SysRole::Admin) {
             if (!AuthValidator::isAdmin()) {
                 throw new NoPrivilageException(['Privilage not found for create admin user!']);
+            }
+        }
+    }
+    static function getUserByIdValidator(User $user)
+    {
+        if (AuthValidator::isAdmin()) {
+            return true;
+        } else {
+            $token = json_decode(Auth::token());
+            if ($token->stk_user === $user->customer->stk_user) {
+                return true;
+            } else {
+                throw new NoPrivilageException(['No privilage for view this user!']);
             }
         }
     }

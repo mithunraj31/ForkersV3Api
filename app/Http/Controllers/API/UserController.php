@@ -34,10 +34,7 @@ class UserController extends Controller
 
     public function index(IndexUser $request): UserResourceCollection
     {
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-        $users = new UserResourceCollection(User::with('owner')->paginate($perPage));
-        $users->withQueryString()->links();
-        return $users;
+        return $this->userService->getAll($request->query('perPage'));
     }
 
     public function store(StoreUser $request)
