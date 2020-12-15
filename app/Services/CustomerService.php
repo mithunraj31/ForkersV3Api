@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Exceptions\StonkamInvalidRequestException;
+use App\Http\Resources\CustomerResource;
+use App\Http\Resources\CustomerResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\CustomerDto;
 use App\Models\Group;
@@ -45,20 +47,27 @@ class CustomerService implements CustomerServiceInterface{
 
     }
 
-    public function update(Customer $customer) {
-
+    public function update(CustomerDto $request, Customer $customer) {
+        $customer->update([
+        'name' => $request->name,
+        'description' => $request->description,
+        'owner_id' => Auth::user()->id
+        ]);
+        return $customer;
     }
 
     public function findById(Customer $customer) {
-
+        return new CustomerResource($customer->load('owner'));
     }
 
-    public function getAll(){
-
+    public function getAll($perPage = 15){
+        return new CustomerResourceCollection(Customer::with('owner')->paginate($perPage));
     }
 
     public function delete(Customer $customer){
-
+        $customer->owner_id = Auth::user()->id;
+        $customer->save();
+        return $customer->delete();
     }
 
     private function createUserInStonkam(CustomerDto $customer) {
