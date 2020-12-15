@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Models\Driver;
 use App\Models\DTOs\DriverDto;
-use App\Models\Regular;
 use App\Services\Interfaces\DriverServiceInterface;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -70,21 +69,9 @@ class DriverService extends ServiceBase implements DriverServiceInterface
 
     public function delete($id)
     {
-        $driver = $this->findById($id);
+        $driver = $this->findById($id)->first();
         Log::info('Deleting Driver data', (array)  $driver);
         $driver->delete();
         Log::info("Deleted Driver by ID $id");
-    }
-
-    public function findRegularDataByDriverId($driverId)
-    {
-        $regular = new Regular();
-        $data = $regular->where('driver_id', $driverId)->where('type', '4')->get();
-
-        if ($data->count() == 0) {
-            Log::warning("Not found Drivers");
-            throw new NotFoundResourceException();
-        }
-        return $data;
     }
 }

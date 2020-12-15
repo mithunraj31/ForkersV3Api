@@ -15,6 +15,4 @@ interface DriverServiceInterface
     public function findAll();
 
     public function delete($id);
-
-    public function findRegularDataByDriverId($driverId);
 }

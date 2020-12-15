@@ -74,7 +74,7 @@ class DriverController extends Controller
     {
         $driver = $this->driverService->findById($id);
 
-        return response()->json([
+        return response([
             'data' => $driver
         ], 200);
     }
@@ -124,18 +124,5 @@ class DriverController extends Controller
     {
         $this->driverService->delete($id);
         return response(['message' => 'Success!'], 200);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getRegularDataByDriverId(Request $request, $driverId)
-    {
-        $drivers = $this->driverService->findRegularDataByDriverId($driverId);
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-        $result = CollectionUtility::paginate($drivers, $perPage);
-        return response($result, 200);
     }
 }
