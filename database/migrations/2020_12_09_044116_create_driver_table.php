@@ -19,11 +19,11 @@ class CreateDriverTable extends Migration
             $table->timestamps();
             $table->string('name');
             $table->date('dob');
-            $table->boolean('address');
+            $table->longText('address');
             $table->string('license_no')->unique();
             $table->date('license_received_date');
             $table->date('license_renewal_date');
-            $table->string('license_location');
+            $table->longText('license_location');
             $table->string('phone_no');
             $table->softDeletes();
         });
