@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+
 use App\Models\Driver;
 use App\Models\DTOs\DriverDto;
 use App\Services\Interfaces\DriverServiceInterface;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
+
 
 class DriverService extends ServiceBase implements DriverServiceInterface
 {
@@ -15,9 +17,14 @@ class DriverService extends ServiceBase implements DriverServiceInterface
         Log::info('Creating Driver', $model->toArray());
         $driver = new Driver();
         $driver->driver_id = $model->driverId;
-        $driver->driver_name = $model->driverName;
-        $driver->driver_status = $model->driverStatus;
-        $driver->driver_license_no = $model->driverLicenseNo;
+        $driver->name = $model->name;
+        $driver->dob = $model->dob;
+        $driver->address = $model->address;
+        $driver->license_no = $model->licenseNo;
+        $driver->license_received_date = $model->licenseReceivedDate;
+        $driver->license_renewal_date = $model->licenseRenewalDate;
+        $driver->license_location = $model->licenseLocation;
+        $driver->phone_no = $model->phoneNo;
         $driver->save();
         Log::info('Driver has been created');
     }
@@ -25,19 +32,25 @@ class DriverService extends ServiceBase implements DriverServiceInterface
     public function update(DriverDto $model)
     {
         Log::info('Updating Driver', $model->toArray());
-        $driver = $this->findById($model->driverId);
-        $driver->driver_name = $model->driverName;
-        $driver->driver_status = $model->driverStatus;
-        $driver->driver_license_no = $model->driverLicenseNo;
+        $driver = $this->findById($model->id);
+        $driver->driver_id = $model->driverId;
+        $driver->name = $model->name;
+        $driver->dob = $model->dob;
+        $driver->address = $model->address;
+        $driver->license_no = $model->licenseNo;
+        $driver->license_received_date = $model->licenseReceivedDate;
+        $driver->license_renewal_date = $model->licenseRenewalDate;
+        $driver->license_location = $model->licenseLocation;
+        $driver->phone_no = $model->phoneNo;
         $driver->update();
         Log::info('Driver has been updated');
     }
 
-    public function findById($driverId)
+    public function findById($id)
     {
-        $driver =  Driver::find($driverId);
+        $driver =  Driver::find($id);
         if ($driver == null) {
-            Log::warning("Not found Driver by ID $driverId");
+            Log::warning("Not found Driver by ID $id");
             throw new NotFoundResourceException();
         }
         return $driver;
@@ -54,11 +67,11 @@ class DriverService extends ServiceBase implements DriverServiceInterface
         return $drivers;
     }
 
-    public function delete($driverId)
+    public function delete($id)
     {
-        $driver = $this->findById($driverId);
+        $driver = $this->findById($id)->first();
         Log::info('Deleting Driver data', (array)  $driver);
         $driver->delete();
-        Log::info("Deleted Driver by ID $driverId");
+        Log::info("Deleted Driver by ID $id");
     }
 }

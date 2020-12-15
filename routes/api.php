@@ -4,12 +4,12 @@ use App\Http\Controllers\API\CameraController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
+use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\GroupController;
 use App\Http\Controllers\API\OperatorController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\DriverController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -104,5 +104,15 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/', [CustomerController::class, 'store']);
         Route::put('/{customer}', [CustomerController::class, 'update']);
         Route::delete('/{customer}',[CustomerController::class, 'delete']);
+    });
+
+    // Driver APIs
+    Route::group(['prefix' => 'drivers'], function () {
+        Route::post('/', [DriverController::class, 'store']);
+        Route::put('/{id}', [DriverController::class, 'update']);
+        Route::delete('/{id}', [DriverController::class, 'destroy']);
+        Route::get('/{id}', [DriverController::class, 'show']);
+        Route::get('/', [DriverController::class, 'index']);
+        Route::get('/{driverId}/history', [DriverController::class, 'getRegularDataByDriverId']);
     });
 });
