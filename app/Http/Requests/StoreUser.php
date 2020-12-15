@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\AuthValidators\AuthValidator;
-use App\AuthValidators\UserValidator;
 use App\Enum\AccessType;
 use App\Enum\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;

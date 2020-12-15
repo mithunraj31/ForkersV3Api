@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\AuthValidators\AuthValidator;
-use App\AuthValidators\UserValidator;
 use App\Enum\AccessType;
 use App\Enum\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,7 +21,7 @@ class StoreRole extends FormRequest
         if (!Auth::check()) return false;
 
         //check whether user is admin
-        if (UserValidator::isAdmin()) return true;
+        if (AuthValidator::isAdmin()) return true;
 
         //check whether user has relevent privileges
 
