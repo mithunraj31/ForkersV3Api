@@ -17,7 +17,7 @@ class CustomerValidator
     }
     static function getByIdValidate(Customer $customer)
     {
-        if (UserValidator::isAdmin()) {
+        if (AuthValidator::isAdmin()) {
             return true;
         } else {
             $token = json_decode(Auth::token());
