@@ -137,6 +137,8 @@ class UserService implements UserServiceInterface
 
     public function delete(User $user)
     {
+        UserValidator::deleteUserValidator($user);
+        return $user->delete();
     }
     public function generatePrivileges($role_id)
     {

@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\UserResourceCollection;
 use App\Enum\AccessType;
 use App\Enum\ResourceType;
+use App\Http\Requests\DeleteUser;
 use App\Http\Requests\IndexUser;
 use App\Http\Requests\StoreUser;
 use App\Http\Requests\UpdateUser;
@@ -69,6 +70,11 @@ class UserController extends Controller
 
 
         return $this->userService->update($newUser, $user);
+    }
+
+    public function delete(DeleteUser $request, User $user){
+
+        $this->userService->delete($user);
     }
 }
 

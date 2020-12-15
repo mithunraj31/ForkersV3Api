@@ -93,4 +93,17 @@ class UserValidator
             }
         }
     }
+    static function deleteUserValidator(User $user)
+    {
+        if (AuthValidator::isAdmin()) {
+            return true;
+        } else {
+            $token = json_decode(Auth::token());
+            if ($token->stk_user === $user->customer->stk_user) {
+                return true;
+            } else {
+                throw new NoPrivilageException(['No privilage for delete this user!']);
+            }
+        }
+    }
 }
