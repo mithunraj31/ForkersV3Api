@@ -154,7 +154,7 @@ class UserService implements UserServiceInterface
         //create user in Keycloak
         $createdResponse = Http::withHeaders([
             'Authorization' => 'Bearer ' . $keycloak->access_token
-        ])->post(env("KEYCLOAK_HOST") . '/auth/admin/realms/' . env("KEYCLOAK_REALM") . '/users', [
+        ])->post(config("keycloak.host") . '/auth/admin/realms/' . config("keycloak.realm") . '/users', [
             'firstName' => $validatedUser->first_name,
             'lastName' => $validatedUser->last_name,
             'email' => $validatedUser->username,
@@ -174,11 +174,11 @@ class UserService implements UserServiceInterface
     private function getKeyclaokToken()
     {
         //login as admin
-        $keycloak = Http::asForm()->post(env("KEYCLOAK_HOST") . '/auth/realms/master/protocol/openid-connect/token', [
+        $keycloak = Http::asForm()->post(config("keycloak.host") . '/auth/realms/master/protocol/openid-connect/token', [
             'client_id' => 'admin-cli',
             'grant_type' => 'password',
-            'username' => 'admin',
-            'password' => 'Test@2020'
+            'username' => config("keycloak.username"),
+            'password' => config("keycloak.password")
         ]);
         return json_decode($keycloak);
     }
@@ -192,7 +192,7 @@ class UserService implements UserServiceInterface
         //get user in Keycloak
         $getUser = Http::withHeaders([
             'Authorization' => 'Bearer ' . $keycloak->access_token
-        ])->get(env("KEYCLOAK_HOST") . '/auth/admin/realms/' . env("KEYCLOAK_REALM") . '/users?username=' . $username);
+        ])->get(config("keycloak.host") . '/auth/admin/realms/' . config("keycloak.realm") . '/users?username=' . $username);
         if($getUser->status()!=200) throw new BadRequestException([$getUser->body()]);
 
         $getUserId = $getUser[0]["id"];
@@ -228,7 +228,7 @@ class UserService implements UserServiceInterface
 
         $updateResponse = Http::withHeaders([
             'Authorization' => 'Bearer ' . $keycloak->access_token
-        ])->put(env("KEYCLOAK_HOST") . '/auth/admin/realms/' . env("KEYCLOAK_REALM") . '/users/' . $getUserId, $newUser);
+        ])->put(config("keycloak.host") . '/auth/admin/realms/' . config("keycloak.realm") . '/users/' . $getUserId, $newUser);
         if ($updateResponse->status() != 204) throw new InvalidArgumentException($updateResponse->body());
     }
 }
