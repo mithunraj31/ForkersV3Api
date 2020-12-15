@@ -75,7 +75,8 @@ class User extends Authenticatable
             'attributes' => [
                 'privileges' => json_encode($validatedUser->privileges),
                 'groups' => json_encode($validatedUser->groups),
-                'sysRoles' => "[\"user\"]"
+                'sysRoles' => "[\"user\"]",
+                'stk_user' => $validatedUser->stk_user
             ]
         ]);
         if ($createdResponse->status() != 201) throw new BadRequestException([$createdResponse->body()]);

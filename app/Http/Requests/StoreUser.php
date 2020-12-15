@@ -40,9 +40,9 @@ class StoreUser extends FormRequest
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
             'username' => 'required|max:255|unique:user',
-            'customer_id' => 'required|exists:App\Customer,id',
+            'customer_id' => 'required|exists:App\Models\Customer,id',
             'role_id' => 'required|exists:App\Role,id',
-            'sys_roles' => 'required',
+            'sys_roles' => 'required|in:admin,user',
             'privileges' => 'required',
             'password' => 'required',
             'groups' => ['exists:App\Group,id']

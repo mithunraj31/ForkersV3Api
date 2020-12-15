@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\AuthValidators\CustomerValidator;
 use App\Exceptions\StonkamInvalidRequestException;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\CustomerResourceCollection;
@@ -14,7 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class CustomerService implements CustomerServiceInterface{
+class CustomerService implements CustomerServiceInterface
+{
     private StonkamServiceInterface $stonkamService;
 
     public function __construct(StonkamServiceInterface $stonkamService)
@@ -22,7 +24,8 @@ class CustomerService implements CustomerServiceInterface{
         $this->stonkamService = $stonkamService;
     }
 
-    public function create(CustomerDto $customer) {
+    public function create(CustomerDto $customer)
+    {
         // create stonkam user
         $this->createUserInStonkam($customer);
 
@@ -37,40 +40,46 @@ class CustomerService implements CustomerServiceInterface{
         // Create default group in Forkers
         $groupModel = new Group();
         $groupModel->name = 'default';
-        $groupModel->description = 'default '.$customer->name;
+        $groupModel->description = 'default ' . $customer->name;
         $groupModel->customer_id = $customerModel->id;
         $groupModel->owner_id = Auth::user()->id;
 
         $groupModel->save();
 
         return $customerModel;
-
     }
 
-    public function update(CustomerDto $request, Customer $customer) {
+    public function update(CustomerDto $request, Customer $customer)
+    {
         $customer->update([
-        'name' => $request->name,
-        'description' => $request->description,
-        'owner_id' => Auth::user()->id
+            'name' => $request->name,
+            'description' => $request->description,
+            'owner_id' => Auth::user()->id
         ]);
         return $customer;
     }
 
-    public function findById(Customer $customer) {
+    public function findById(Customer $customer)
+    {
+        // Validate Customer
+        CustomerValidator::getByIdValidate($customer);
         return new CustomerResource($customer->load('owner'));
     }
 
-    public function getAll($perPage = 15){
+    public function getAll($perPage = 15)
+    {
         return new CustomerResourceCollection(Customer::with('owner')->paginate($perPage));
     }
 
-    public function delete(Customer $customer){
+    public function delete(Customer $customer)
+    {
         $customer->owner_id = Auth::user()->id;
         $customer->save();
         return $customer->delete();
     }
 
-    private function createUserInStonkam(CustomerDto $customer) {
+    private function createUserInStonkam(CustomerDto $customer)
+    {
 
         $sessionId = $this->stonkamService->refreshAccessToken();
         $endpoint = env('STONKAM_HOSTNAME') . "/AddUser/100";
@@ -83,15 +92,16 @@ class CustomerService implements CustomerServiceInterface{
         ];
         Log::info("Requesting stonkam server for creating new user- $customer->stk_user");
         $response = Http::post($endpoint, $data);
-        if(!$response->ok()){
+        if (!$response->ok()) {
             $content = $response->json();
-            Log::warning('Invalid input or stonkam faild. '.$content['Reason']);
+            Log::warning('Invalid input or stonkam faild. ' . $content['Reason']);
             throw new StonkamInvalidRequestException($content['Reason']);
         }
 
         Log::info('Create stonkam user success!!');
     }
-    private function createGroupInStonkam(CustomerDto $customer) { // this group doesnt have any connection with Forkers groups
+    private function createGroupInStonkam(CustomerDto $customer)
+    { // this group doesnt have any connection with Forkers groups
 
         $sessionId = $this->stonkamService->refreshAccessToken();
         $endpoint = env('STONKAM_HOSTNAME') . "/AddGroup/100";
@@ -103,14 +113,12 @@ class CustomerService implements CustomerServiceInterface{
         ];
         Log::info("Requesting stonkam server for creating new group- $customer->stk_user");
         $response = Http::post($endpoint, $data);
-        if(!$response->ok()){
+        if (!$response->ok()) {
             $content = $response->json();
-            Log::warning('Invalid input or stonkam faild. '.$content['Reason']);
+            Log::warning('Invalid input or stonkam faild. ' . $content['Reason']);
             throw new StonkamInvalidRequestException($content['Reason']);
         }
 
         Log::info('Create stonkam group success!!');
     }
-
 }
-
