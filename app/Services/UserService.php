@@ -11,6 +11,7 @@ use App\Models\DTOs\UserDto;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Interfaces\UserServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
@@ -165,6 +166,30 @@ class UserService implements UserServiceInterface
         }
         return $privilegeArray;
     }
+    public function updateKeycloakPrivileges(Collection $users, $role_id){ // $users is string array
+        $keycloak = $this->getKeyclaokToken();
+
+        foreach ($users as $user){
+            //get user in Keycloak
+            $getUser = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $keycloak->access_token
+            ])->get(config("keycloak.host") . '/auth/admin/realms/' . config("keycloak.realm") . '/users?username=' . $user->username);
+            if($getUser->status()!=200) throw new BadRequestException([$getUser->body()]);
+
+            $getUserId = $getUser[0]["id"];
+            $stk_user = $getUser[0]["attributes"]['stk_user'];
+            $groups = $getUser[0]["attributes"]['groups'];
+            $privileges = json_encode($this->generatePrivileges($role_id));
+            $newUser = [];
+            $newUser['attributes']['privileges'] = $privileges;
+            $newUser['attributes']['stk_user'] = $stk_user;
+            $newUser['attributes']['groups'] = $groups;
+            $updateResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $keycloak->access_token
+            ])->put(config("keycloak.host") . '/auth/admin/realms/' . config("keycloak.realm") . '/users/' . $getUserId, $newUser);
+            if ($updateResponse->status() != 204) throw new InvalidArgumentException($updateResponse->body());
+        }
+    }
     private function createKeycloakUser(UserDto $validatedUser)
     {
         $keycloak = $this->getKeyclaokToken();
@@ -213,7 +238,6 @@ class UserService implements UserServiceInterface
         if($getUser->status()!=200) throw new BadRequestException([$getUser->body()]);
 
         $getUserId = $getUser[0]["id"];
-
         $newUser = [];
         if ($user->first_name) {
             $newUser['firstName'] = $user->first_name;
@@ -223,15 +247,23 @@ class UserService implements UserServiceInterface
         }
         if ($user->groups) {
             $newUser['attributes']['groups'] = json_encode($user->groups);
+        }else{
+            $newUser['attributes']['groups'] = $getUser[0]["attributes"]['groups'];
         }
         if ($user->role_id) {
             $newUser['attributes']['privileges'] = json_encode($user->privileges);
+        }else{
+            $newUser['attributes']['privileges'] = $getUser[0]["attributes"]['privileges'];
         }
         if ($user->customer_id) {
             $newUser['attributes']['stk_user'] = $user->stk_user;
+        }else{
+            $newUser['attributes']['stk_user'] = $getUser[0]["attributes"]['stk_user'];
         }
         if ($user->sys_role) {
             $newUser['attributes']['sys_role'] = $user->sys_role;
+        }{
+            $newUser['attributes']['sys_role'] = $getUser[0]["attributes"]['sys_role'];
         }
         if ($user->password) {
             $newUser['credentials'] = array(['value' => $user->password]);

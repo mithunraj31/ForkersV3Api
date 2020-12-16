@@ -24,4 +24,5 @@ class UserDto extends DtoBase
     public $groups;
 
     public $privileges;
+    public $stk_user;
 }

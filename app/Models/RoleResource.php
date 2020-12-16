@@ -19,8 +19,11 @@ class RoleResource extends Model
         'add',
         'edit',
         'delete',
-        'view'
+        'view',
+        'owner_id'
     ];
+
+
     public function Customer()
     {
         return $this->belongsTo('App\Customer');

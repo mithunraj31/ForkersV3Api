@@ -4,6 +4,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property mixed id
+ * @property mixed name
+ * @property mixed description
+ * @property mixed customer_id
+ * @property mixed users
+ * @property mixed customers
+ * @property mixed owner
+ * @property mixed privileges
+ */
+
 class Role extends Model
 {
     protected $table = 'role';
@@ -18,7 +29,7 @@ class Role extends Model
 
     public function Users()
     {
-        return $this->hasMany('App\Models\role');
+        return $this->hasMany('App\Models\User', 'role_id');
     }
 
     public function Customer()
