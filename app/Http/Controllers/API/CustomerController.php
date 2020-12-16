@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\AuthValidators\CustomerValidator;
 use App\Http\Requests\DeleteCustomer;
 use App\Http\Requests\IndexCustomer;
+use App\Http\Requests\IndexCustomerRole;
 use App\Http\Requests\IndexCustomerUser;
 use App\Http\Requests\StoreCustomer;
 use App\Http\Requests\UpdateCustomer;
@@ -63,5 +64,10 @@ class CustomerController extends Controller
     public function indexUsers(IndexCustomerUser $request, Customer $customer)
     {
         return $this->customerService->getAllUsers($customer, $request->query('perPage'));
+    }
+
+    public function indexRoles(IndexCustomerRole $request, Customer $customer)
+    {
+        return $this->customerService->getAllRoles($customer, $request->query('perPage'));
     }
 }

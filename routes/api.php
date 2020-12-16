@@ -109,6 +109,9 @@ Route::group(['prefix' => 'v1'], function () {
 
         // get users of requested customer id
         Route::get('/{customer}/users', [CustomerController::class, 'indexUsers']);
+
+        // get roles of reqested customer id
+        Route::get('/{customer}/roles', [CustomerController::class, 'indexRoles']);
     });
 
     // Driver APIs
