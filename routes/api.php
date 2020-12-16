@@ -84,10 +84,11 @@ Route::group(['prefix' => 'v1'], function () {
     });
     // Role API
     Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
-        Route::get('/', [RoleController::class, 'index']);
-        Route::get('/{role}', [RoleController::class, 'show']);
-        Route::post('/', [RoleController::class, 'store']);
-        Route::put('/{role}', [RoleController::class, 'update']);
+        Route::middleware('auth:api')->get('/', [RoleController::class, 'index']);
+        Route::middleware('auth:api')->get('/{role}', [RoleController::class, 'show']);
+        Route::middleware('auth:api')->post('/', [RoleController::class, 'store']);
+        Route::middleware('auth:api')->put('/{role}', [RoleController::class, 'update']);
+        Route::middleware('auth:api')->delete('/{role}', [RoleController::class, 'delete']);
     });
 
     // Group API

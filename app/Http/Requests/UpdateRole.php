@@ -36,7 +36,13 @@ class UpdateRole extends FormRequest
     public function rules()
     {
         return [
-            'customer_id' => 'exists:App\Customer,id',
+            'privileges.*.resource' => 'required|max:100',
+            'privileges.*.add' => 'required|boolean',
+            'privileges.*.edit' => 'required|boolean',
+            'privileges.*.delete' => 'required|boolean',
+            'privileges.*.view' => 'required|boolean',
+            'customer_id' => 'exists:App\Models\Customer,id',
+            'description' => 'nullable'
         ];
     }
 }

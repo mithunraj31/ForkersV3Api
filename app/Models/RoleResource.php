@@ -14,7 +14,13 @@ class RoleResource extends Model
      */
     protected $table = 'role_resource';
     use SoftDeletes;
-
+    protected $fillable = [
+        'resource',
+        'add',
+        'edit',
+        'delete',
+        'view'
+    ];
     public function Customer()
     {
         return $this->belongsTo('App\Customer');

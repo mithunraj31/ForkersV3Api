@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-
+use App\Http\Requests\DeleteRole;
 use App\Http\Requests\DestroyRole;
 use App\Http\Requests\IndexRole;
 use App\Http\Requests\StoreRole;
@@ -42,7 +42,7 @@ class RoleController extends Controller
             $p = new RoleResource([
                 'view' => $request->privileges[$i]["view"],
                 'add' => $request->privileges[$i]["add"],
-                'edit' => $request->privileges[$i]["update"],
+                'edit' => $request->privileges[$i]["edit"],
                 'delete' => $request->privileges[$i]["delete"],
                 'resource' => $request->privileges[$i]["resource"]
             ]);
@@ -92,11 +92,12 @@ class RoleController extends Controller
                 $p = new RoleResource([
                     'view' => $request->privileges[$i]["view"],
                     'add' => $request->privileges[$i]["add"],
-                    'edit' => $request->privileges[$i]["update"],
+                    'edit' => $request->privileges[$i]["edit"],
                     'delete' => $request->privileges[$i]["delete"],
                     'resource' => $request->privileges[$i]["resource"],
-                    'owner_id' => Auth::user()->id
+
                 ]);
+                $p->owner_id =Auth::user()->id;
                 array_push($newPrivileges, $p);
             }
         }
@@ -110,9 +111,8 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DestroyRole $request, Role $role)
+    public function delete(DeleteRole $request, Role $role)
     {
-        $role->privileges()->delete();
         $role->delete();
     }
 }
