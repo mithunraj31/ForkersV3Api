@@ -14,10 +14,12 @@ use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\DriverServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
 use App\Services\Interfaces\OperatorServiceInterface;
+use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
 use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
+use App\Services\RoleService;
 use App\Services\StonkamService;
 use App\Services\UserService;
 use App\Services\VideoService;
@@ -51,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
         CustomerServiceInterface::class => CustomerService::class,
         DriverServiceInterface::class => DriverService::class,
         UserServiceInterface::class => UserService::class,
+        RoleServiceInterface::class => RoleService::class
 
     ];
 
