@@ -8,6 +8,8 @@ use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\GroupController;
 use App\Http\Controllers\API\OperatorController;
+use App\Http\Controllers\API\RfidController;
+use App\Http\Controllers\API\RfidHistoryController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -113,5 +115,22 @@ Route::group(['prefix' => 'v1'], function () {
         Route::delete('/{id}', [DriverController::class, 'destroy']);
         Route::get('/{id}', [DriverController::class, 'show']);
         Route::get('/', [DriverController::class, 'index']);
+    });
+
+    // RFID APIs
+    Route::group(['prefix' => 'rfid'], function () {
+        Route::post('/', [RfidController::class, 'store']);
+        Route::put('/{id}', [RfidController::class, 'update']);
+        Route::delete('/{id}', [RfidController::class, 'destroy']);
+        Route::get('/{id}', [RfidController::class, 'show']);
+        Route::get('/', [RfidController::class, 'index']);
+    });
+
+    // RFID History APIs
+    Route::group(['prefix' => 'rfid/history'], function () {
+        Route::post('/assign', [RfidHistoryController::class, 'assignOperator']);
+        Route::delete('/remove/{rfid}', [RfidHistoryController::class, 'removeOperator']);
+        Route::get('/{rfid}', [RfidHistoryController::class, 'findrfIdHistory']);
+        Route::delete('/{id}', [RfidHistoryController::class, 'destroy']);
     });
 });

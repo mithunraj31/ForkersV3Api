@@ -12,9 +12,13 @@ use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\DriverServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
 use App\Services\Interfaces\OperatorServiceInterface;
+use App\Services\Interfaces\RfidHistoryServiceInterface;
+use App\Services\Interfaces\RfidServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
+use App\Services\RfidHistoryService;
+use App\Services\RfidService;
 use App\Services\StonkamService;
 use App\Services\VideoService;
 use Illuminate\Support\ServiceProvider;
@@ -46,6 +50,8 @@ class AppServiceProvider extends ServiceProvider
         VideoServiceInterface::class => VideoService::class,
         CustomerServiceInterface::class => CustomerService::class,
         DriverServiceInterface::class => DriverService::class,
+        RfidServiceInterface::class => RfidService::class,
+        RfidHistoryServiceInterface::class => RfidHistoryService::class,
     ];
 
 
