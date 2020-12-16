@@ -20,4 +20,9 @@ class Customer extends Model
     {
         return $this->belongsTo('App\Models\User','owner_id');
     }
+
+    public function users()
+    {
+        return $this->hasMany('App\Models\User', 'customer_id');
+    }
 }

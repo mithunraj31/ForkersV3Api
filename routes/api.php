@@ -106,6 +106,9 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/', [CustomerController::class, 'store']);
         Route::put('/{customer}', [CustomerController::class, 'update']);
         Route::delete('/{customer}',[CustomerController::class, 'delete']);
+
+        // get users of requested customer id
+        Route::get('/{customer}/users', [CustomerController::class, 'indexUsers']);
     });
 
     // Driver APIs

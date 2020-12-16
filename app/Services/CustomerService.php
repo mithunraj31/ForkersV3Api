@@ -6,9 +6,11 @@ use App\AuthValidators\CustomerValidator;
 use App\Exceptions\StonkamInvalidRequestException;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\CustomerResourceCollection;
+use App\Http\Resources\UserResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\CustomerDto;
 use App\Models\Group;
+use App\Models\User;
 use App\Services\Interfaces\CustomerServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use Illuminate\Support\Facades\Auth;
@@ -76,6 +78,11 @@ class CustomerService implements CustomerServiceInterface
         $customer->owner_id = Auth::user()->id;
         $customer->save();
         return $customer->delete();
+    }
+
+    public function getAllUsers(Customer $customer,$perPage=15)
+    {
+        return new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner')->paginate($perPage));
     }
 
     private function createUserInStonkam(CustomerDto $customer)
