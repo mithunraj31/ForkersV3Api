@@ -55,7 +55,7 @@ class RfidController extends Controller
      */
     public function show($id)
     {
-        $rfid = $this->fidService->findById($id);
+        $rfid = $this->rfidService->findById($id);
 
         return response([
             'data' => $rfid

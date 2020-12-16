@@ -58,12 +58,12 @@ class RfidHistoryController extends Controller
      * @param  \App\Models\rfid  $rfid
      * @return \Illuminate\Http\Response
      */
-    public function findrfIdHistory($rfid)
+    public function findrfIdHistory(Request $request, $rfid)
     {
         $rfidHistory = $this->rfidHistoryService->findrfIdHistory($rfid);
-        return response([
-            'data' => $rfidHistory
-        ], 200);
+        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
+        $result = CollectionUtility::paginate($rfidHistory, $perPage);
+        return response($result, 200);
     }
 
     /**

@@ -60,7 +60,9 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
 
     public function findrfIdHistory($rfid)
     {
-        $rfids =  RfidHistory::where('rfid', '=', $rfid);
+        $rfids =  RfidHistory::where('rfid', $rfid)
+            ->orderBy('assigned_till')
+            ->get();
         if ($rfids == null) {
             Log::warning("Not found Rfid by ID $rfids");
             throw new NotFoundResourceException();
