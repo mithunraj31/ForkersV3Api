@@ -41,7 +41,7 @@ class RfidHistoryController extends Controller
     {
         $validateRfidData = $request->validate([
             'rfid' => 'required',
-            'operator_id' => 'required'
+            'operator_id' => 'required|exists:App\Models\Driver,id'
         ]);
         $rfid = new RfidHistoryDto();
         $rfid->rfid = $validateRfidData['rfid'];
