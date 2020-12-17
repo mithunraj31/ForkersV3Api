@@ -28,7 +28,7 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
             Log::warning("Not found rfid for  $model->rfid");
             throw new NotFoundResourceException();
         }
-        $rfid->assign_status = 1;
+        $rfid->current_operator_id = $model->operatorId;
         $rfid->update();
         Log::info('Rfid History has been created');
     }
@@ -40,7 +40,7 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
         $rfidHistory->assigned_till = new DateTime();
         $rfidHistory->update();
         $rfid = Rfid::where('rfid', $rfid)->first();
-        $rfid->assign_status = 0;
+        $rfid->current_operator_id = 0;
         $rfid->update();
         Log::info('Operator Removed for Rfid');
     }

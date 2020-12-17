@@ -5,7 +5,7 @@ namespace App\Models\DTOs;
 
 class DriverDto extends DtoBase
 {
-    public $operatorId;
+    public $id;
 
     public $name;
 

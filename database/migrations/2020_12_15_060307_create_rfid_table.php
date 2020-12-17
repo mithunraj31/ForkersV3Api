@@ -18,7 +18,7 @@ class CreateRfidTable extends Migration
             $table->timestamps();
             $table->string('rfid', 45)->unique();
             $table->string('created_by');
-            $table->boolean('assign_status');
+            $table->integer('current_operator_id');
         });
     }
 

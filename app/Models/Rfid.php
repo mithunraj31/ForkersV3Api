@@ -12,6 +12,6 @@ class Rfid extends Model
     protected $table = 'rfid';
 
     protected $fillable = [
-        'rfid'
+        'rfid',
     ];
 }

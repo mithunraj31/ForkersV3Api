@@ -12,7 +12,7 @@ class Driver extends Model
     protected $table = 'operators';
 
     protected $fillable = [
-        'operator_id',
+        'id',
         'name',
         'dob',
         'address',

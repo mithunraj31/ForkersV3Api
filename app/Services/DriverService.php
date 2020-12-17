@@ -16,7 +16,6 @@ class DriverService extends ServiceBase implements DriverServiceInterface
     {
         Log::info('Creating Driver', $model->toArray());
         $driver = new Driver();
-        $driver->operator_id = $model->operatorId;
         $driver->name = $model->name;
         $driver->dob = $model->dob;
         $driver->address = $model->address;
@@ -33,7 +32,6 @@ class DriverService extends ServiceBase implements DriverServiceInterface
     {
         Log::info('Updating Driver', $model->toArray());
         $driver = $this->findById($model->id);
-        $driver->operator_id = $model->operatorId;
         $driver->name = $model->name;
         $driver->dob = $model->dob;
         $driver->address = $model->address;
