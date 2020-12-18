@@ -262,7 +262,7 @@ class UserService implements UserServiceInterface
         }
         if ($user->sys_role) {
             $newUser['attributes']['sys_role'] = $user->sys_role;
-        }{
+        }else{
             $newUser['attributes']['sys_role'] = $getUser[0]["attributes"]['sys_role'];
         }
         if ($user->password) {

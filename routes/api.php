@@ -97,6 +97,9 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{group}', [GroupController::class, 'show']);
         Route::post('/', [GroupController::class, 'store']);
         Route::put('/{group}', [GroupController::class, 'update']);
+
+        // add users to group
+        Route::post('/{group}/users', [GroupController::class, 'addUsers']);
     });
 
     // Customer API

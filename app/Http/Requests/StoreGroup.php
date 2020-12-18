@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Requests;
 
 
 use App\AuthValidators\AuthValidator;

@@ -38,7 +38,7 @@ class GroupValidator {
             return true;
         } else {
 
-            throw new NoPrivilageException(['Privilege not found for requested role!']);
+            throw new NoPrivilageException(['Privilege not found for requested group!']);
         }
     }
     static function updateGroupValidator(GroupDto $request)

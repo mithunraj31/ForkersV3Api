@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\AuthValidators\AuthValidator;
 use App\AuthValidators\GroupValidator;
+use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\GroupDto;
@@ -46,12 +47,40 @@ class GroupService extends ServiceBase implements GroupServiceInterface
 
     public function update(GroupDto $request, Group $group)
     {
-        // TODO: Implement update() method.
+        GroupValidator::updateGroupValidator($request);
+
+        if($request->name){
+            $group->name = $request->name;
+        }
+        if($request->description){
+            $group->description = $request->description;
+        }
+        if($request->customer_id){
+            $group->customer_id = $request->customer_id;
+        }
+        if($request->parent_id){
+            $group->parent_id = $request->parent_id;
+        }
+        // assign relevant customer
+        if(!$request->customer_id){
+            $request->customer_id = Auth::user()->customer_id;
+        }
+        // Checking the parent_group customer is same as child
+        if ($request->parent_id) {
+            $parentGroup = Group::find($request->parent_id);
+            if (!$parentGroup->customer_id == $group->customer_id) {
+                throw new InvalidArgumentException("Parent group should be in same customer");
+            }
+        }
+
+        $request->owner_id = Auth::user()->id;
+        return $group->save();
     }
 
-    public function findById(Group $group)
+    public function findById(Group $group): GroupResource
     {
-        // TODO: Implement findById() method.
+        GroupValidator::getGroupByIdValidator($group);
+        return new GroupResource($group->load('owner', 'children', 'customer'));
     }
 
     public function getAll($perPage=15): GroupResourceCollection
@@ -68,7 +97,8 @@ class GroupService extends ServiceBase implements GroupServiceInterface
 
     public function delete(Group $group)
     {
-        // TODO: Implement delete() method.
+        GroupValidator::deleteGroupValidator($group);
+        return $group->delete();
     }
 
 
@@ -80,5 +110,21 @@ class GroupService extends ServiceBase implements GroupServiceInterface
     public function getAllDevices(Group $group)
     {
         // TODO: Implement getAllDevices() method.
+    }
+
+    public function addUsers($users, Group $group): bool
+    {
+        //Authorization needed to be implemented.
+
+        //Add owner id for the relation
+        $ownerForRelation = Auth::user()->id;
+        $usersArray = (array)$users;
+        $sync_data = [];
+        for ($i = 0; $i < count($usersArray); $i++) {
+            $sync_data[$usersArray[$i]] = ['owner_id' => $ownerForRelation];
+        }
+        // Add users to group
+        $group->users()->syncWithoutDetaching($sync_data);
+        return true;
     }
 }
