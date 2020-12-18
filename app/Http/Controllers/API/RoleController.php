@@ -3,19 +3,28 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-
-use App\Http\Requests\DestroyRole;
+use App\Http\Requests\DeleteRole;
 use App\Http\Requests\IndexRole;
 use App\Http\Requests\StoreRole;
 use App\Http\Requests\UpdateRole;
 use App\Http\Resources\RoleResource as ResourcesRoleResource;
 use App\Http\Resources\RoleResourceCollection;
+use App\Models\DTOs\RoleDto;
 use App\Models\Role;
 use App\Models\RoleResource;
+use App\Services\Interfaces\RoleServiceInterface;
 use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
+
+    private RoleServiceInterface $roleService;
+
+    public function __construct(RoleServiceInterface $roleService)
+    {
+        $this->roleService = $roleService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,10 +32,7 @@ class RoleController extends Controller
      */
     public function index(IndexRole $request)
     {
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-        $roles = Role::with('owner', 'privileges');
-        $groupsPaginate = new RoleResourceCollection($roles->paginate($perPage));
-        return $groupsPaginate;
+        return $this->roleService->getAll($request->query('perPage'));
     }
 
     /**
@@ -37,29 +43,13 @@ class RoleController extends Controller
      */
     public function store(StoreRole $request)
     {
-        $newPrivileges = array();
-        for ($i = 0; count($request->privileges) > $i; $i++) {
-            $p = new RoleResource([
-                'view' => $request->privileges[$i]["view"],
-                'add' => $request->privileges[$i]["add"],
-                'edit' => $request->privileges[$i]["update"],
-                'delete' => $request->privileges[$i]["delete"],
-                'resource' => $request->privileges[$i]["resource"]
-            ]);
-            $p->owner_id = Auth::user()->id;
-            array_push($newPrivileges, $p);
-        }
-        $role = new Role([
-            'name' => $request->name,
-            'description' => $request->description,
-            'customer_id' => $request->customer_id,
-        ]);
-        $role->owner_id = Auth::user()->id;
-        $role->save();
+        $role = new RoleDto();
+        $role->name = $request->name;
+        $role->description = $request->description;
+        $role->customer_id = $request->customer_id;
+        $role->privileges = $request->privileges;
 
-        $role->privileges()->saveMany($newPrivileges);
-
-        return  $role->load('privileges');
+        return  $this->roleService->create($role);
     }
 
     /**
@@ -70,8 +60,7 @@ class RoleController extends Controller
      */
     public function show(IndexRole $request, Role $role)
     {
-        $roleResource = new ResourcesRoleResource($role->load('owner', 'customer', 'privileges'));
-        return $roleResource;
+        return $this->roleService->findById($role);
     }
 
     /**
@@ -83,25 +72,12 @@ class RoleController extends Controller
      */
     public function update(UpdateRole $request, Role $role)
     {
-        $role->owner_id = Auth::user()->id;
-        $role->update($request->all());
-        $newPrivileges = array();
-        if ($request->privileges) {
-            $role->privileges()->delete();
-            for ($i = 0; count($request->privileges) > $i; $i++) {
-                $p = new RoleResource([
-                    'view' => $request->privileges[$i]["view"],
-                    'add' => $request->privileges[$i]["add"],
-                    'edit' => $request->privileges[$i]["update"],
-                    'delete' => $request->privileges[$i]["delete"],
-                    'resource' => $request->privileges[$i]["resource"],
-                    'owner_id' => Auth::user()->id
-                ]);
-                array_push($newPrivileges, $p);
-            }
-        }
-        $role->privileges()->saveMany($newPrivileges);
-        return $role->load('privileges');
+        $validatedRole = new RoleDto();
+        $validatedRole->name = $request->name;
+        $validatedRole->description = $request->description;
+        $validatedRole->customer_id = $request->customer_id;
+        $validatedRole->privileges = $request->privileges;
+        return $this->roleService->update($validatedRole, $role);
     }
 
     /**
@@ -110,9 +86,8 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DestroyRole $request, Role $role)
+    public function delete(DeleteRole $request, Role $role)
     {
-        $role->privileges()->delete();
-        $role->delete();
+        return $this->roleService->delete($role);
     }
 }

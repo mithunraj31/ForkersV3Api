@@ -8,7 +8,7 @@ use App\Enum\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class StoreCustomer extends FormRequest
+class DeleteUser extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class StoreCustomer extends FormRequest
 
         //check whether user has relevent privileges
 
-        return AuthValidator::isPrivileged(ResourceType::Customer, AccessType::Add);
+        return AuthValidator::isPrivileged(ResourceType::User, AccessType::Delete);
     }
 
     /**
@@ -36,9 +36,6 @@ class StoreCustomer extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'description' => 'nullable',
-            'stk_user' => 'required|max:100|unique:customer'
         ];
     }
 }

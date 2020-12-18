@@ -2,8 +2,8 @@
 namespace App\Enum;
 
 abstract class AccessType extends BasicEnum {
-    const View = 'view;';
-    const Add = 'add;';
-    const Update = 'update;';
-    const Delete = 'delete;';
+    const View = 'view';
+    const Add = 'add';
+    const Update = 'update';
+    const Delete = 'delete';
 }

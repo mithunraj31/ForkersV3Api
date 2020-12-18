@@ -3,12 +3,10 @@
 namespace App\Http\Requests;
 
 use App\AuthValidators\AuthValidator;
-use App\Enum\AccessType;
-use App\Enum\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class StoreCustomer extends FormRequest
+class IndexCustomerUser extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,11 +19,11 @@ class StoreCustomer extends FormRequest
         if (!Auth::check()) return false;
 
         //check whether user is admin
-        if (AuthValidator::isAdmin()) return true;
-
-        //check whether user has relevent privileges
-
-        return AuthValidator::isPrivileged(ResourceType::Customer, AccessType::Add);
+        if (AuthValidator::isAdmin()){
+            return true;
+        } else  {
+            return false;
+        }
     }
 
     /**
@@ -36,9 +34,6 @@ class StoreCustomer extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'description' => 'nullable',
-            'stk_user' => 'required|max:100|unique:customer'
         ];
     }
 }

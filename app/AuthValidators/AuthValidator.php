@@ -24,11 +24,20 @@ class AuthValidator {
     static function isAdmin()
     {
         $token=json_decode(Auth::token());
-        if(in_array(SysRole::Admin,$token->sysRoles)){
+        if(SysRole::Admin ==$token->sys_role){
             return true;
         } else {
             return false;
         }
+    }
+    static function getStkUser(){
+        $token=json_decode(Auth::token());
+        return $token->stk_user;
+    }
+
+    static function getGroups(){
+        $token=json_decode(Auth::token());
+        return $token->groups;
     }
 
 }

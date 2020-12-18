@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class GroupValidator {
     static function view()
     {   //Check whether the user is admin
-        if(UserValidator::isAdmin())return;
+        if(AuthValidator::isAdmin())return;
 
         //Check whether user has the required privileges
         $token=json_decode(Auth::token());

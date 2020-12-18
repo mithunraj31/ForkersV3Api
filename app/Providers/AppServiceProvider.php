@@ -5,21 +5,29 @@ namespace App\Providers;
 use App\Models\DTOs\StonkamAccessTokenDto;
 use App\Services\DeviceService;
 use App\Services\CameraService;
+use App\Services\CustomerService;
 use App\Services\DriverService;
 use App\Services\EventService;
+use App\Services\GroupService;
 use App\Services\Interfaces\CameraServiceInterface;
+use App\Services\Interfaces\CustomerServiceInterface;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\DriverServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
+use App\Services\Interfaces\GroupServiceInterface;
 use App\Services\Interfaces\OperatorServiceInterface;
 use App\Services\Interfaces\RfidHistoryServiceInterface;
 use App\Services\Interfaces\RfidServiceInterface;
+use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
+use App\Services\Interfaces\UserServiceInterface;
 use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
 use App\Services\RfidHistoryService;
 use App\Services\RfidService;
+use App\Services\RoleService;
 use App\Services\StonkamService;
+use App\Services\UserService;
 use App\Services\VideoService;
 use Illuminate\Support\ServiceProvider;
 
@@ -52,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
         DriverServiceInterface::class => DriverService::class,
         RfidServiceInterface::class => RfidService::class,
         RfidHistoryServiceInterface::class => RfidHistoryService::class,
+        UserServiceInterface::class => UserService::class,
+        RoleServiceInterface::class => RoleService::class,
+        GroupServiceInterface::class => GroupService::class
+
     ];
 
 

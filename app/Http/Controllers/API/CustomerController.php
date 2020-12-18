@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\AuthValidators\CustomerValidator;
 use App\Http\Requests\DeleteCustomer;
 use App\Http\Requests\IndexCustomer;
+use App\Http\Requests\IndexCustomerRole;
+use App\Http\Requests\IndexCustomerUser;
 use App\Http\Requests\StoreCustomer;
 use App\Http\Requests\UpdateCustomer;
 use App\Http\Resources\CustomerResource;
@@ -30,10 +32,12 @@ class CustomerController extends Controller
     {
         return $this->customerService->findById($customer);
     }
+
     public function index(IndexCustomer $request): CustomerResourceCollection
     {
         return $this->customerService->getAll($request->query('perPage'));
     }
+
     public function store(StoreCustomer $request)
     {
         $customer = new CustomerDto();
@@ -45,9 +49,9 @@ class CustomerController extends Controller
         }
     }
 
-
     public function update(UpdateCustomer $request, Customer $customer)
-    {   $customerR = new CustomerDto();
+    {
+        $customerR = new CustomerDto();
         $customerR->name = $request->name;
         $customerR->description = $request->description;
         return $this->customerService->update($customerR, $customer);
@@ -55,5 +59,15 @@ class CustomerController extends Controller
     public function delete(DeleteCustomer $request, Customer $customer)
     {
         return $this->customerService->delete($customer);
+    }
+
+    public function indexUsers(IndexCustomerUser $request, Customer $customer)
+    {
+        return $this->customerService->getAllUsers($customer, $request->query('perPage'));
+    }
+
+    public function indexRoles(IndexCustomerRole $request, Customer $customer)
+    {
+        return $this->customerService->getAllRoles($customer, $request->query('perPage'));
     }
 }

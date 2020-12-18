@@ -16,8 +16,19 @@ class Customer extends Model
         'stk_user',
     ];
 
-    public function owner()
+    public function Owner()
     {
         return $this->belongsTo('App\Models\User','owner_id');
     }
+
+    public function Users()
+    {
+        return $this->hasMany('App\Models\User', 'customer_id');
+    }
+
+    public function Roles()
+    {
+        return $this->hasMany('App\Models\Role','customer_id');
+    }
+
 }

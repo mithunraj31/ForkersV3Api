@@ -6,9 +6,13 @@ use App\AuthValidators\CustomerValidator;
 use App\Exceptions\StonkamInvalidRequestException;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\CustomerResourceCollection;
+use App\Http\Resources\RoleResourceCollection;
+use App\Http\Resources\UserResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\CustomerDto;
 use App\Models\Group;
+use App\Models\Role;
+use App\Models\User;
 use App\Services\Interfaces\CustomerServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use Illuminate\Support\Facades\Auth;
@@ -78,16 +82,26 @@ class CustomerService implements CustomerServiceInterface
         return $customer->delete();
     }
 
+    public function getAllUsers(Customer $customer,$perPage=15)
+    {
+        return new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner')->paginate($perPage));
+    }
+
+    public function getAllRoles(Customer $customer,$perPage=15)
+    {
+        return new RoleResourceCollection(Role::where('customer_id',$customer->id)->with('owner', 'privileges')->paginate($perPage));
+    }
+
     private function createUserInStonkam(CustomerDto $customer)
     {
 
         $sessionId = $this->stonkamService->refreshAccessToken();
-        $endpoint = env('STONKAM_HOSTNAME') . "/AddUser/100";
+        $endpoint = config('stonkam.hostname') . "/AddUser/100";
 
         $data = [
             'UserName' => $customer->stk_user,
-            'Password' => env('STONKAM_CUSTOMER_PASSWORD'),
-            'ParentUserName' => env('STONKAM_AUTH_ADMIN_USERNAME'),
+            'Password' => config('stonkam.auth.customer.password'),
+            'ParentUserName' => config('stonkam.auth.admin.username'),
             'SessionId' => $sessionId
         ];
         Log::info("Requesting stonkam server for creating new user- $customer->stk_user");
@@ -104,10 +118,10 @@ class CustomerService implements CustomerServiceInterface
     { // this group doesnt have any connection with Forkers groups
 
         $sessionId = $this->stonkamService->refreshAccessToken();
-        $endpoint = env('STONKAM_HOSTNAME') . "/AddGroup/100";
+        $endpoint = config('stonkam.hostname') . "/AddGroup/100";
 
         $data = [
-            'UserName' => env('STONKAM_AUTH_ADMIN_USERNAME'),
+            'UserName' => config('stonkam.auth.admin.username'),
             'GroupName' => $customer->stk_user,
             'SessionId' => $sessionId
         ];
