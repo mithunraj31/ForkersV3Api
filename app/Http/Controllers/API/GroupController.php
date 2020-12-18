@@ -5,9 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersToGroup;
 use App\Http\Requests\IndexGroup;
+use App\Http\Requests\IndexUser;
 use App\Http\Requests\StoreGroup;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
+use App\Http\Resources\UserResourceCollection;
 use App\Models\DTOs\GroupDto;
 use App\Models\Group;
 use App\Services\Interfaces\GroupServiceInterface;
@@ -106,5 +108,17 @@ class GroupController extends Controller
     {
 
         return response($this->groupService->addUsers($request->users,$group));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param IndexUser $request
+     * @param Group $group
+     * @return UserResourceCollection Group
+     */
+    public function getUsers(IndexUser $request, Group $group): UserResourceCollection
+    {
+        return $this->groupService->getAllUsers($group, $request->query('perPage'));
     }
 }

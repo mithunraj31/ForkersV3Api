@@ -100,6 +100,9 @@ Route::group(['prefix' => 'v1'], function () {
 
         // add users to group
         Route::post('/{group}/users', [GroupController::class, 'addUsers']);
+
+        // get users of group
+        Route::get('/{group}/users', [GroupController::class, 'getUsers']);
     });
 
     // Customer API

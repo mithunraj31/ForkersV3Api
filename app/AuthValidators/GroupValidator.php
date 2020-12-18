@@ -2,8 +2,6 @@
 
 namespace App\AuthValidators;
 
-use App\Enum\AccessType;
-use App\Enum\ResourceType;
 use App\Exceptions\NoPrivilageException;
 use App\Models\Customer;
 use App\Models\DTOs\GroupDto;
@@ -58,6 +56,31 @@ class GroupValidator {
         } else {
             $customer = Customer::find($group->customer_id);
             if (AuthValidator::getStkUser() === $customer->stk_user) {
+                return true;
+            }
+            throw new NoPrivilageException(['Privilege not found for requested group!']);
+        }
+    }
+
+    public static function addUserValidation(Group $group)
+    {
+        if (AuthValidator::isAdmin()) {
+            return true;
+        } else {
+            $userGroups = AuthValidator::getGroups();
+            if(in_array($userGroups,$group->id)){
+                return true;
+            }
+            throw new NoPrivilageException(['Privilege not found for requested group!']);
+        }
+    }
+    public static function viewUsersValidation(Group $group)
+    {
+        if (AuthValidator::isAdmin()) {
+            return true;
+        } else {
+            $userGroups = AuthValidator::getGroups();
+            if(in_array($userGroups,$group->id)){
                 return true;
             }
             throw new NoPrivilageException(['Privilege not found for requested group!']);

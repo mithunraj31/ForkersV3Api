@@ -8,6 +8,7 @@ use App\AuthValidators\AuthValidator;
 use App\AuthValidators\GroupValidator;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
+use App\Http\Resources\UserResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\GroupDto;
 use App\Models\Group;
@@ -102,9 +103,9 @@ class GroupService extends ServiceBase implements GroupServiceInterface
     }
 
 
-    public function getAllUsers(Group $group)
+    public function getAllUsers(Group $group, $perPage=15)
     {
-        // TODO: Implement getAllUsers() method.
+        return new UserResourceCollection($group->users()->with('customer')->paginate($perPage));
     }
 
     public function getAllDevices(Group $group)
@@ -114,7 +115,7 @@ class GroupService extends ServiceBase implements GroupServiceInterface
 
     public function addUsers($users, Group $group): bool
     {
-        //Authorization needed to be implemented.
+        GroupValidator::addUserValidation($group);
 
         //Add owner id for the relation
         $ownerForRelation = Auth::user()->id;
