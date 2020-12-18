@@ -68,7 +68,7 @@ class UserService implements UserServiceInterface
         UserValidator::updateUserValidator($request);
 
         if ($request->role_id) {
-            $request->privileges = $this->generatePrivileges($user->role_id);
+            $request->privileges = $this->generatePrivileges($request->role_id);
         }
         if ($request->customer_id) {
             $customer = Customer::findOrFail($request->customer_id);
