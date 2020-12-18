@@ -8,24 +8,36 @@ use App\AuthValidators\GroupValidator;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
 use App\Models\Group;
+use App\Services\GroupService;
+use App\Services\Interfaces\GroupServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
+    // private GroupServiceInterface $groupService;
+
+    // public function __construct(GroupServiceInterface $groupService)
+    // {
+    //     $this->$groupService = $groupService;
+    // }
+
+    private GroupServiceInterface $groupService;
+
+    public function __construct(GroupServiceInterface $groupService)
+    {
+        $this->$groupService = $groupService;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return paginated Group
+     * @param Request $request
+     * @return GroupResourceCollection Group
      */
-    public function index(Request $request)
-    {   //Authorise
-        GroupValidator::view();
-
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-        $groups = Group::with('owner');
-        $groupsPaginate = new GroupResourceCollection($groups->paginate($perPage));
-        return $groupsPaginate;
+    public function index(Request $request): GroupResourceCollection
+    {
+        return $this->groupService->getAll($request->query('perPage'));
     }
 
     /**

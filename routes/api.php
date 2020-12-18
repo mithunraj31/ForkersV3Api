@@ -93,10 +93,10 @@ Route::group(['prefix' => 'v1'], function () {
 
     // Group API
     Route::group(['prefix' => 'groups', 'middleware' => 'auth:api'], function () {
-        Route::get('/', [GroupController::class, 'index']);
-        Route::get('/{group}', [GroupController::class, 'show']);
-        Route::post('/', [GroupController::class, 'store']);
-        Route::put('/{group}', [GroupController::class, 'update']);
+        Route::middleware('auth:api')->get('/', [GroupController::class, 'index']);
+        Route::middleware('auth:api')->get('/{group}', [GroupController::class, 'show']);
+        Route::middleware('auth:api')->post('/', [GroupController::class, 'store']);
+        Route::middleware('auth:api')->put('/{group}', [GroupController::class, 'update']);
     });
 
     // Customer API

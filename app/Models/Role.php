@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property mixed customers
  * @property mixed owner
  * @property mixed privileges
+ * @property mixed owner_id
  */
 
 class Role extends Model
