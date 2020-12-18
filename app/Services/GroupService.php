@@ -5,7 +5,6 @@ namespace App\Services;
 
 
 use App\AuthValidators\AuthValidator;
-use App\AuthValidators\GroupValidator;
 use App\Http\Resources\GroupResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\GroupDto;
@@ -32,19 +31,14 @@ class GroupService extends ServiceBase implements GroupServiceInterface
 
     public function getAll($perPage=15): GroupResourceCollection
     {
-
-        if (AuthValidator::isAdmin()) {
-            $groups = Group::with('owner', 'customer');
-            return new GroupResourceCollection($groups->paginate($perPage));
-        } else {
             $customer = Customer::where('stk_user', AuthValidator::getStkUser())->first();
-            $groups = Group::where('customer_id', $customer->id)->with('owner', 'customer');
-            return new GroupResourceCollection($groups->paginate($perPage));
-        }
+            return $this->getAllByCustomer($customer);
+
     }
-     public function getAllByCustomer(Customer $customer, $perPage=15)
+     public function getAllByCustomer(Customer $customer, $perPage=15): GroupResourceCollection
      {
-        return NULL;
+         $groups = Group::where('customer_id', $customer->id)->with('owner', 'customer','children');
+         return new GroupResourceCollection($groups->paginate($perPage));
      }
 
     public function delete(Group $group)
@@ -52,12 +46,12 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         // TODO: Implement delete() method.
     }
 
-    public function getAllUsers(Group $group)
+    public function getAllUsers(Group $group, $perPage)
     {
         // TODO: Implement getAllUsers() method.
     }
 
-    public function getAllDevices(Group $group)
+    public function getAllDevices(Group $group, $perPage)
     {
         // TODO: Implement getAllDevices() method.
     }

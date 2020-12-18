@@ -3,30 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-
-use App\AuthValidators\GroupValidator;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
 use App\Models\Group;
-use App\Services\GroupService;
 use App\Services\Interfaces\GroupServiceInterface;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
-    // private GroupServiceInterface $groupService;
-
-    // public function __construct(GroupServiceInterface $groupService)
-    // {
-    //     $this->$groupService = $groupService;
-    // }
-
     private GroupServiceInterface $groupService;
 
     public function __construct(GroupServiceInterface $groupService)
     {
-        $this->$groupService = $groupService;
+        $this->groupService = $groupService;
     }
 
     /**
@@ -35,7 +26,7 @@ class GroupController extends Controller
      * @param Request $request
      * @return GroupResourceCollection Group
      */
-    public function index(Request $request): GroupResourceCollection
+    public function index(Request $request)
     {
         return $this->groupService->getAll($request->query('perPage'));
     }
@@ -43,8 +34,8 @@ class GroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -78,23 +69,22 @@ class GroupController extends Controller
      * Display the specified resource.
      *
      * @param  Group  $group
-     * @return Resource Group
+     * @return GroupResource Group
      */
-    public function show(Group $group)
+    public function show(Group $group): GroupResource
     {
-        $groupResource = new GroupResource($group->load('owner', 'parent', 'children', 'customer', 'users'));
-        return $groupResource;
+        return new GroupResource($group->load('owner', 'parent', 'children', 'customer', 'users'));
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  Group  $group
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function update(Request $request, Group $group)
+    public function update(Request $request, Group $group): Response
     {
         $request->validate([
             'name' => 'max:255',
@@ -126,9 +116,9 @@ class GroupController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  Group  $group
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function destroy(Group $group)
+    public function destroy(Group $group): Response
     {
         $group->delete();
         return response(['message' => 'Success!'], 200);
@@ -139,10 +129,10 @@ class GroupController extends Controller
      *
      * @param Group $group
      * @param Request $request users: bigInteger or array of bigIntegers
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
 
-    public function addUsers(Request $request, Group $group)
+    public function addUsers(Request $request, Group $group): Response
     {   //Authorization needed to be implemented.
         // validating users are exsists
         $request->validate([
@@ -158,6 +148,6 @@ class GroupController extends Controller
         }
         // Add users to group
         $group->users()->syncWithoutDetaching($sync_data);
-        return $group->load('users');
+        return response($group->load('users'),200);
     }
 }

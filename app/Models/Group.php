@@ -23,7 +23,7 @@ class Group extends Model
 
     public function children()
     {
-       return $this->hasMany('App\Models\Group','parent_id');
+       return $this->hasMany('App\Models\Group','parent_id')->with('children');
     }
     public function parent()
     {
