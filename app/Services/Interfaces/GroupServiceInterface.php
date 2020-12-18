@@ -16,13 +16,13 @@ interface GroupServiceInterface
 
     public function findById(Group $group);
 
-    public function getAll();
+    public function getAll($perPage);
 
     public function delete(Group $group);
 
-    public function getAllUsers(Group $group);
+    public function getAllUsers(Group $group, $perPage);
 
-    public function getAllDevices(Group $group);
+    public function getAllDevices(Group $group, $perPage);
 
-    function getAllByCustomer(Customer $customer);
+    public function getAllByCustomer(Customer $customer, $perPage);
 }

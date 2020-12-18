@@ -86,19 +86,19 @@ Route::group(['prefix' => 'v1'], function () {
     });
     // Role API
     Route::group(['prefix' => 'roles', 'middleware' => 'auth:api'], function () {
-        Route::middleware('auth:api')->get('/', [RoleController::class, 'index']);
-        Route::middleware('auth:api')->get('/{role}', [RoleController::class, 'show']);
-        Route::middleware('auth:api')->post('/', [RoleController::class, 'store']);
-        Route::middleware('auth:api')->put('/{role}', [RoleController::class, 'update']);
-        Route::middleware('auth:api')->delete('/{role}', [RoleController::class, 'delete']);
+        Route::get('/', [RoleController::class, 'index']);
+        Route::get('/{role}', [RoleController::class, 'show']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::put('/{role}', [RoleController::class, 'update']);
+        Route::delete('/{role}', [RoleController::class, 'delete']);
     });
 
     // Group API
     Route::group(['prefix' => 'groups', 'middleware' => 'auth:api'], function () {
-        Route::middleware('auth:api')->get('/', [GroupController::class, 'index']);
-        Route::middleware('auth:api')->get('/{group}', [GroupController::class, 'show']);
-        Route::middleware('auth:api')->post('/', [GroupController::class, 'store']);
-        Route::middleware('auth:api')->put('/{group}', [GroupController::class, 'update']);
+        Route::get('/', [GroupController::class, 'index']);
+        Route::get('/{group}', [GroupController::class, 'show']);
+        Route::post('/', [GroupController::class, 'store']);
+        Route::put('/{group}', [GroupController::class, 'update']);
     });
 
     // Customer API
@@ -112,8 +112,11 @@ Route::group(['prefix' => 'v1'], function () {
         // get users of requested customer id
         Route::get('/{customer}/users', [CustomerController::class, 'indexUsers']);
 
-        // get roles of reqested customer id
+        // get roles of requested customer id
         Route::get('/{customer}/roles', [CustomerController::class, 'indexRoles']);
+
+        // get groups of requested customer id
+        Route::get('/{customer}/groups', [CustomerController::class, 'indexGroups']);
     });
 
     // Driver APIs

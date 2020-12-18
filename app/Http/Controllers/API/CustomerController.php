@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-
-use App\AuthValidators\CustomerValidator;
 use App\Http\Requests\DeleteCustomer;
 use App\Http\Requests\IndexCustomer;
 use App\Http\Requests\IndexCustomerRole;
@@ -16,16 +14,18 @@ use App\Http\Resources\CustomerResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\CustomerDto;
 use App\Services\Interfaces\CustomerServiceInterface;
-use Illuminate\Http\Request;
+use App\Services\Interfaces\GroupServiceInterface;
 
 class CustomerController extends Controller
 {
 
     private CustomerServiceInterface $customerService;
+    private GroupServiceInterface $groupService;
 
-    public function __construct(CustomerServiceInterface $customerService)
+    public function __construct(CustomerServiceInterface $customerService, GroupServiceInterface $groupService)
     {
         $this->customerService = $customerService;
+        $this->groupService = $groupService;
     }
 
     public function show(Customer $customer): CustomerResource
@@ -46,6 +46,8 @@ class CustomerController extends Controller
         $customer->description = $request->description;
         if ($this->customerService->create($customer)) {
             return response(['message' => 'success!'], 201);
+        } else {
+            return response(['message' => 'something went wrong!'], 500);
         }
     }
 
@@ -56,6 +58,7 @@ class CustomerController extends Controller
         $customerR->description = $request->description;
         return $this->customerService->update($customerR, $customer);
     }
+
     public function delete(DeleteCustomer $request, Customer $customer)
     {
         return $this->customerService->delete($customer);
@@ -69,5 +72,10 @@ class CustomerController extends Controller
     public function indexRoles(IndexCustomerRole $request, Customer $customer)
     {
         return $this->customerService->getAllRoles($customer, $request->query('perPage'));
+    }
+
+    public function indexGroups(IndexCustomerRole $request, Customer $customer)
+    {
+        return $this->groupService->getAllByCustomer($customer, $request->query('perPage'));
     }
 }
