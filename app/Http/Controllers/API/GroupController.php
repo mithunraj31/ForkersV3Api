@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
+use App\Models\DTOs\GroupDto;
 use App\Models\Group;
 use App\Services\Interfaces\GroupServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use IndexGroup;
 
 class GroupController extends Controller
 {
@@ -23,10 +25,10 @@ class GroupController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param IndexGroup $request
      * @return GroupResourceCollection Group
      */
-    public function index(Request $request)
+    public function index(IndexGroup $request): GroupResourceCollection
     {
         return $this->groupService->getAll($request->query('perPage'));
     }
@@ -34,35 +36,18 @@ class GroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreGroup $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(StoreGroup $request)
     {
-        //Authorization need to be implemented.
+        $group = new GroupDto();
+        $group->parent_id = $request->parent_id;
+        $group->customer_id = $request->customer_id;
+        $group->description = $request->description;
+        $group->name = $request->name;
 
-        //validating
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'nullable|max:255',
-            'parent_id' => 'nullable|exists:App\Group,id',
-            'customer_id' => 'required|exists:App\Customer,id',
-        ]);
-        $group = new Group($validatedData);
-
-        // Checking the parent_group customer is same as child
-        if ($request->parent_id) {
-
-            $parentGroup = Group::find($request->parent_id);
-            if (!$parentGroup->customer_id == $group->customer_id) {
-                return response(['message' => 'Parent id is invalid!'], 400);
-            }
-        }
-
-        $group->owner_id = Auth::user()->id;
-        $group->save();
-
-        return response($group, 201);
+        return response($this->groupService->create($group), 201);
     }
 
     /**

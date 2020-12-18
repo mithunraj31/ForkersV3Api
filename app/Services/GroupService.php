@@ -5,17 +5,42 @@ namespace App\Services;
 
 
 use App\AuthValidators\AuthValidator;
+use App\AuthValidators\GroupValidator;
 use App\Http\Resources\GroupResourceCollection;
 use App\Models\Customer;
 use App\Models\DTOs\GroupDto;
 use App\Models\Group;
 use App\Services\Interfaces\GroupServiceInterface;
+use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
+use InvalidArgumentException as GlobalInvalidArgumentException;
 
 class GroupService extends ServiceBase implements GroupServiceInterface
 {
-    public function create(GroupDto $request)
+    public function create(GroupDto $request): bool
     {
-        // TODO: Implement create() method.
+        GroupValidator::storeGroupValidator($request);
+
+        if(!$request->customer_id){
+            $request->customer_id = Auth::user()->customer_id;
+        }
+        $group = new Group([
+            'name' => $request->name,
+            'description' => $request->description,
+            'customer_id' => $request->customer_id,
+            'parent_id' => $request->parent_id
+        ]);
+
+        // Checking the parent_group customer is same as child
+        if ($request->parent_id) {
+            $parentGroup = Group::find($request->parent_id);
+            if (!$parentGroup->customer_id == $group->customer_id) {
+                throw new InvalidArgumentException("Parent group should be in same customer");
+            }
+        }
+
+        $group->owner_id = Auth::user()->id;
+        return $group->save();
     }
 
 
@@ -46,12 +71,13 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         // TODO: Implement delete() method.
     }
 
-    public function getAllUsers(Group $group, $perPage)
+
+    public function getAllUsers(Group $group)
     {
         // TODO: Implement getAllUsers() method.
     }
 
-    public function getAllDevices(Group $group, $perPage)
+    public function getAllDevices(Group $group)
     {
         // TODO: Implement getAllDevices() method.
     }
