@@ -92,7 +92,7 @@ class GroupService extends ServiceBase implements GroupServiceInterface
     }
      public function getAllByCustomer(Customer $customer, $perPage=15): GroupResourceCollection
      {
-         $groups = Group::where('customer_id', $customer->id)->with('owner', 'customer','children');
+         $groups = Group::where('customer_id', $customer->id)->where('parent_id', null)->with('owner', 'customer','children');
          return new GroupResourceCollection($groups->paginate($perPage));
      }
 
