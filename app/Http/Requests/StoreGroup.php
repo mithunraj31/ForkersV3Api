@@ -7,9 +7,10 @@ namespace App\Http\Requests;
 use App\AuthValidators\AuthValidator;
 use App\Enum\AccessType;
 use App\Enum\ResourceType;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class StoreGroup
+class StoreGroup extends FormRequest
 {
 
     /**
