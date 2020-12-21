@@ -125,12 +125,12 @@ class UserService implements UserServiceInterface
     public function getAll($perPage=15)
     {
         if(AuthValidator::isAdmin()){
-            $users = new UserResourceCollection(User::with('owner')->paginate($perPage));
+            $users = new UserResourceCollection(User::with('owner', 'role', 'customer')->paginate($perPage));
             $users->withQueryString()->links();
             return $users;
         }else{
             $customer = Customer::where('stk_user',AuthValidator::getStkUser())->first();
-            $users = new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner')->paginate($perPage));
+            $users = new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner', 'role')->paginate($perPage));
             $users->withQueryString()->links();
             return $users;
         }
