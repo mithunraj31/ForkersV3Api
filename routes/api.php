@@ -31,7 +31,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // API version 1 group
 Route::group(['prefix' => 'v1'], function () {
     // Device APIs
-    Route::group(['prefix' => 'devices'], function () {
+    Route::group(['prefix' => 'devices','middleware' => 'auth:api'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
 
@@ -40,6 +40,17 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
         Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
     });
+
+//    // Device APIs
+//    Route::group(['prefix' => 'vehicles','middleware' => 'auth:api'], function () {
+//
+//        Route::get('/', [DeviceController::class, 'index']);
+//
+//        Route::get('/{deviceId}/driveSummary', [DeviceController::class, 'driveSummery']);
+//        Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
+//        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
+//        Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
+//    });
 
     // Event APIs
     Route::group(['prefix' => 'events'], function () {
@@ -97,6 +108,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{group}', [GroupController::class, 'show']);
         Route::post('/', [GroupController::class, 'store']);
         Route::put('/{group}', [GroupController::class, 'update']);
+        Route::delete('/{group}', [GroupController::class, 'destroy']);
 
         // add users to group
         Route::post('/{group}/users', [GroupController::class, 'addUsers']);

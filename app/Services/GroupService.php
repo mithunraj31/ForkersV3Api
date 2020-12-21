@@ -99,6 +99,14 @@ class GroupService extends ServiceBase implements GroupServiceInterface
     public function delete(Group $group)
     {
         GroupValidator::deleteGroupValidator($group);
+        $children = $group->children;
+        if(!$children || count($children)===0){
+            throw new InvalidArgumentException("Cannot delete when child groups are available");
+        }
+        $users = $group->users;
+        if(!$users || count($users)===0){
+            throw new InvalidArgumentException("Cannot delete when group has users");
+        }
         return $group->delete();
     }
 
