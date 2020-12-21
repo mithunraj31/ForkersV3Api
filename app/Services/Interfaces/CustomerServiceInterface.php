@@ -15,9 +15,9 @@ interface CustomerServiceInterface
 
     public function getAll($perPage);
 
-    public function delete(Customer $customer, $perPage);
+    public function delete(Customer $customer);
 
-    public function getAllUsers(Customer $customer, $perPage);
+    public function getAllUsers(Customer $customer);
 
-    public function getAllRoles(Customer $customer, $perPage);
+    public function getAllRoles(Customer $customer);
 }

@@ -63,6 +63,7 @@ class UserController extends Controller
         $newUser->role_id = $request->role_id;
         $newUser->password =$request->password;
         $newUser->username =$request->username;
+        $newUser->sys_role =$request->sys_role;
 
 
         return $this->userService->update($newUser, $user);

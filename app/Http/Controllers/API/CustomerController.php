@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteCustomer;
 use App\Http\Requests\IndexCustomer;
+use App\Http\Requests\IndexCustomerGroup;
 use App\Http\Requests\IndexCustomerRole;
 use App\Http\Requests\IndexCustomerUser;
 use App\Http\Requests\StoreCustomer;
@@ -74,7 +75,7 @@ class CustomerController extends Controller
         return $this->customerService->getAllRoles($customer, $request->query('perPage'));
     }
 
-    public function indexGroups(IndexCustomerRole $request, Customer $customer)
+    public function indexGroups(IndexCustomerGroup $request, Customer $customer)
     {
         return $this->groupService->getAllByCustomer($customer, $request->query('perPage'));
     }

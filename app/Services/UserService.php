@@ -68,7 +68,7 @@ class UserService implements UserServiceInterface
         UserValidator::updateUserValidator($request);
 
         if ($request->role_id) {
-            $request->privileges = $this->generatePrivileges($user->role_id);
+            $request->privileges = $this->generatePrivileges($request->role_id);
         }
         if ($request->customer_id) {
             $customer = Customer::findOrFail($request->customer_id);
@@ -262,7 +262,7 @@ class UserService implements UserServiceInterface
         }
         if ($user->sys_role) {
             $newUser['attributes']['sys_role'] = $user->sys_role;
-        }{
+        }else{
             $newUser['attributes']['sys_role'] = $getUser[0]["attributes"]['sys_role'];
         }
         if ($user->password) {

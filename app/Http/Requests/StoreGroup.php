@@ -1,13 +1,17 @@
 <?php
 
+
 namespace App\Http\Requests;
+
+
 use App\AuthValidators\AuthValidator;
 use App\Enum\AccessType;
 use App\Enum\ResourceType;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class IndexGroup extends FormRequest {
+class StoreGroup
+{
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -21,9 +25,9 @@ class IndexGroup extends FormRequest {
         //check whether user is admin
         if (AuthValidator::isAdmin()) return true;
 
-        //check whether user has relevant privileges
+        //check whether user has relevent privileges
 
-        return AuthValidator::isPrivileged(ResourceType::Group, AccessType::View);
+        return AuthValidator::isPrivileged(ResourceType::Group, AccessType::Add);
     }
 
     /**
@@ -34,7 +38,10 @@ class IndexGroup extends FormRequest {
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|max:255',
+            'description' => 'nullable|max:255',
+            'parent_id' => 'nullable|exists:App\Models\Group,id',
+            'customer_id' => 'exists:App\Models\Customer,id',
         ];
     }
 }

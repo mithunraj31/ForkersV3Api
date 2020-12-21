@@ -135,4 +135,5 @@ class CustomerService implements CustomerServiceInterface
 
         Log::info('Create stonkam group success!!');
     }
+
 }

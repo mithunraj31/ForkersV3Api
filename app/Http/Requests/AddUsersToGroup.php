@@ -7,7 +7,9 @@ use App\Enum\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class IndexGroup extends FormRequest {
+class AddUsersToGroup extends FormRequest
+{
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -23,7 +25,7 @@ class IndexGroup extends FormRequest {
 
         //check whether user has relevant privileges
 
-        return AuthValidator::isPrivileged(ResourceType::Group, AccessType::View);
+        return AuthValidator::isPrivileged(ResourceType::Group, AccessType::Add);
     }
 
     /**
@@ -34,7 +36,7 @@ class IndexGroup extends FormRequest {
     public function rules(): array
     {
         return [
-            //
+            'users' => ['required', 'exists:App\Models\User,id']
         ];
     }
 }

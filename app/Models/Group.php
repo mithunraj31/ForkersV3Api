@@ -5,6 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property mixed customer_id
+ * @property mixed name
+ * @property mixed description
+ * @property mixed parent_id
+ * @property mixed owner_id
+ */
 class Group extends Model
 {
     protected $table = 'group';

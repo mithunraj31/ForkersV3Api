@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddUsersToGroup;
+use App\Http\Requests\IndexGroup;
+use App\Http\Requests\IndexUser;
+use App\Http\Requests\StoreGroup;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
+use App\Http\Resources\UserResourceCollection;
+use App\Models\DTOs\GroupDto;
 use App\Models\Group;
 use App\Services\Interfaces\GroupServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
@@ -23,10 +28,10 @@ class GroupController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param IndexGroup $request
      * @return GroupResourceCollection Group
      */
-    public function index(Request $request)
+    public function index(IndexGroup $request): GroupResourceCollection
     {
         return $this->groupService->getAll($request->query('perPage'));
     }
@@ -34,35 +39,18 @@ class GroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreGroup $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(StoreGroup $request)
     {
-        //Authorization need to be implemented.
+        $group = new GroupDto();
+        $group->parent_id = $request->parent_id;
+        $group->customer_id = $request->customer_id;
+        $group->description = $request->description;
+        $group->name = $request->name;
 
-        //validating
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'nullable|max:255',
-            'parent_id' => 'nullable|exists:App\Group,id',
-            'customer_id' => 'required|exists:App\Customer,id',
-        ]);
-        $group = new Group($validatedData);
-
-        // Checking the parent_group customer is same as child
-        if ($request->parent_id) {
-
-            $parentGroup = Group::find($request->parent_id);
-            if (!$parentGroup->customer_id == $group->customer_id) {
-                return response(['message' => 'Parent id is invalid!'], 400);
-            }
-        }
-
-        $group->owner_id = Auth::user()->id;
-        $group->save();
-
-        return response($group, 201);
+        return response($this->groupService->create($group), 201);
     }
 
     /**
@@ -73,7 +61,7 @@ class GroupController extends Controller
      */
     public function show(Group $group): GroupResource
     {
-        return new GroupResource($group->load('owner', 'parent', 'children', 'customer', 'users'));
+        return $this->groupService->findById($group);
     }
 
 
@@ -86,30 +74,14 @@ class GroupController extends Controller
      */
     public function update(Request $request, Group $group): Response
     {
-        $request->validate([
-            'name' => 'max:255',
-            'description' => 'nullable|max:255',
-            'parent_id' => 'nullable|exists:App\Group,id',
-            'customer_id' => 'exists:App\Customer,id',
+        $group = new Group([
+           'name' => $request->name,
+           'description' => $request->description,
+           'customer_id' => $request->customer_id,
+           'parent_id' => $request->parent_id,
         ]);
 
-        // Checking the parent_group customer is same as child
-        if ($request->parent_id) {
-            // Checking parent and child is same
-            if ($request->parent_id == $group->id) {
-                return response(['message' => 'Parent id is invalid!'], 400);
-            }
-            $parentGroup = Group::find($request->parent_id);
-            if ($parentGroup->customer_id != $group->customer_id) {
-                return response(['message' => 'Parent id is invalid!'], 400);
-            }
-        }
-
-
-        $request->owner_id = Auth::user()->id;
-        $group->update($request->all());
-
-        return response($group);
+        return response($this->groupService->update($request, $group), 200);
     }
 
     /**
@@ -120,34 +92,33 @@ class GroupController extends Controller
      */
     public function destroy(Group $group): Response
     {
-        $group->delete();
-        return response(['message' => 'Success!'], 200);
+
+        return response($this->groupService->delete($group),204);
     }
 
     /**
      * Add Users to a single group
      *
+     * @param AddUsersToGroup $request users: bigInteger or array of bigIntegers
      * @param Group $group
-     * @param Request $request users: bigInteger or array of bigIntegers
      * @return Response
      */
 
-    public function addUsers(Request $request, Group $group): Response
-    {   //Authorization needed to be implemented.
-        // validating users are exsists
-        $request->validate([
-            'users' => ['required', 'exists:App\User,id']
-        ]);
+    public function addUsers(AddUsersToGroup $request, Group $group): Response
+    {
 
-        //Add owner id for the relation
-        $ownerForRelation = Auth::user()->id;
-        $usersArray = (array)$request->users;
-        $sync_data = [];
-        for ($i = 0; $i < count($usersArray); $i++) {
-            $sync_data[$usersArray[$i]] = ['owner_id' => $ownerForRelation];
-        }
-        // Add users to group
-        $group->users()->syncWithoutDetaching($sync_data);
-        return response($group->load('users'),200);
+        return response($this->groupService->addUsers($request->users,$group));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param IndexUser $request
+     * @param Group $group
+     * @return UserResourceCollection Group
+     */
+    public function getUsers(IndexUser $request, Group $group): UserResourceCollection
+    {
+        return $this->groupService->getAllUsers($group, $request->query('perPage'));
     }
 }
