@@ -84,7 +84,7 @@ class CustomerService implements CustomerServiceInterface
 
     public function getAllUsers(Customer $customer,$perPage=15)
     {
-        return new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner')->paginate($perPage));
+        return new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner', 'role')->paginate($perPage));
     }
 
     public function getAllRoles(Customer $customer,$perPage=15)
