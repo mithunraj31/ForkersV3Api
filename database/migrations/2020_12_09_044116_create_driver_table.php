@@ -14,11 +14,17 @@ class CreateDriverTable extends Migration
     public function up()
     {
         Schema::create('driver', function (Blueprint $table) {
-            $table->integer('driver_id')->primary();
+            $table->id();
+            $table->string('driver_id');
             $table->timestamps();
-            $table->string('driver_name');
-            $table->boolean('driver_status');
-            $table->integer('driver_license_no')->unique();
+            $table->string('name');
+            $table->date('dob');
+            $table->longText('address');
+            $table->string('license_no')->unique();
+            $table->date('license_received_date');
+            $table->date('license_renewal_date');
+            $table->longText('license_location');
+            $table->string('phone_no');
             $table->softDeletes();
         });
     }

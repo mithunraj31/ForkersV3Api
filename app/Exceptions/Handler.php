@@ -4,10 +4,13 @@ namespace App\Exceptions;
 
 use Carbon\Exceptions\InvalidFormatException;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use KeycloakGuard\Exceptions\TokenException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Throwable;
 
@@ -47,19 +50,28 @@ class Handler extends ExceptionHandler
         if ($exception instanceof NotFoundResourceException
         || $exception instanceof ModelNotFoundException) {
             return response()->json(['message' => 'Data not found.'], 404);
-        } else if ($exception instanceof InvalidFormatException) {
-            return response()->json(['message' => $exception->getMessage()], 400);
-        } else if ($exception instanceof InvalidArgumentException) {
-            return response()->json(['message' => $exception->getMessage()], 400);
-        } else if ($exception instanceof StonkamResultIsFailedException) {
-            return response()->json(['message' => $exception->getMessage()], 500);
-        } else if ($exception instanceof Exception) {
-            $requestMethod = request()->getMethod();
-            $requestUri = request()->getRequestUri();
-            Log::error("Unknown error, Request $requestMethod $requestUri", (array) request()->all());
-            return $exception;
         }
-
+        if ($exception instanceof InvalidFormatException) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+        if ($exception instanceof InvalidArgumentException) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+        if ($exception instanceof StonkamResultIsFailedException) {
+            return response()->json(['message' => $exception->getMessage()], 500);
+        }
+        if($exception instanceof TokenException && $request->wantsJson()) {
+            return response()->json(['message' => 'Token Expired'], 401);
+        }
+        if($exception instanceof NotFoundHttpException && $request->wantsJson()) {
+            return response()->json(['message' => 'Url Not Found!'], 404);
+        }
+        if($exception instanceof AuthorizationException && $request->wantsJson()) {
+            return response()->json(['message' => 'This action is unauthorized!'], 403);
+        }
+        if($exception instanceof StonkamInvalidRequestException && $request->wantsJson()) {
+            return response()->json(['message' => 'stonkam->' .$exception->getMessage()], 400);
+        }
         return parent::render($request, $exception);
     }
 }

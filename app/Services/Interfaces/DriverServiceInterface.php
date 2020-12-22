@@ -10,9 +10,9 @@ interface DriverServiceInterface
 
     public function update(DriverDto $model);
 
-    public function findById($driverId);
+    public function findById($id);
 
     public function findAll();
 
-    public function delete($driverId);
+    public function delete($id);
 }
