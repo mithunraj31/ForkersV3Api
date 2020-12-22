@@ -3,14 +3,13 @@
 
 namespace App\Http\Requests;
 
-
 use App\AuthValidators\AuthValidator;
 use App\Enum\AccessType;
 use App\Enum\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class StoreGroup extends FormRequest
+class AddVehicle extends FormRequest
 {
 
     /**
@@ -26,9 +25,9 @@ class StoreGroup extends FormRequest
         //check whether user is admin
         if (AuthValidator::isAdmin()) return true;
 
-        //check whether user has relevent privileges
+        //check whether user has relevant privileges
 
-        return AuthValidator::isPrivileged(ResourceType::Group, AccessType::Add);
+        return AuthValidator::isPrivileged(ResourceType::Vehicle, AccessType::Add);
     }
 
     /**
@@ -39,10 +38,10 @@ class StoreGroup extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:255',
-            'description' => 'nullable|max:255',
-            'parent_id' => 'nullable|exists:App\Models\Group,id',
-            'customer_id' => 'exists:App\Models\Customer,id',
+            'name' => 'required| max:255',
+            'customer_id' => 'exists:App\Models\Vehicle,id',
+            'group_id' => 'required| exists:App\Models\Group,id',
+            'device_id' => 'exists:App\Models\Device,id'
         ];
     }
 }

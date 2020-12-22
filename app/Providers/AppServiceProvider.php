@@ -21,6 +21,7 @@ use App\Services\Interfaces\RfidServiceInterface;
 use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
+use App\Services\Interfaces\VehicleServiceInterface;
 use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
 use App\Services\RfidHistoryService;
@@ -28,6 +29,7 @@ use App\Services\RfidService;
 use App\Services\RoleService;
 use App\Services\StonkamService;
 use App\Services\UserService;
+use App\Services\VehicleService;
 use App\Services\VideoService;
 use Illuminate\Support\ServiceProvider;
 
@@ -62,7 +64,8 @@ class AppServiceProvider extends ServiceProvider
         RfidHistoryServiceInterface::class => RfidHistoryService::class,
         UserServiceInterface::class => UserService::class,
         RoleServiceInterface::class => RoleService::class,
-        GroupServiceInterface::class => GroupService::class
+        GroupServiceInterface::class => GroupService::class,
+        VehicleServiceInterface::class => VehicleService::class
 
     ];
 

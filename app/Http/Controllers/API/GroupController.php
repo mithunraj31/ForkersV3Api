@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersToGroup;
 use App\Http\Requests\IndexGroup;
 use App\Http\Requests\IndexUser;
+use App\Http\Requests\IndexVehicle;
 use App\Http\Requests\StoreGroup;
+use App\Http\Requests\UpdateGroup;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupResourceCollection;
 use App\Http\Resources\UserResourceCollection;
@@ -68,20 +70,19 @@ class GroupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param  Group  $group
+     * @param UpdateGroup $request
+     * @param Group $group
      * @return Response
      */
-    public function update(Request $request, Group $group): Response
+    public function update(UpdateGroup $request, Group $group): Response
     {
-        $group = new Group([
-           'name' => $request->name,
-           'description' => $request->description,
-           'customer_id' => $request->customer_id,
-           'parent_id' => $request->parent_id,
-        ]);
+        $groupRequest = new GroupDto();
+        $groupRequest->name = $request->name;
+        $groupRequest->description = $request->description;
+        $groupRequest->customer_id = $request->customer_id;
+        $groupRequest->parent_id = $request->parent_id;
 
-        return response($this->groupService->update($request, $group), 200);
+        return response($this->groupService->update($groupRequest, $group), 200);
     }
 
     /**
@@ -120,5 +121,17 @@ class GroupController extends Controller
     public function getUsers(IndexUser $request, Group $group): UserResourceCollection
     {
         return $this->groupService->getAllUsers($group, $request->query('perPage'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param IndexVehicle $request
+     * @param Group $group
+     * @return GroupResourceCollection Group
+     */
+    public function getVehicles(IndexVehicle $request, Group $group): GroupResourceCollection
+    {
+        return $this->groupService->getAllVehicles($group, $request->query('perPage'));
     }
 }

@@ -48,4 +48,8 @@ class Group extends Model
     {
         return $this->belongsToMany('App\Models\User','user_group','group_id', 'user_id');
     }
+    public function vehicles()
+    {
+        return $this->hasMany('App\Models\Vehicle','group_id')->with('device');
+    }
 }

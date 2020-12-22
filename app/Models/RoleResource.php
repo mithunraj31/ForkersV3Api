@@ -26,7 +26,7 @@ class RoleResource extends Model
 
     public function Customer()
     {
-        return $this->belongsTo('App\Customer');
+        return $this->belongsTo('App\Models\Customer');
     }
 
     public function Owner()

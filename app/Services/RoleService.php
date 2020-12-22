@@ -28,7 +28,7 @@ class RoleService extends ServiceBase implements RoleServiceInterface
         RoleValidator::storeRoleValidator($request);
         $newPrivileges = $this->makeNewRoleResources($request->privileges);
         if(!$request->customer_id){
-            $request->customer_id = Customer::where('stk_user',Auth::user()->stk_user)->first();
+            $request->customer_id = Auth::user()->customer_id;
         }
         $role = new Role([
             'name' => $request->name,

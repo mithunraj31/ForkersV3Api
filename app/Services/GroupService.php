@@ -92,25 +92,49 @@ class GroupService extends ServiceBase implements GroupServiceInterface
     }
      public function getAllByCustomer(Customer $customer, $perPage=15): GroupResourceCollection
      {
-         $groups = Group::where('customer_id', $customer->id)->with('owner', 'customer','children');
+         $groups = Group::where('customer_id', $customer->id)->where('parent_id', null)->with('owner', 'customer','children');
          return new GroupResourceCollection($groups->paginate($perPage));
      }
 
     public function delete(Group $group)
     {
         GroupValidator::deleteGroupValidator($group);
+        $children = $group->children;
+        if($children && count($children)>0){
+            throw new InvalidArgumentException("Cannot delete when child groups are available");
+        }
+        $users = $group->users;
+        if($users && count($users)>0){
+            throw new InvalidArgumentException("Cannot delete when group has users");
+        }
         return $group->delete();
     }
 
 
     public function getAllUsers(Group $group, $perPage=15)
     {
+        GroupValidator::getAllByGroup($group);
         return new UserResourceCollection($group->users()->with('customer')->paginate($perPage));
     }
 
-    public function getAllDevices(Group $group)
+    public function getAllVehicles(Group $group, $perPage=15)
     {
-        // TODO: Implement getAllDevices() method.
+        GroupValidator::getAllByGroup($group);
+        $paginator= $group->vehicles()->paginate($perPage);
+        $paginator->getCollection()->transform(function($value){
+           return [
+               'id' =>$value->id,
+               'name' =>$value->name,
+               'owner_id'=> $value->owner_id,
+               'group_id'=> $value->group_id,
+               'customer_id'=> $value->customer_id,
+               'created_at'=>$value->created_at,
+               'updated_at'=>$value->updated_at,
+               'device' =>$value->device?$value->device->device:null,
+
+           ];
+        });
+        return new GroupResourceCollection($paginator);
     }
 
     public function addUsers($users, Group $group): bool
@@ -127,5 +151,10 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         // Add users to group
         $group->users()->syncWithoutDetaching($sync_data);
         return true;
+    }
+
+    public function getAllDevices(Group $group, $perPage=15)
+    {
+        // TODO: Implement getAllDevices() method.
     }
 }

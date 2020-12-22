@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\AuthValidators\AuthValidator;
 use App\AuthValidators\UserValidator;
+use App\Enum\AccessType;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserResourceCollection;
 use App\Models\Customer;
@@ -99,7 +100,7 @@ class UserService implements UserServiceInterface
         }
 
 
-        if ($user->groups) {
+        if ($request->groups || is_array($request->groups) ) {
             //Add owner id for the relation
             $ownerForRelation = Auth::user()->id;
             $usersArray = (array)$request->groups;
@@ -125,12 +126,12 @@ class UserService implements UserServiceInterface
     public function getAll($perPage=15)
     {
         if(AuthValidator::isAdmin()){
-            $users = new UserResourceCollection(User::with('owner')->paginate($perPage));
+            $users = new UserResourceCollection(User::with('owner', 'role', 'customer')->paginate($perPage));
             $users->withQueryString()->links();
             return $users;
         }else{
             $customer = Customer::where('stk_user',AuthValidator::getStkUser())->first();
-            $users = new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner')->paginate($perPage));
+            $users = new UserResourceCollection(User::where('customer_id',$customer->id)->with('owner', 'role')->paginate($perPage));
             $users->withQueryString()->links();
             return $users;
         }
@@ -148,19 +149,19 @@ class UserService implements UserServiceInterface
         $privilegeArray = [];
         foreach ($privileges as $p) {
             if ($p->add) {
-                $string = $p->resource . ':add';
+                $string = $p->resource . ':' . AccessType::Add ;
                 array_push($privilegeArray, $string);
             }
             if ($p->edit) {
-                $string = $p->resource . ':edit';
+                $string = $p->resource . ':' . AccessType::Update;
                 array_push($privilegeArray, $string);
             }
             if ($p->view) {
-                $string = $p->resource . ':view';
+                $string = $p->resource . ':' . AccessType::View;
                 array_push($privilegeArray, $string);
             }
             if ($p->delete) {
-                $string = $p->resource . ':delete';
+                $string = $p->resource . ':' . AccessType::Delete;
                 array_push($privilegeArray, $string);
             }
         }
@@ -245,7 +246,7 @@ class UserService implements UserServiceInterface
         if ($user->last_name) {
             $newUser['lastName'] = $user->last_name;
         }
-        if ($user->groups) {
+        if ($user->groups || is_array($user->groups)) {
             $newUser['attributes']['groups'] = json_encode($user->groups);
         }else{
             $newUser['attributes']['groups'] = $getUser[0]["attributes"]['groups'];

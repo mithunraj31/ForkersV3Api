@@ -27,4 +27,6 @@ interface GroupServiceInterface
     public function getAllByCustomer(Customer $customer);
 
     public function addUsers($users, Group $group);
+
+    public function getAllVehicles(Group $group);
 }

@@ -37,8 +37,8 @@ class UpdateGroup extends FormRequest
         return [
             'name' => 'max:255',
             'description' => 'nullable|max:255',
-            'parent_id' => 'nullable|exists:App\Group,id',
-            'customer_id' => 'exists:App\Customer,id',
+            'parent_id' => 'nullable|exists:App\Models\Group,id',
+            'customer_id' => 'exists:App\Models\Customer,id',
         ];
     }
 }

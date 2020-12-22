@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\CameraController;
 use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\DriverController;
@@ -33,7 +34,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // API version 1 group
 Route::group(['prefix' => 'v1'], function () {
     // Device APIs
-    Route::group(['prefix' => 'devices'], function () {
+    Route::group(['prefix' => 'devices','middleware' => 'auth:api'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
 
@@ -41,6 +42,20 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
         Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
         Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
+    });
+
+    // Vehicle APIs
+    Route::group(['prefix' => 'vehicles','middleware' => 'auth:api'], function () {
+
+        Route::get('/', [VehicleController::class, 'index']);
+        Route::get('/{vehicle}', [VehicleController::class, 'show']);
+        Route::put('/{vehicle}', [VehicleController::class, 'update']);
+        Route::post('/', [VehicleController::class, 'create']);
+
+//        Route::get('/{deviceId}/driveSummary', [VehicleController::class, 'driveSummery']);
+//        Route::get('/{deviceId}/route', [VehicleController::class, 'getRoute']);
+//        Route::get('/{deviceId}/cameras', [VehicleController::class, 'getCameraByDeviceId']);
+//        Route::post('/{deviceId}/switchon', [VehicleController::class, 'doWaitingQueue']);
     });
 
     // Event APIs
@@ -99,12 +114,16 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{group}', [GroupController::class, 'show']);
         Route::post('/', [GroupController::class, 'store']);
         Route::put('/{group}', [GroupController::class, 'update']);
+        Route::delete('/{group}', [GroupController::class, 'destroy']);
 
         // add users to group
         Route::post('/{group}/users', [GroupController::class, 'addUsers']);
 
         // get users of group
         Route::get('/{group}/users', [GroupController::class, 'getUsers']);
+
+        // get vehicles of group
+        Route::get('/{group}/vehicles', [GroupController::class, 'getVehicles']);
     });
 
     // Customer API
