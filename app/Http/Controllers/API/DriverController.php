@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\DTOs\DriverDto;
+use App\Models\DTOs\RfidHistoryDto;
 use App\Services\Interfaces\DriverServiceInterface;
 use App\Utils\CollectionUtility;
+use DateTime;
 use Illuminate\Http\Request;
 
 class DriverController extends Controller
@@ -70,6 +72,27 @@ class DriverController extends Controller
         $driver->licenseLocation = $validateDriverData['license_location'];
         $driver->phoneNo = $validateDriverData['phone_no'];
         $this->driverService->create($driver);
+        return response(['message' => 'Success!'], 200);
+    }
+
+    public function assignRfid(Request $request)
+    {
+        $validateDriverData = $request->validate([
+            'id' => 'required|exists:App\Models\Driver,id',
+            'rfid' => 'required|exists:App\Models\Rfid,rfid',
+        ]);
+        $driver = new RfidHistoryDto();
+        $driver->rfid = $validateDriverData['rfid'];
+        $driver->operatorId = $validateDriverData['id'];
+        $driver->assignedFrom = new DateTime();
+        $driver->assignedTill = null;
+        $this->driverService->assignRfid($driver);
+        return response(['message' => 'Success!'], 200);
+    }
+
+    public function removeRfid($operatorId)
+    {
+        $this->driverService->removeRfid($operatorId);
         return response(['message' => 'Success!'], 200);
     }
 

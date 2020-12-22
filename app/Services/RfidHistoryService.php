@@ -9,6 +9,7 @@ use App\Models\Rfid;
 use App\Services\Interfaces\RfidHistoryServiceInterface;
 use DateTime;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Translation\Exception\AlreadyUsedException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 
@@ -22,13 +23,15 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
         $rfidHistory->operator_id = $model->operatorId;
         $rfidHistory->assigned_from = $model->assignedFrom;
         $rfidHistory->assigned_till = $model->assignedTill;
-        $rfidHistory->save();
         $rfid = Rfid::where('rfid', $model->rfid)->first();
         if ($rfid->count() == 0) {
             Log::warning("Not found rfid for  $model->rfid");
             throw new NotFoundResourceException();
+        } else if ($rfid->current_operator_id != 0) {
+            throw new AlreadyUsedException();
         }
         $rfid->current_operator_id = $model->operatorId;
+        $rfidHistory->save();
         $rfid->update();
         Log::info('Rfid History has been created');
     }
@@ -37,6 +40,9 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
     {
         Log::info('Removing operator for Rfid ');
         $rfidHistory = $this->findCurrentAssignedOperator($rfid);
+        if ($rfidHistory->assigned_till != null) {
+            throw new AlreadyUsedException();
+        }
         $rfidHistory->assigned_till = new DateTime();
         $rfidHistory->update();
         $rfid = Rfid::where('rfid', $rfid)->first();

@@ -3,6 +3,7 @@
 namespace App\Services\Interfaces;
 
 use App\Models\DTOs\DriverDto;
+use App\Models\DTOs\RfidHistoryDto;
 
 interface DriverServiceInterface
 {
@@ -15,4 +16,8 @@ interface DriverServiceInterface
     public function findAll();
 
     public function delete($id);
+
+    public function assignRfid(RfidHistoryDto $model);
+
+    public function removeRfid($operatorId);
 }
