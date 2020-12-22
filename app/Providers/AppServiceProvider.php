@@ -19,11 +19,13 @@ use App\Services\Interfaces\OperatorServiceInterface;
 use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
+use App\Services\Interfaces\VehicleServiceInterface;
 use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
 use App\Services\RoleService;
 use App\Services\StonkamService;
 use App\Services\UserService;
+use App\Services\VehicleService;
 use App\Services\VideoService;
 use Illuminate\Support\ServiceProvider;
 
@@ -56,7 +58,8 @@ class AppServiceProvider extends ServiceProvider
         DriverServiceInterface::class => DriverService::class,
         UserServiceInterface::class => UserService::class,
         RoleServiceInterface::class => RoleService::class,
-        GroupServiceInterface::class => GroupService::class
+        GroupServiceInterface::class => GroupService::class,
+        VehicleServiceInterface::class => VehicleService::class
 
     ];
 
