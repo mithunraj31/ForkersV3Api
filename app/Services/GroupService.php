@@ -113,12 +113,28 @@ class GroupService extends ServiceBase implements GroupServiceInterface
 
     public function getAllUsers(Group $group, $perPage=15)
     {
+        GroupValidator::getAllByGroup($group);
         return new UserResourceCollection($group->users()->with('customer')->paginate($perPage));
     }
 
-    public function getAllDevices(Group $group)
+    public function getAllVehicles(Group $group, $perPage=15)
     {
-        // TODO: Implement getAllDevices() method.
+        GroupValidator::getAllByGroup($group);
+        $paginator= $group->vehicles()->paginate($perPage);
+        $paginator->getCollection()->transform(function($value){
+           return [
+               'id' =>$value->id,
+               'name' =>$value->name,
+               'owner_id'=> $value->owner_id,
+               'group_id'=> $value->group_id,
+               'customer_id'=> $value->customer_id,
+               'created_at'=>$value->created_at,
+               'updated_at'=>$value->updated_at,
+               'device' =>$value->device?$value->device->device:null,
+
+           ];
+        });
+        return new GroupResourceCollection($paginator);
     }
 
     public function addUsers($users, Group $group): bool
@@ -135,5 +151,10 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         // Add users to group
         $group->users()->syncWithoutDetaching($sync_data);
         return true;
+    }
+
+    public function getAllDevices(Group $group, $perPage=15)
+    {
+        // TODO: Implement getAllDevices() method.
     }
 }

@@ -75,9 +75,39 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
     public function getAll($perPage=15)
     {
         if(AuthValidator::isAdmin()) {
-            return new VehicleResourceCollection(Vehicle::with('device','customer')->paginate($perPage));
+            $paginator = Vehicle::with('device','customer')->paginate($perPage);
+            $paginator->getCollection()->transform(function($value){
+                return [
+                    'id' =>$value->id,
+                    'name' =>$value->name,
+                    'owner_id'=> $value->owner_id,
+                    'group_id'=> $value->group_id,
+                    'customer_id'=> $value->customer_id,
+                    'created_at'=>$value->created_at,
+                    'updated_at'=>$value->updated_at,
+                    'device' =>$value->device?$value->device->device:null,
+                    'customer'=>$value->customer
+
+                ];
+             });
+            return new VehicleResourceCollection($paginator);
         }else{
-            return new VehicleResourceCollection(Vehicle::whereIn('group_id',AuthValidator::getGroups())->with('device','customer')->paginate($perPage));
+            $paginator = Vehicle::whereIn('group_id',AuthValidator::getGroups())->with('device','customer')->paginate($perPage);
+            $paginator->getCollection()->transform(function($value){
+                return [
+                    'id' =>$value->id,
+                    'name' =>$value->name,
+                    'owner_id'=> $value->owner_id,
+                    'group_id'=> $value->group_id,
+                    'customer_id'=> $value->customer_id,
+                    'created_at'=>$value->created_at,
+                    'updated_at'=>$value->updated_at,
+                    'device' =>$value->device?$value->device->device:null,
+                    'customer'=>$value->customer
+
+                ];
+             });
+            return new VehicleResourceCollection($paginator);
         }
     }
 

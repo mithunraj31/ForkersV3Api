@@ -119,6 +119,9 @@ Route::group(['prefix' => 'v1'], function () {
 
         // get users of group
         Route::get('/{group}/users', [GroupController::class, 'getUsers']);
+
+        // get vehicles of group
+        Route::get('/{group}/vehicles', [GroupController::class, 'getVehicles']);
     });
 
     // Customer API

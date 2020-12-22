@@ -74,7 +74,8 @@ class GroupValidator {
             throw new NoPrivilageException(['Privilege not found for requested group!']);
         }
     }
-    public static function viewUsersValidation(Group $group)
+
+    public static function getAllByGroup(Group $group)
     {
         if (AuthValidator::isAdmin()) {
             return true;

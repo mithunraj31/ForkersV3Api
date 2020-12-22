@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Device;
-use App\Models\Drive;
 use App\Models\Regular;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;

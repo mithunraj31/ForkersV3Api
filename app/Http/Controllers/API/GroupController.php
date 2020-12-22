@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersToGroup;
 use App\Http\Requests\IndexGroup;
 use App\Http\Requests\IndexUser;
+use App\Http\Requests\IndexVehicle;
 use App\Http\Requests\StoreGroup;
 use App\Http\Requests\UpdateGroup;
 use App\Http\Resources\GroupResource;
@@ -120,5 +121,17 @@ class GroupController extends Controller
     public function getUsers(IndexUser $request, Group $group): UserResourceCollection
     {
         return $this->groupService->getAllUsers($group, $request->query('perPage'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param IndexVehicle $request
+     * @param Group $group
+     * @return GroupResourceCollection Group
+     */
+    public function getVehicles(IndexVehicle $request, Group $group): GroupResourceCollection
+    {
+        return $this->groupService->getAllVehicles($group, $request->query('perPage'));
     }
 }
