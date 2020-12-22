@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\CameraController;
 use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\DriverController;
@@ -41,16 +42,19 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
     });
 
-//    // Device APIs
-//    Route::group(['prefix' => 'vehicles','middleware' => 'auth:api'], function () {
-//
-//        Route::get('/', [DeviceController::class, 'index']);
-//
-//        Route::get('/{deviceId}/driveSummary', [DeviceController::class, 'driveSummery']);
-//        Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
-//        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
-//        Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
-//    });
+    // Vehicle APIs
+    Route::group(['prefix' => 'vehicles','middleware' => 'auth:api'], function () {
+
+        Route::get('/', [VehicleController::class, 'index']);
+        Route::get('/{vehicle}', [VehicleController::class, 'show']);
+        Route::put('/{vehicle}', [VehicleController::class, 'update']);
+        Route::post('/', [VehicleController::class, 'create']);
+
+//        Route::get('/{deviceId}/driveSummary', [VehicleController::class, 'driveSummery']);
+//        Route::get('/{deviceId}/route', [VehicleController::class, 'getRoute']);
+//        Route::get('/{deviceId}/cameras', [VehicleController::class, 'getCameraByDeviceId']);
+//        Route::post('/{deviceId}/switchon', [VehicleController::class, 'doWaitingQueue']);
+    });
 
     // Event APIs
     Route::group(['prefix' => 'events'], function () {

@@ -7,4 +7,5 @@ abstract class ResourceType extends BasicEnum {
     const Customer = 'customer';
     const Role = 'role';
     const Device = 'device';
+    const Vehicle = 'vehicle';
 }
