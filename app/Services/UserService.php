@@ -100,7 +100,7 @@ class UserService implements UserServiceInterface
         }
 
 
-        if ($user->groups) {
+        if ($request->groups || is_array($request->groups) ) {
             //Add owner id for the relation
             $ownerForRelation = Auth::user()->id;
             $usersArray = (array)$request->groups;
@@ -246,7 +246,7 @@ class UserService implements UserServiceInterface
         if ($user->last_name) {
             $newUser['lastName'] = $user->last_name;
         }
-        if ($user->groups) {
+        if ($user->groups || is_array($user->groups)) {
             $newUser['attributes']['groups'] = json_encode($user->groups);
         }else{
             $newUser['attributes']['groups'] = $getUser[0]["attributes"]['groups'];
