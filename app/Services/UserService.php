@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\AuthValidators\AuthValidator;
 use App\AuthValidators\UserValidator;
+use App\Enum\AccessType;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserResourceCollection;
 use App\Models\Customer;
@@ -148,19 +149,19 @@ class UserService implements UserServiceInterface
         $privilegeArray = [];
         foreach ($privileges as $p) {
             if ($p->add) {
-                $string = $p->resource . ':add';
+                $string = $p->resource . ':' . AccessType::Add ;
                 array_push($privilegeArray, $string);
             }
             if ($p->edit) {
-                $string = $p->resource . ':edit';
+                $string = $p->resource . ':' . AccessType::Update;
                 array_push($privilegeArray, $string);
             }
             if ($p->view) {
-                $string = $p->resource . ':view';
+                $string = $p->resource . ':' . AccessType::View;
                 array_push($privilegeArray, $string);
             }
             if ($p->delete) {
-                $string = $p->resource . ':delete';
+                $string = $p->resource . ':' . AccessType::Delete;
                 array_push($privilegeArray, $string);
             }
         }
