@@ -7,6 +7,7 @@ use App\Models\RfidHistory;
 use App\Models\DTOs\RfidHistoryDto;
 use App\Models\Rfid;
 use App\Services\Interfaces\RfidHistoryServiceInterface;
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\AlreadyUsedException;
@@ -23,6 +24,9 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
         $rfidHistory->operator_id = $model->operatorId;
         $rfidHistory->assigned_from = $model->assignedFrom;
         $rfidHistory->assigned_till = $model->assignedTill;
+        if ($this->checkOperatorIsAlreadyAssigned($model->operatorId)) {
+            throw new AlreadyUsedException();
+        }
         $rfid = Rfid::where('rfid', $model->rfid)->first();
         if ($rfid->count() == 0) {
             Log::warning("Not found rfid for  $model->rfid");
@@ -36,6 +40,18 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
         Log::info('Rfid History has been created');
     }
 
+    public function checkOperatorIsAlreadyAssigned($operatorId)
+    {
+        $opids = RfidHistory::where([
+            ['operator_id', $operatorId],
+            ['assigned_till', null]
+        ])->first();
+        if ($opids == null) {
+            return false;
+        }
+        return true;
+    }
+
     public function removeOperator($rfid)
     {
         Log::info('Removing operator for Rfid ');
@@ -43,7 +59,7 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
         if ($rfidHistory->assigned_till != null) {
             throw new AlreadyUsedException();
         }
-        $rfidHistory->assigned_till = new DateTime();
+        $rfidHistory->assigned_till = Carbon::parse(new DateTime());
         $rfidHistory->update();
         $rfid = Rfid::where('rfid', $rfid)->first();
         $rfid->current_operator_id = 0;
@@ -57,9 +73,9 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
             ['rfid', $rfid],
             ['assigned_till', null]
         ])->first();
-        if ($rfids->count() == 0) {
+        if ($rfids === null) {
             Log::warning("Not found Rfid by ID $rfid");
-            throw new NotFoundResourceException();
+            throw new AlreadyUsedException();
         }
         return $rfids;
     }
@@ -74,24 +90,5 @@ class RfidHistoryService extends ServiceBase implements RfidHistoryServiceInterf
             throw new NotFoundResourceException();
         }
         return $rfids;
-    }
-
-
-    public function findAll()
-    {
-        $rfids =  RfidHistory::all();
-        if ($rfids->count() == 0) {
-            Log::warning("Not found Rfids");
-            throw new NotFoundResourceException();
-        }
-        return $rfids;
-    }
-
-    public function delete($id)
-    {
-        $rfid = RfidHistory::find($id);
-        Log::info('Deleting Rfid History data', (array)  $rfid);
-        $rfid->delete();
-        Log::info("Deleted Rfid History by ID $id");
     }
 }

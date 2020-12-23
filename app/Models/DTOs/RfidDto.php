@@ -5,9 +5,13 @@ namespace App\Models\DTOs;
 
 class RfidDto extends DtoBase
 {
-    public $rfid;
+    public $id;
 
     public $createdBy;
 
-    public $currentOperatorId;
+    public $customerId;
+
+    public $ownerId;
+
+    public $groupId;
 }

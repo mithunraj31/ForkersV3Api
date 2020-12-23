@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Driver extends Model
+class Operator extends Model
 {
     use HasFactory;
 
-    protected $table = 'operators';
+    protected $table = 'operator';
 
     protected $fillable = [
         'id',
@@ -22,4 +22,15 @@ class Driver extends Model
         'license_location',
         'phone_no'
     ];
+
+
+    public function rfid()
+    {
+        return $this->hasOne('App\Models\RfidHistory', 'operator_id')->with('rfid')->latest();
+    }
+
+    public function rfidHistory()
+    {
+        return $this->hasMany('App\Models\RfidHistory', 'operator_id');
+    }
 }

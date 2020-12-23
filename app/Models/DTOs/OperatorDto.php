@@ -3,7 +3,7 @@
 
 namespace App\Models\DTOs;
 
-class DriverDto extends DtoBase
+class OperatorDto extends DtoBase
 {
     public $id;
 
@@ -22,4 +22,8 @@ class DriverDto extends DtoBase
     public $licenseLocation;
 
     public $phoneNumber;
+
+    public $unAssigned;
+
+    public $assigned;
 }

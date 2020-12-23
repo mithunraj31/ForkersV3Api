@@ -15,6 +15,7 @@ class CreateRfidHistoryTable extends Migration
     {
         Schema::create('rfid_history', function (Blueprint $table) {
             $table->id();
+            $table->timestamps();
             $table->string('rfid', 45);
             $table->string('operator_id');
             $table->dateTime('assigned_from');

@@ -11,8 +11,4 @@ interface RfidHistoryServiceInterface
     public function removeOperator($rfid);
 
     public function findrfIdHistory($rfid);
-
-    public function findAll();
-
-    public function delete($id);
 }

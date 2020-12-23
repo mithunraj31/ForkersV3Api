@@ -12,6 +12,24 @@ class Rfid extends Model
     protected $table = 'rfid';
 
     protected $fillable = [
-        'rfid',
+        'id',
+        'customer_id',
+        'owner_id',
+        'group_id'
     ];
+
+    public function Customer()
+    {
+        return $this->belongsTo("App\Models\Customer", "customer_id");
+    }
+
+    public function Owner()
+    {
+        return $this->belongsTo("App\Models\User", "owner_id");
+    }
+
+    public function Group()
+    {
+        return $this->belongsTo("App\Models\Group", "group_id");
+    }
 }

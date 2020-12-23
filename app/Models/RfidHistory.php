@@ -11,7 +11,6 @@ class RfidHistory extends Model
 
     protected $table = 'rfid_history';
 
-    public $timestamps = false;
 
     protected $fillable = [
         'rfid',
@@ -21,4 +20,14 @@ class RfidHistory extends Model
 
 
     ];
+
+    public function Rfid()
+    {
+        return $this->belongsTo("App\Models\Rfid", "rfid", "id");
+    }
+
+    public function Operator()
+    {
+        return $this->belongsTo("App\Models\Driver", "operator_id");
+    }
 }

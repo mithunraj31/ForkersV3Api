@@ -5,12 +5,10 @@ use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
-use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\GroupController;
-use App\Http\Controllers\API\OperatorController;
+use App\Http\Controllers\API\OperatorController_backup;
 use App\Http\Controllers\API\RfidController;
-use App\Http\Controllers\API\RfidHistoryController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -34,7 +32,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // API version 1 group
 Route::group(['prefix' => 'v1'], function () {
     // Device APIs
-    Route::group(['prefix' => 'devices','middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'devices', 'middleware' => 'auth:api'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
 
@@ -45,17 +43,17 @@ Route::group(['prefix' => 'v1'], function () {
     });
 
     // Vehicle APIs
-    Route::group(['prefix' => 'vehicles','middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'vehicles', 'middleware' => 'auth:api'], function () {
 
         Route::get('/', [VehicleController::class, 'index']);
         Route::get('/{vehicle}', [VehicleController::class, 'show']);
         Route::put('/{vehicle}', [VehicleController::class, 'update']);
         Route::post('/', [VehicleController::class, 'create']);
 
-//        Route::get('/{deviceId}/driveSummary', [VehicleController::class, 'driveSummery']);
-//        Route::get('/{deviceId}/route', [VehicleController::class, 'getRoute']);
-//        Route::get('/{deviceId}/cameras', [VehicleController::class, 'getCameraByDeviceId']);
-//        Route::post('/{deviceId}/switchon', [VehicleController::class, 'doWaitingQueue']);
+        //        Route::get('/{deviceId}/driveSummary', [VehicleController::class, 'driveSummery']);
+        //        Route::get('/{deviceId}/route', [VehicleController::class, 'getRoute']);
+        //        Route::get('/{deviceId}/cameras', [VehicleController::class, 'getCameraByDeviceId']);
+        //        Route::post('/{deviceId}/switchon', [VehicleController::class, 'doWaitingQueue']);
     });
 
     // Event APIs
@@ -71,8 +69,8 @@ Route::group(['prefix' => 'v1'], function () {
     // Operator APIs
     Route::group(['prefix' => 'operators'], function () {
 
-        Route::get('/{operatorId}/driveSummary', [OperatorController::class, 'getDriveSummery']);
-        Route::get('/{operatorId}/events', [OperatorController::class, 'getOperatorEvents']);
+        Route::get('/{operatorId}/driveSummary', [OperatorController_backup::class, 'getDriveSummery']);
+        Route::get('/{operatorId}/events', [OperatorController_backup::class, 'getOperatorEvents']);
     });
 
     // Video APIs
@@ -146,30 +144,24 @@ Route::group(['prefix' => 'v1'], function () {
 
     // Driver APIs
     Route::group(['prefix' => 'operators'], function () {
-        Route::post('/', [DriverController::class, 'store']);
-        Route::post('/assign', [DriverController::class, 'assignRfid']);
-        Route::put('/{id}', [DriverController::class, 'update']);
-        Route::get('/{id}', [DriverController::class, 'show']);
-        Route::get('/', [DriverController::class, 'index']);
-        Route::get('/all/data', [DriverController::class, 'getAll']);
-        Route::delete('/{id}', [DriverController::class, 'destroy']);
-        Route::delete('/{operatorId}/rfid', [DriverController::class, 'removeRfid']);
+        Route::post('/', [OperatorController::class, 'store']);
+        Route::put('/{operatorId}', [OperatorController::class, 'update']);
+        Route::get('/{operatorId}', [OperatorController::class, 'show']);
+        Route::get('/', [OperatorController::class, 'index']);
+        Route::delete('/{operatorId}', [OperatorController::class, 'destroy']);
+        Route::put('/{operatorId}/assign/rfid/{rfid}', [OperatorController::class, 'assignRfid']);
+        Route::put('/{operatorId}/remove/rfid/{rfid}', [OperatorController::class, 'removeRfid']);
     });
 
     // RFID APIs
     Route::group(['prefix' => 'rfid'], function () {
         Route::post('/', [RfidController::class, 'store']);
-        Route::put('/{id}', [RfidController::class, 'update']);
-        Route::delete('/{id}', [RfidController::class, 'destroy']);
-        Route::get('/{id}', [RfidController::class, 'show']);
+        Route::put('/{rfid}', [RfidController::class, 'update']);
+        Route::delete('/{rfid}', [RfidController::class, 'destroy']);
+        Route::get('/{rfid}', [RfidController::class, 'show']);
         Route::get('/', [RfidController::class, 'index']);
-    });
-
-    // RFID History APIs
-    Route::group(['prefix' => 'rfid/history'], function () {
-        Route::post('/assign', [RfidHistoryController::class, 'assignOperator']);
-        Route::delete('/remove/{rfid}', [RfidHistoryController::class, 'removeOperator']);
-        Route::get('/{rfid}', [RfidHistoryController::class, 'findrfIdHistory']);
-        Route::delete('/{id}', [RfidHistoryController::class, 'destroy']);
+        Route::put('/{rfid}/assign/operator/{operatorId}', [RfidController::class, 'assignOperator']);
+        Route::put('/{rfid}/remove/operator/{operatorId}', [RfidController::class, 'removeOperator']);
+        Route::get('/{rfid}/history', [RfidController::class, 'findrfIdHistory']);
     });
 });
