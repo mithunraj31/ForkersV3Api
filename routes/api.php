@@ -35,11 +35,11 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'devices','middleware' => 'auth:api'], function () {
 
         Route::get('/', [DeviceController::class, 'index']);
-
-        Route::get('/{deviceId}/driveSummary', [DeviceController::class, 'driveSummery']);
-        Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
-        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
-        Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
+        Route::middleware('auth:api')->post('/', [DeviceController::class, 'create']);
+        // Route::get('/{deviceId}/driveSummary', [DeviceController::class, 'driveSummery']);
+        // Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
+        // Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
+        // Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
     });
 
     // Vehicle APIs
