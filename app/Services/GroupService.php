@@ -59,7 +59,7 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         if($request->customer_id){
             $group->customer_id = $request->customer_id;
         }
-        if($request->parent_id){
+        if($request->parent_id || $request->parent_id == null){
             $group->parent_id = $request->parent_id;
         }
         // assign relevant customer
@@ -84,16 +84,23 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         return new GroupResource($group->load('owner', 'children', 'customer'));
     }
 
-    public function getAll($perPage=15): GroupResourceCollection
+    public function getAll()
     {
+        if(AuthValidator::isAdmin()) {
             $customer = Customer::where('stk_user', AuthValidator::getStkUser())->first();
             return $this->getAllByCustomer($customer);
+        }else{
+            $availableGroups = AuthValidator::getGroups();
+            $groups = Group::whereIn('id',$availableGroups)->get();
+            $groupTree = $this->generateGroupTree($groups);
+            return new GroupResourceCollection($groupTree);
+        }
 
     }
-     public function getAllByCustomer(Customer $customer, $perPage=15): GroupResourceCollection
+     public function getAllByCustomer(Customer $customer): GroupResourceCollection
      {
          $groups = Group::where('customer_id', $customer->id)->where('parent_id', null)->with('owner', 'customer','children');
-         return new GroupResourceCollection($groups->paginate($perPage));
+         return new GroupResourceCollection($groups->get());
      }
 
     public function delete(Group $group)
@@ -156,5 +163,44 @@ class GroupService extends ServiceBase implements GroupServiceInterface
     public function getAllDevices(Group $group, $perPage=15)
     {
         // TODO: Implement getAllDevices() method.
+    }
+
+    private function generateGroupTree($groups)
+    {
+        $groupArray = $groups->toArray();
+        $children = [];
+        $parents = [];
+
+        foreach ($groupArray as &$item) $children[$item['parent_id']][] = &$item;
+        unset($item);
+
+        foreach ($groupArray as &$item) if (isset($children[$item['id']]))
+            $item['children'] = $children[$item['id']];
+
+        foreach ($children as $key => $child){
+            if($key!=""){
+                $keyCount = $this->getKeyCount($parents,$key);
+                if($keyCount==0){
+                    $parents = array_merge($parents,$child);
+                }
+            }else{
+                $parents = array_merge($parents,$child);
+            }
+        }
+        return collect($parents);
+    }
+
+    private function getKeyCount(array $main, int $key): int
+    {
+        $count =0;
+        foreach($main as $sub){
+            if($sub['id']==$key){
+                $count++;
+            }
+            if(array_key_exists('children',$sub)){
+                $count += $this->getKeyCount($sub['children'],$key);
+            }
+        }
+        return $count;
     }
 }
