@@ -8,6 +8,7 @@ use App\Exceptions\StonkamInvalidRequestException;
 use App\Http\Resources\DeviceResourceCollection;
 use App\Models\Customer;
 use App\Models\Device;
+use App\Models\DTOs\DeviceDto;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
