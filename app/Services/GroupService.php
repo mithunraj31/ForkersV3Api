@@ -180,7 +180,6 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         foreach ($children as $key => $child){
             if($key!=""){
                 $keyCount = $this->getKeyCount($parents,$key);
-                print($keyCount);
                 if($keyCount==0){
                     $parents = array_merge($parents,$child);
                 }

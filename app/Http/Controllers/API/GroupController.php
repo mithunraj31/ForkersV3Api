@@ -35,9 +35,9 @@ class GroupController extends Controller
      */
     public function index(IndexGroup $request)
     {
-        $t = $this->groupService->getAll();
+        $data = $this->groupService->getAll();
         return response()->json([
-            'data' => $t
+            'data' => $data
         ], 200);
     }
 
