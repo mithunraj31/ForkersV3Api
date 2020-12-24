@@ -68,7 +68,7 @@ class GroupValidator {
             return true;
         } else {
             $userGroups = AuthValidator::getGroups();
-            if(in_array($userGroups,$group->id)){
+            if(in_array($group->id,$userGroups)){
                 return true;
             }
             throw new NoPrivilageException(['Privilege not found for requested group!']);
@@ -81,7 +81,7 @@ class GroupValidator {
             return true;
         } else {
             $userGroups = AuthValidator::getGroups();
-            if(in_array($userGroups,$group->id)){
+            if(in_array($group->id,$userGroups)){
                 return true;
             }
             throw new NoPrivilageException(['Privilege not found for requested group!']);

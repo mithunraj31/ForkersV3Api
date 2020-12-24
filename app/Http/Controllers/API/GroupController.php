@@ -31,11 +31,14 @@ class GroupController extends Controller
      * Display a listing of the resource.
      *
      * @param IndexGroup $request
-     * @return GroupResourceCollection Group
+     * @return \Illuminate\Http\JsonResponse Group
      */
-    public function index(IndexGroup $request): GroupResourceCollection
+    public function index(IndexGroup $request)
     {
-        return $this->groupService->getAll($request->query('perPage'));
+        $t = $this->groupService->getAll();
+        return response()->json([
+            'data' => $t
+        ], 200);
     }
 
     /**
