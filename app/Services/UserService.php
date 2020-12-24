@@ -181,10 +181,12 @@ class UserService implements UserServiceInterface
             $stk_user = $getUser[0]["attributes"]['stk_user'];
             $groups = $getUser[0]["attributes"]['groups'];
             $privileges = json_encode($this->generatePrivileges($role_id));
+            $sys_role = $getUser[0]["attributes"]['sys_role'];
             $newUser = [];
             $newUser['attributes']['privileges'] = $privileges;
             $newUser['attributes']['stk_user'] = $stk_user;
             $newUser['attributes']['groups'] = $groups;
+            $newUser['attributes']['sys_role'] = $sys_role;
             $updateResponse = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $keycloak->access_token
             ])->put(config("keycloak.host") . '/auth/admin/realms/' . config("keycloak.realm") . '/users/' . $getUserId, $newUser);
