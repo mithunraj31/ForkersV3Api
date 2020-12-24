@@ -31,6 +31,6 @@ class Operator extends Model
 
     public function rfidHistory()
     {
-        return $this->hasMany('App\Models\RfidHistory', 'operator_id');
+        return $this->hasMany('App\Models\RfidHistory', 'operator_id')->with('rfid')->latest();
     }
 }

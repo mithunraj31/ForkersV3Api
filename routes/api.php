@@ -7,6 +7,7 @@ use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\GroupController;
+use App\Http\Controllers\API\OperatorController;
 use App\Http\Controllers\API\OperatorController_backup;
 use App\Http\Controllers\API\RfidController;
 use App\Http\Controllers\API\RoleController;

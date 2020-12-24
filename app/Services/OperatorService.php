@@ -5,12 +5,11 @@ namespace App\Services;
 use App\Models\DTOs\OperatorDto;
 use App\Models\DTOs\RfidHistoryDto;
 use App\Models\Operator;
-use App\Models\Rfid;
 use App\Models\RfidHistory;
 use App\Services\Interfaces\OperatorServiceInterface;
+use App\Models\UnAssignedOperator;
+use App\Utils\CollectionUtility;
 use Carbon\Carbon;
-use DateTime;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\AlreadyUsedException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -63,51 +62,36 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
 
     public function findAll(OperatorDto $queryBuilder)
     {
-        if ($queryBuilder->unAssigned && $queryBuilder->assigned) {
-
-            // $operatorsData = Operator::with('rfidHistory')->get();
-            // $testD = $operatorsData[1]->rfid;
-            // if ($operatorsData->assigned_till)
-
-
-            $operators =  DB::table('operator')
-                ->leftJoin('rfid_history', function ($join) {
-                    $join->on('operator.id', '=', 'rfid_history.operator_id')
-                        ->whereNull('rfid_history.assigned_till');
-                })
-                ->get(['operator.*', 'rfid_history.rfid']);
-            if ($operators == null) {
-                Log::warning("Not found Operator");
-                throw new NotFoundResourceException();
-            }
-            return $operators;
+        $operatorsData = [];
+        if (($queryBuilder->unAssigned && $queryBuilder->assigned) ||
+            (!$queryBuilder->unAssigned && !$queryBuilder->assigned)
+        ) {
+            $operatorsData = Operator::with('rfid')->get();
+            $operatorsData->transform(function ($value) {
+                $model = $value->toArray();
+                $model['rfid'] = $model['rfid'] != null && $model['rfid']['assigned_till'] == null
+                    ? $model['rfid']['rfid']['id'] : null;
+                return $model;
+            });
         } else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
-            $operators =  DB::table('operator')
-                ->join('rfid_history', function ($join) {
-                    $join->on('operator.id', '=', 'rfid_history.operator_id')
-                        ->whereNull('rfid_history.assigned_till');
-                })
-                ->get(['operator.*', 'rfid_history.rfid']);
-            if ($operators == null) {
-                Log::warning("Not found Operator");
-                throw new NotFoundResourceException();
-            }
-            return $operators;
+            $operatorsData = Operator::join('rfid_history', function ($join) {
+                $join->on('operator.id', '=', 'rfid_history.operator_id');
+            })->where('rfid_history.assigned_till', '=', null)->get(['operator.*', 'rfid_history.rfid']);
         } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
-            $operators =  DB::table('operators')
-                ->join('rfid_history', function ($join) {
-                    $join->on('operators.id', '=', 'rfid_history.operator_id')
-                        ->whereNotNull('rfid_history.assigned_till');
-                })
-                ->get(['operators.*', 'rfid_history.rfid']);
-            if ($operators == null) {
-                Log::warning("Not found Operator");
-                throw new NotFoundResourceException();
-            }
-            return $operators;
+            $operatorsData = UnAssignedOperator::select("*")
+                ->get();
+            $operatorsData->transform(function ($value) {
+                $model = $value->toArray();
+                $model['rfid'] = null;
+                return $model;
+            });
         }
+        if ($queryBuilder->perPage) {
+            $result = CollectionUtility::paginate($operatorsData, $queryBuilder->perPage);
+            return  $result;
+        }
+        return $operatorsData;
     }
-
 
 
     public function delete($operatorId)
@@ -133,23 +117,21 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
     public function removeRfid($operatorId, $rfid)
     {
         Log::info('Removing rfid for Operator ');
-        $rfidHistory = $this->findCurrentAssignedRfid($operatorId);
+        $rfidHistory = $this->findCurrentAssignedRfid($operatorId, $rfid);
         if ($rfidHistory->assigned_till != null) {
             throw new AlreadyUsedException();
         }
-        $rfidHistory->assigned_till = Carbon::parse(new DateTime());
+        $rfidHistory->assigned_till = Carbon::now();
         $rfidHistory->update();
-        $rfid = Rfid::where('rfid', $rfidHistory->rfid)->first();
-        $rfid->current_operator_id = 0;
-        $rfid->update();
         Log::info('Rfid Removed for Operator');
     }
 
-    public function findCurrentAssignedRfid($id)
+    public function findCurrentAssignedRfid($id, $rfid)
     {
         $rfids =  RfidHistory::where([
-            ['operator_id', $id],
-            ['assigned_till', null]
+            ['operator_id', '=', $id],
+            ['rfid', '=', $rfid],
+            ['assigned_till', '=', null]
         ])->first();
         if ($rfids == null) {
             Log::warning("Not found Rfid by ID $id");

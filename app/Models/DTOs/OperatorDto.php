@@ -26,4 +26,6 @@ class OperatorDto extends DtoBase
     public $unAssigned;
 
     public $assigned;
+
+    public $perPage;
 }

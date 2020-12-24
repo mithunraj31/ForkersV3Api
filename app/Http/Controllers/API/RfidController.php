@@ -27,10 +27,12 @@ class RfidController extends Controller
      */
     public function index(Request $request)
     {
-        $rfid = $this->rfidService->findAll();
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-        $result = CollectionUtility::paginate($rfid, $perPage);
-        return response($result, 200);
+        $queryBuilder = new RfidDto();
+        $queryBuilder->unAssigned = filter_var($request->unAssigned, FILTER_VALIDATE_BOOLEAN);
+        $queryBuilder->assigned = filter_var($request->assigned, FILTER_VALIDATE_BOOLEAN);
+        $queryBuilder->perPage = $request->query('perPage');
+        $rfid = $this->rfidService->findAll($queryBuilder);
+        return response($rfid, 200);
     }
 
     /**
@@ -44,13 +46,12 @@ class RfidController extends Controller
         $validateRfidData = $request->validate([
             'id' => 'required',
             'customerId' => 'required',
-            'ownerId' => 'required',
             'groupId' => 'required',
         ]);
         $rfid = new RfidDto();
         $rfid->id = $validateRfidData['id'];
         $rfid->customerId = $validateRfidData['customerId'];
-        $rfid->ownerId = $validateRfidData['ownerId'];
+        $rfid->ownerId = '1';
         $rfid->groupId = $validateRfidData['groupId'];
         $this->rfidService->create($rfid);
         return response(['message' => 'Success!'], 200);
@@ -82,14 +83,13 @@ class RfidController extends Controller
     {
         $validateRfidData = $request->validate([
             'customerId' => 'required',
-            'ownerId' => 'required',
             'groupId' => 'required',
 
         ]);
         $rfids = new RfidDto();
         $rfids->id = $rfid;
         $rfids->customerId = $validateRfidData['customerId'];
-        $rfids->ownerId = $validateRfidData['ownerId'];
+        $rfids->ownerId = '1';
         $rfids->groupId = $validateRfidData['groupId'];
         $this->rfidService->update($rfids);
         return response(['message' => 'Success!'], 200);
@@ -116,12 +116,12 @@ class RfidController extends Controller
      */
     public function assignOperator($rfid, $operatorId)
     {
-        $rfid = new RfidHistoryDto();
-        $rfid->rfid = $rfid;
-        $rfid->operatorId = $operatorId;
-        $rfid->assignedFrom = Carbon::parse(new DateTime());
-        $rfid->assignedTill = null;
-        $this->rfidService->assignOperator($rfid);
+        $rfids = new RfidHistoryDto();
+        $rfids->rfid = $rfid;
+        $rfids->operatorId = $operatorId;
+        $rfids->assignedFrom = Carbon::now();
+        $rfids->assignedTill = null;
+        $this->rfidService->assignOperator($rfids);
         return response(['message' => 'Success!'], 200);
     }
 
@@ -148,7 +148,7 @@ class RfidController extends Controller
      */
     public function removeOperator($rfid, $operatorId)
     {
-        $this->rfidService->removeOperator($rfid);
+        $this->rfidService->removeOperator($rfid, $operatorId);
         return response(['message' => 'Success!'], 200);
     }
 }

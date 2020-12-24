@@ -6,11 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DTOs\OperatorDto;
 use App\Models\DTOs\RfidHistoryDto;
 use App\Services\Interfaces\OperatorServiceInterface;
-use App\Utils\CollectionUtility;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Http\Request;
-use phpDocumentor\Reflection\Types\Boolean;
 
 class OperatorController extends Controller
 {
@@ -32,10 +29,9 @@ class OperatorController extends Controller
         $queryBuilder = new OperatorDto();
         $queryBuilder->unAssigned = filter_var($request->unAssigned, FILTER_VALIDATE_BOOLEAN);
         $queryBuilder->assigned = filter_var($request->assigned, FILTER_VALIDATE_BOOLEAN);
+        $queryBuilder->perPage = $request->query('perPage');
         $operators = $this->operatorService->findAll($queryBuilder);
-        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
-        $result = CollectionUtility::paginate($operators, $perPage);
-        return response($result, 200);
+        return response($operators, 200);
     }
 
     /**
@@ -74,7 +70,7 @@ class OperatorController extends Controller
         $operator = new RfidHistoryDto();
         $operator->rfid = $rfid;
         $operator->operatorId = $operatorId;
-        $operator->assignedFrom = Carbon::parse(new DateTime());
+        $operator->assignedFrom = Carbon::now();
         $operator->assignedTill = null;
         $this->operatorService->assignRfid($operator);
         return response(['message' => 'Success!'], 200);

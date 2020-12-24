@@ -23,11 +23,11 @@ class RfidHistory extends Model
 
     public function Rfid()
     {
-        return $this->belongsTo("App\Models\Rfid", "rfid", "id");
+        return $this->belongsTo("App\Models\Rfid", "rfid");
     }
 
     public function Operator()
     {
-        return $this->belongsTo("App\Models\Driver", "operator_id");
+        return $this->belongsTo("App\Models\Operator", "operator_id");
     }
 }

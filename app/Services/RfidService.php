@@ -7,7 +7,9 @@ use App\Models\Rfid;
 use App\Models\DTOs\RfidDto;
 use App\Models\DTOs\RfidHistoryDto;
 use App\Models\RfidHistory;
+use App\Models\UnAssignedRfid;
 use App\Services\Interfaces\RfidServiceInterface;
+use App\Utils\CollectionUtility;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -51,14 +53,44 @@ class RfidService extends ServiceBase implements RfidServiceInterface
     }
 
 
-    public function findAll()
+    public function findAll(RfidDto $queryBuilder)
     {
-        $Rfids =  Rfid::all();
-        if ($Rfids == null) {
-            Log::warning("Not found Rfids");
-            throw new NotFoundResourceException();
+        $rfidData = [];
+        if (($queryBuilder->unAssigned && $queryBuilder->assigned) ||
+            (!$queryBuilder->unAssigned && !$queryBuilder->assigned)
+        ) {
+            $rfidData = Rfid::with('operator')->get();
+            $rfidData->transform(function ($value) {
+                return [
+                    'id' => $value->id,
+                    'created_at' => $value->name,
+                    'owner_id' => $value->owner_id,
+                    'group_id' => $value->group_id,
+                    'customer_id' => $value->customer_id,
+                    'created_at' => $value->created_at,
+                    'updated_at' => $value->updated_at,
+                    'operator_id' => $value->operator != null && $value->operator->assigned_till == null ? $value->operator->operator_id : null,
+
+                ];
+            });
+        } else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
+            $rfidData = Rfid::join('rfid_history', function ($join) {
+                $join->on('rfid.id', '=', 'rfid_history.rfid');
+            })->where('rfid_history.assigned_till', '=', null)->get(['rfid.*', 'rfid_history.operator_id']);
+        } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
+            $rfidData = UnAssignedRfid::select("*")
+                ->get();
+            $rfidData->transform(function ($value) {
+                $model = $value->toArray();
+                $model['operator_id'] = null;
+                return $model;
+            });
         }
-        return $Rfids;
+        if ($queryBuilder->perPage) {
+            $result = CollectionUtility::paginate($rfidData, $queryBuilder->perPage);
+            return  $result;
+        }
+        return $rfidData;
     }
 
     public function delete($rfid)
@@ -80,16 +112,7 @@ class RfidService extends ServiceBase implements RfidServiceInterface
         if ($this->checkOperatorIsAlreadyAssigned($model->operatorId)) {
             throw new AlreadyUsedException();
         }
-        $rfid = Rfid::where('rfid', $model->rfid)->first();
-        if ($rfid == null) {
-            Log::warning("Not found rfid for  $model->rfid");
-            throw new NotFoundResourceException();
-        } else if ($rfid->current_operator_id != 0) {
-            throw new AlreadyUsedException();
-        }
-        $rfid->current_operator_id = $model->operatorId;
         $rfidHistory->save();
-        $rfid->update();
         Log::info('Rfid History has been created');
     }
 
@@ -105,25 +128,23 @@ class RfidService extends ServiceBase implements RfidServiceInterface
         return true;
     }
 
-    public function removeOperator($rfid)
+    public function removeOperator($rfid, $operatorId)
     {
         Log::info('Removing operator for Rfid ');
-        $rfidHistory = $this->findCurrentAssignedOperator($rfid);
+        $rfidHistory = $this->findCurrentAssignedOperator($rfid, $operatorId);
         if ($rfidHistory->assigned_till != null) {
             throw new AlreadyUsedException();
         }
-        $rfidHistory->assigned_till = Carbon::parse(new DateTime());
+        $rfidHistory->assigned_till = Carbon::now();
         $rfidHistory->update();
-        $rfid = Rfid::where('rfid', $rfid)->first();
-        $rfid->current_operator_id = 0;
-        $rfid->update();
         Log::info('Operator Removed for Rfid');
     }
 
-    public function findCurrentAssignedOperator($rfid)
+    public function findCurrentAssignedOperator($rfid, $operatorId)
     {
         $rfids =  RfidHistory::where([
             ['rfid', $rfid],
+            ['operator_id', $operatorId],
             ['assigned_till', null]
         ])->first();
         if ($rfids === null) {

@@ -13,13 +13,13 @@ interface RfidServiceInterface
 
     public function findById($rfid);
 
-    public function findAll();
+    public function findAll(RfidDto $queryBuilder);
 
     public function delete($rfid);
 
     public function assignOperator(RfidHistoryDto $model);
 
-    public function removeOperator($rfid);
+    public function removeOperator($rfid, $operatorId);
 
     public function findrfIdHistory($rfid);
 }

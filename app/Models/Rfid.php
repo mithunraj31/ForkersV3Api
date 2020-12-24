@@ -18,6 +18,11 @@ class Rfid extends Model
         'group_id'
     ];
 
+    public function Operator()
+    {
+        return $this->hasOne('App\Models\RfidHistory', 'rfid')->with('operator')->latest();
+    }
+
     public function Customer()
     {
         return $this->belongsTo("App\Models\Customer", "customer_id");
