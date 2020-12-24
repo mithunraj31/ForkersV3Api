@@ -59,7 +59,7 @@ class GroupService extends ServiceBase implements GroupServiceInterface
         if($request->customer_id){
             $group->customer_id = $request->customer_id;
         }
-        if($request->parent_id){
+        if($request->parent_id || $request->parent_id == null){
             $group->parent_id = $request->parent_id;
         }
         // assign relevant customer
