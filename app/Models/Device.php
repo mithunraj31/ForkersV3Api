@@ -10,7 +10,6 @@ class Device extends Model
 {
     use SoftDeletes;
 
-
     protected $table = 'device';
     /**
      * The attributes that are mass assignable.
