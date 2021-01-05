@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCustomerTable extends Migration
+class CreateUserGroupTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateCustomerTable extends Migration
      */
     public function up()
     {
-        Schema::create('customer', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->text('description')->nullable(true);
+        Schema::create('user_group', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
+            $table->bigInteger('user_id')->nullable(false);
+            $table->bigInteger('group_id')->nullable(false);
             $table->bigInteger('owner_id')->nullable(true);
-            $table->string('stk_user')->nullable(true);
-            $table->dateTime('deleted_at')->nullable(true);
         });
     }
 
@@ -31,6 +29,6 @@ class CreateCustomerTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer');
+        Schema::dropIfExists('user_group');
     }
 }
