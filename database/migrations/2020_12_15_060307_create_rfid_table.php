@@ -14,12 +14,10 @@ class CreateRfidTable extends Migration
     public function up()
     {
         Schema::create('rfid', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary();
             $table->timestamps();
-            $table->integer('created_by');
-            $table->integer('customer_id');
-            $table->integer('owner_id');
-            $table->integer('group_id');
+            $table->bigInteger('customer_id');
+            $table->bigInteger('owner_id')->nullable();
         });
     }
 

@@ -18,6 +18,10 @@ class Rfid extends Model
         'group_id'
     ];
 
+    public function getIdAttribute() {
+        return $this->attributes['id'];
+    }
+
     public function Operator()
     {
         return $this->hasOne('App\Models\RfidHistory', 'rfid')->with('operator')->latest();
