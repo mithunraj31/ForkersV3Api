@@ -62,6 +62,6 @@ class CreateUnAssignedRfidViews extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('un_assigned_rfid__views');
+        Schema::dropIfExists('un_assigned_rfid');
     }
 }
