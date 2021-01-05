@@ -7,11 +7,10 @@ use App\Models\Rfid;
 use App\Models\DTOs\RfidDto;
 use App\Models\DTOs\RfidHistoryDto;
 use App\Models\RfidHistory;
-use App\Models\UnAssignedRfid;
+use App\Models\UnAssignedRfidView;
 use App\Services\Interfaces\RfidServiceInterface;
 use App\Utils\CollectionUtility;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\AlreadyUsedException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -78,7 +77,7 @@ class RfidService extends ServiceBase implements RfidServiceInterface
                 $join->on('rfid.id', '=', 'rfid_history.rfid');
             })->where('rfid_history.assigned_till', '=', null)->get(['rfid.*', 'rfid_history.operator_id']);
         } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
-            $rfidData = UnAssignedRfid::select("*")
+            $rfidData = UnAssignedRfidView::select("*")
                 ->get();
             $rfidData->transform(function ($value) {
                 $model = $value->toArray();

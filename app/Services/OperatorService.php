@@ -7,7 +7,7 @@ use App\Models\DTOs\RfidHistoryDto;
 use App\Models\Operator;
 use App\Models\RfidHistory;
 use App\Services\Interfaces\OperatorServiceInterface;
-use App\Models\UnAssignedOperator;
+use App\Models\UnAssignedOperatorView;
 use App\Utils\CollectionUtility;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -78,7 +78,7 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
                 $join->on('operator.id', '=', 'rfid_history.operator_id');
             })->where('rfid_history.assigned_till', '=', null)->get(['operator.*', 'rfid_history.rfid']);
         } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
-            $operatorsData = UnAssignedOperator::select("*")
+            $operatorsData = UnAssignedOperatorView::select("*")
                 ->get();
             $operatorsData->transform(function ($value) {
                 $model = $value->toArray();

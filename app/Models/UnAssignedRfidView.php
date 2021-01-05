@@ -5,7 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UnAssignedRfid extends Model
+class UnAssignedRfidView extends Model
 {
     public $table = "un_assigned_rfid";
 }
