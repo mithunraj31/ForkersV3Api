@@ -27,25 +27,25 @@ class CreateUnAssignedRfidViews extends Migration
         `r`.`group_id` AS `group_id`,
         `h`.`operator_id` AS `operator_id`
     FROM
-        (`forkersV3_m`.`rfid` `r`
+        (`rfid` `r`
         LEFT JOIN (SELECT
-            `forkersV3_m`.`rfid_history`.`id` AS `id`,
-                `forkersV3_m`.`rfid_history`.`created_at` AS `created_at`,
-                `forkersV3_m`.`rfid_history`.`updated_at` AS `updated_at`,
-                `forkersV3_m`.`rfid_history`.`rfid` AS `rfid`,
-                `forkersV3_m`.`rfid_history`.`operator_id` AS `operator_id`,
-                `forkersV3_m`.`rfid_history`.`assigned_from` AS `assigned_from`,
-                `forkersV3_m`.`rfid_history`.`assigned_till` AS `assigned_till`,
+            `rfid_history`.`id` AS `id`,
+                `rfid_history`.`created_at` AS `created_at`,
+                `rfid_history`.`updated_at` AS `updated_at`,
+                `rfid_history`.`rfid` AS `rfid`,
+                `rfid_history`.`operator_id` AS `operator_id`,
+                `rfid_history`.`assigned_from` AS `assigned_from`,
+                `rfid_history`.`assigned_till` AS `assigned_till`,
                 `latest_records`.`h_id` AS `h_id`,
                 `latest_records`.`rid` AS `rid`
         FROM
-            (`forkersV3_m`.`rfid_history`
+            (`rfid_history`
         JOIN (SELECT
-            MAX(`forkersV3_m`.`rfid_history`.`id`) AS `h_id`,
-                `forkersV3_m`.`rfid_history`.`rfid` AS `rid`
+            MAX(`rfid_history`.`id`) AS `h_id`,
+                `rfid_history`.`rfid` AS `rid`
         FROM
-            `forkersV3_m`.`rfid_history`
-        GROUP BY `rid`) `latest_records` ON ((`latest_records`.`h_id` = `forkersV3_m`.`rfid_history`.`id`)))) `h` ON ((`r`.`id` = `h`.`rfid`)))
+            `rfid_history`
+        GROUP BY `rid`) `latest_records` ON ((`latest_records`.`h_id` = `rfid_history`.`id`)))) `h` ON ((`r`.`id` = `h`.`rfid`)))
     WHERE
         ((ISNULL(`h`.`assigned_till`)
             AND ISNULL(`h`.`assigned_from`))
