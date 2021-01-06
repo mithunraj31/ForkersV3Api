@@ -32,25 +32,25 @@ class CreateUnAssignedOperatorViews extends Migration
         `o`.`deleted_at` AS `deleted_at`,
         `h`.`rfid` AS `rfid`
     FROM
-        (`forkersV3_m`.`operator` `o`
+        (`operator` `o`
         LEFT JOIN (SELECT
-            `forkersV3_m`.`rfid_history`.`id` AS `id`,
-                `forkersV3_m`.`rfid_history`.`created_at` AS `created_at`,
-                `forkersV3_m`.`rfid_history`.`updated_at` AS `updated_at`,
-                `forkersV3_m`.`rfid_history`.`rfid` AS `rfid`,
-                `forkersV3_m`.`rfid_history`.`operator_id` AS `operator_id`,
-                `forkersV3_m`.`rfid_history`.`assigned_from` AS `assigned_from`,
-                `forkersV3_m`.`rfid_history`.`assigned_till` AS `assigned_till`,
+            `rfid_history`.`id` AS `id`,
+                `rfid_history`.`created_at` AS `created_at`,
+                `rfid_history`.`updated_at` AS `updated_at`,
+                `rfid_history`.`rfid` AS `rfid`,
+                `rfid_history`.`operator_id` AS `operator_id`,
+                `rfid_history`.`assigned_from` AS `assigned_from`,
+                `rfid_history`.`assigned_till` AS `assigned_till`,
                 `latest_records`.`h_id` AS `h_id`,
                 `latest_records`.`oid` AS `oid`
         FROM
-            (`forkersV3_m`.`rfid_history`
+            (`rfid_history`
         JOIN (SELECT
-            MAX(`forkersV3_m`.`rfid_history`.`id`) AS `h_id`,
-                `forkersV3_m`.`rfid_history`.`operator_id` AS `oid`
+            MAX(`rfid_history`.`id`) AS `h_id`,
+                `rfid_history`.`operator_id` AS `oid`
         FROM
-            `forkersV3_m`.`rfid_history`
-        GROUP BY `oid`) `latest_records` ON ((`latest_records`.`h_id` = `forkersV3_m`.`rfid_history`.`id`)))) `h` ON ((`o`.`id` = `h`.`operator_id`)))
+            `rfid_history`
+        GROUP BY `oid`) `latest_records` ON ((`latest_records`.`h_id` = `rfid_history`.`id`)))) `h` ON ((`o`.`id` = `h`.`operator_id`)))
     WHERE
         ((ISNULL(`h`.`assigned_till`)
             AND ISNULL(`h`.`assigned_from`))
