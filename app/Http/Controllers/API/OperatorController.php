@@ -32,6 +32,17 @@ class OperatorController extends Controller
         $queryBuilder->unAssigned = filter_var($request->unAssigned, FILTER_VALIDATE_BOOLEAN);
         $queryBuilder->assigned = filter_var($request->assigned, FILTER_VALIDATE_BOOLEAN);
         $queryBuilder->perPage = $request->query('perPage');
+
+        $customerId = $request->customer_id;
+
+        if ($customerId && AuthValidator::isAdmin()) {
+            $queryBuilder->customerId = $customerId;
+        } else if (!$customerId && AuthValidator::isAdmin()) {
+            $queryBuilder->customerId = '';
+        } else {
+            $queryBuilder->customerId = Auth::user()->customer_id;
+        }
+
         $operators = $this->operatorService->findAll($queryBuilder);
         return response($operators, 200);
     }
