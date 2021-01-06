@@ -37,7 +37,7 @@ class RfidController extends Controller
 
         if ($customerId && AuthValidator::isAdmin()) {
             $queryBuilder->customerId = $customerId;
-        } else if (!$customerId &&  AuthValidator::isAdmin()) {
+        } else if (!$customerId && AuthValidator::isAdmin()) {
             $queryBuilder->customerId = '';
         } else {
             $queryBuilder->customerId = Auth::user()->customer_id;

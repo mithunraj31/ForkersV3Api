@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use App\AuthValidators\AuthValidator;
 use App\Http\Controllers\Controller;
 use App\Models\DTOs\OperatorDto;
 use App\Models\DTOs\RfidHistoryDto;
 use App\Services\Interfaces\OperatorServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OperatorController extends Controller
 {
@@ -51,6 +53,7 @@ class OperatorController extends Controller
             'license_renewal_date' => 'required',
             'license_location' => 'required',
             'phone_no' => 'required',
+            'customer' => ''
         ]);
         $operator = new OperatorDto();
         $operator->name = $validateOperatorData['name'];
@@ -61,8 +64,16 @@ class OperatorController extends Controller
         $operator->licenseRenewalDate = $validateOperatorData['license_renewal_date'];
         $operator->licenseLocation = $validateOperatorData['license_location'];
         $operator->phoneNo = $validateOperatorData['phone_no'];
+        $operator->ownerId = Auth::user()->id;
+
+        if (AuthValidator::isAdmin()) {
+            $operator->customerId = $validateOperatorData['customer_id'];
+        } else {
+            $operator->customerId = Auth::user()->customer_id;
+        }
+
         $this->operatorService->create($operator);
-        return response(['message' => 'Success!'], 200);
+        return response(['message' => 'Success!'], 201);
     }
 
     public function assignRfid($operatorId, $rfid)

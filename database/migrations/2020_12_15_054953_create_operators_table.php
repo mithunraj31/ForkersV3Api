@@ -24,6 +24,10 @@ class CreateOperatorsTable extends Migration
             $table->date('license_renewal_date');
             $table->longText('license_location');
             $table->string('phone_no');
+
+            $table->bigInteger('owner_id')->nullable();
+            $table->bigInteger('customer_id');
+
             $table->softDeletes();
         });
     }

@@ -29,6 +29,8 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
         $operator->license_renewal_date = $model->licenseRenewalDate;
         $operator->license_location = $model->licenseLocation;
         $operator->phone_no = $model->phoneNo;
+        $operator->owner_id = $model->ownerId;
+        $operator->customer_id = $model->ownerId;
         $operator->save();
         Log::info('Operator has been created');
     }
@@ -45,6 +47,7 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
         $operator->license_renewal_date = $model->licenseRenewalDate;
         $operator->license_location = $model->licenseLocation;
         $operator->phone_no = $model->phoneNo;
+        $operator->owner_id = $model->ownerId;
         $operator->update();
         Log::info('Operator has been updated');
     }

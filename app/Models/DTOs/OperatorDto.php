@@ -28,4 +28,8 @@ class OperatorDto extends DtoBase
     public $assigned;
 
     public $perPage;
+
+    public $ownerId;
+
+    public $customerId;
 }
