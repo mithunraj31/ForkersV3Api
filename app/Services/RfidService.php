@@ -11,6 +11,7 @@ use App\Models\UnAssignedRfidView;
 use App\Services\Interfaces\RfidServiceInterface;
 use App\Utils\CollectionUtility;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Translation\Exception\AlreadyUsedException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -24,8 +25,7 @@ class RfidService extends ServiceBase implements RfidServiceInterface
         $rfid = new Rfid();
         $rfid->id = $model->id;
         $rfid->customer_id = $model->customerId;
-        $rfid->owner_id = $model->ownerId;
-        $rfid->group_id = $model->groupId;
+        $rfid->owner_id = Auth::user()->id;
         $rfid->save();
         Log::info('Rfid has been created');
     }
@@ -58,27 +58,32 @@ class RfidService extends ServiceBase implements RfidServiceInterface
         if (($queryBuilder->unAssigned && $queryBuilder->assigned) ||
             (!$queryBuilder->unAssigned && !$queryBuilder->assigned)
         ) {
-            $rfidData = Rfid::with('operator')->get();
+            $query =  Rfid::with('operator', 'customer');
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+            $rfidData = $query->get();
             $rfidData->transform(function ($value) {
-                return [
-                    'id' => $value->id,
-                    'created_at' => $value->name,
-                    'owner_id' => $value->owner_id,
-                    'group_id' => $value->group_id,
-                    'customer_id' => $value->customer_id,
-                    'created_at' => $value->created_at,
-                    'updated_at' => $value->updated_at,
-                    'operator_id' => $value->operator != null && $value->operator->assigned_till == null ? $value->operator->operator_id : null,
-
-                ];
+                $rfid = $value->toArray();
+                $rfid['operator_id'] = $value->operator != null && $value->operator->assigned_till == null ? $value->operator->operator_id : null;
+                return $rfid;
             });
         } else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
-            $rfidData = Rfid::join('rfid_history', function ($join) {
+            $query = Rfid::join('rfid_history', function ($join) {
                 $join->on('rfid.id', '=', 'rfid_history.rfid');
-            })->where('rfid_history.assigned_till', '=', null)->get(['rfid.*', 'rfid_history.operator_id']);
+            })->where('rfid_history.assigned_till', '=', null);
+
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+
+            $rfidData = $query->get(['rfid.*', 'rfid_history.operator_id']);
         } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
-            $rfidData = UnAssignedRfidView::select("*")
-                ->get();
+            $query = UnAssignedRfidView::select('*');
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+            $rfidData = $query->get();
             $rfidData->transform(function ($value) {
                 $model = $value->toArray();
                 $model['operator_id'] = null;

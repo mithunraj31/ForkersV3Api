@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRfidTable extends Migration
+class CreateUserGroupTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateRfidTable extends Migration
      */
     public function up()
     {
-        Schema::create('rfid', function (Blueprint $table) {
-            $table->string('id')->primary();
+        Schema::create('user_group', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-            $table->bigInteger('customer_id');
-            $table->bigInteger('owner_id')->nullable();
+            $table->bigInteger('user_id')->nullable(false);
+            $table->bigInteger('group_id')->nullable(false);
+            $table->bigInteger('owner_id')->nullable(true);
         });
     }
 
@@ -28,6 +29,6 @@ class CreateRfidTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rfid');
+        Schema::dropIfExists('user_group');
     }
 }

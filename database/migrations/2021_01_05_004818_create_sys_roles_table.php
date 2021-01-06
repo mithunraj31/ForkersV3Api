@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRfidTable extends Migration
+class CreateSysRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateRfidTable extends Migration
      */
     public function up()
     {
-        Schema::create('rfid', function (Blueprint $table) {
-            $table->string('id')->primary();
+        Schema::create('sys_roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('role')->nullable(false);
+            $table->bigInteger('user_id')->nullable(false);
+            $table->bigInteger('owner_id')->nullable(true);
             $table->timestamps();
-            $table->bigInteger('customer_id');
-            $table->bigInteger('owner_id')->nullable();
         });
     }
 
@@ -28,6 +29,6 @@ class CreateRfidTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rfid');
+        Schema::dropIfExists('sys_roles');
     }
 }

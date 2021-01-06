@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\AuthValidators\AuthValidator;
 use App\Http\Controllers\Controller;
 use App\Models\DTOs\RfidDto;
 use App\Models\DTOs\RfidHistoryDto;
@@ -10,6 +11,7 @@ use App\Utils\CollectionUtility;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RfidController extends Controller
 {
@@ -31,6 +33,16 @@ class RfidController extends Controller
         $queryBuilder->unAssigned = filter_var($request->unAssigned, FILTER_VALIDATE_BOOLEAN);
         $queryBuilder->assigned = filter_var($request->assigned, FILTER_VALIDATE_BOOLEAN);
         $queryBuilder->perPage = $request->query('perPage');
+        $customerId = $request->customer_id;
+
+        if ($customerId && AuthValidator::isAdmin()) {
+            $queryBuilder->customerId = $customerId;
+        } else if (!$customerId &&  AuthValidator::isAdmin()) {
+            $queryBuilder->customerId = '';
+        } else {
+            $queryBuilder->customerId = Auth::user()->customer_id;
+        }
+
         $rfid = $this->rfidService->findAll($queryBuilder);
         return response($rfid, 200);
     }
@@ -45,14 +57,16 @@ class RfidController extends Controller
     {
         $validateRfidData = $request->validate([
             'id' => 'required',
-            'customerId' => 'required',
-            'groupId' => 'required',
+            'customer_id' => ''
         ]);
         $rfid = new RfidDto();
         $rfid->id = $validateRfidData['id'];
-        $rfid->customerId = $validateRfidData['customerId'];
-        $rfid->ownerId = '1';
-        $rfid->groupId = $validateRfidData['groupId'];
+        $customerId = $validateRfidData['customer_id'];
+        if ($customerId) {
+            $rfid->customerId = $customerId;
+        } else {
+            $rfid->customerId = Auth::user()->customer_id;
+        }
         $this->rfidService->create($rfid);
         return response(['message' => 'Success!'], 200);
     }

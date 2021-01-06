@@ -1,11 +1,10 @@
 <?php
 
-use App\Enum\SysRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersTable extends Migration
+class CreateRoleResourceTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,17 +13,19 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('role_resource', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('username');
+            $table->boolean('edit')->nullable(false);
+            $table->boolean('add')->nullable(false);
+            $table->boolean('view')->nullable(false);
+            $table->boolean('delete')->nullable(false);
+
             $table->timestamps();
-            $table->bigInteger('customer_id')->nullable(false);
+
+            $table->string('resource')->nullable(false);
             $table->bigInteger('role_id')->nullable(false);
             $table->bigInteger('owner_id')->nullable(true);
-            $table->dateTime('deleted_at')->nullable(true);
-            $table->string('sys_role')->nullable(false)->default(SysRole::User);
+            $table->datetime('deleted_at')->nullable(true);
         });
     }
 
@@ -35,6 +36,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('role_resource');
     }
 }
