@@ -53,7 +53,7 @@ class OperatorController extends Controller
             'license_renewal_date' => 'required',
             'license_location' => 'required',
             'phone_no' => 'required',
-            'customer' => ''
+            'customer_id' => ''
         ]);
         $operator = new OperatorDto();
         $operator->name = $validateOperatorData['name'];
@@ -126,6 +126,7 @@ class OperatorController extends Controller
             'license_renewal_date' => 'required',
             'license_location' => 'required',
             'phone_no' => 'required',
+            'customer_id' => ''
         ]);
         $operator = new OperatorDto();
         $operator->id = $operatorId;
@@ -137,6 +138,14 @@ class OperatorController extends Controller
         $operator->licenseRenewalDate = $validateOperatorData['license_renewal_date'];
         $operator->licenseLocation = $validateOperatorData['license_location'];
         $operator->phoneNo = $validateOperatorData['phone_no'];
+        $operator->ownerId = Auth::user()->id;
+
+        if (AuthValidator::isAdmin()) {
+            $operator->customerId = $validateOperatorData['customer_id'];
+        } else {
+            $operator->customerId = Auth::user()->customer_id;
+        }
+
         $this->operatorService->update($operator);
         return response(['message' => 'Success!'], 200);
     }
