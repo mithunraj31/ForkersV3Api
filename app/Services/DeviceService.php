@@ -27,13 +27,6 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
     public function create(DeviceDto $request)
     {
 
-        if(!$request->customer_id){
-            $request->customer_id = Auth::user()->customer_id;
-        }
-        // find stk user
-        $customer = Customer::find($request->customer_id);
-        $request->stk_user = $customer->stk_user;
-
         //create user in stonkam
         $this->createDeviceInStonkam($request);
 
@@ -50,14 +43,45 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
 
     public function update(DeviceDto $request, Device $device)
     {
+        // get required data from db
+        if ($request->plate_number || $request->channel_number) {
+            if (!$request->plate_number) {
+                $request->plate_number = $device->plate_number;
+            }
+            if(!$request->channel_number){
+                $request->channel_number = $device->channel_number;
+            }
+        }
+        // update stonkam device
+        $session = $this->stonkamService->refreshAccessToken();
+        $this->updateDeviceInStonkam($request, $session);
 
-        $device->customer_id = $request->customer_id;
+        // update db
+        // when customer is needed to update stonkam need to delete and re enter.
+        if($request->customer_id) {
+
+            $currentCustomer = $device->customer;
+            $newCustomer = Customer::find($request->customer_id);
+            $request->stk_user = $newCustomer->stk_user;
+
+            //delete from current stonkam group
+            $this->deleteDeviceInStonkamGroup($request,$currentCustomer->stk_user,$session);
+
+            //delete from current stonkam sub user
+            $this->deleteDeviceInStonkamUser($request,$currentCustomer->stk_user, $session);
+
+            // add to new stonkam group
+            $this->createDeviceInStonkamGroup($request, $session);
+
+            // add to customer
+            $this->addDeviceToStonkamUser($request->id, $request->stk_user, $session);
+
+            $device->customer_id = $request->customer_id;
+        }
         $device->channel_number = $request->channel_number;
         $device->plate_number = $request->plate_number;
-        $device->device_type = 'DV426';
 
         return $device->save();
-
     }
 
     public function findById(Device $device)
@@ -73,24 +97,24 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
     public function delete(Device $device)
     {
         return $device->delete();
-
     }
 
     private function createDeviceInStonkam(DeviceDto $request)
     {
         $session = $this->stonkamService->refreshAccessToken();
         // add to group
-        $this->createDeviceInStonkamGroup($request,$session);
+        $this->createDeviceInStonkamGroup($request, $session);
 
         // add to admin
-        $this->addDeviceToStonkamUser($request->id,config('stonkam.auth.admin.username'),$session);
+        $this->addDeviceToStonkamUser($request->id, config('stonkam.auth.admin.username'), $session);
 
         // add to customer
-        $this->addDeviceToStonkamUser($request->id,$request->stk_user ,$session);
+        $this->addDeviceToStonkamUser($request->id, $request->stk_user, $session);
     }
 
 
-    private function createDeviceInStonkamGroup(DeviceDto $request, $session){
+    private function createDeviceInStonkamGroup(DeviceDto $request, $session)
+    {
 
         $endpoint = config('stonkam.hostname') . "/AddDeviceForGroup/100";
 
@@ -115,7 +139,7 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
         Log::info('Create stonkam device success!!');
     }
 
-    private function addDeviceToStonkamUser($id,$stk_user,$session)
+    private function addDeviceToStonkamUser($id, $stk_user, $session)
     {
         $endpoint = config('stonkam.hostname') . "/AddDeviceForUser/100";
 
@@ -137,4 +161,68 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
         Log::info('Add device to user success!!');
     }
 
+    private function updateDeviceInStonkam(DeviceDto $request, $session)
+    {
+
+        $endpoint = config('stonkam.hostname') . "/EditDevice/100";
+
+        $data = [
+            'DeviceId' => $request->id,
+            'UserName' => config('stonkam.auth.admin.username'),
+            'SessionId' => $session,
+            'NewPlateNumber' => $request->plate_number,
+            'ChannelNumber' => $request->channel_number
+        ];
+        Log::info("Requesting stonkam server for Update device - $request->id");
+        $response = Http::post($endpoint, $data);
+        if (!$response->ok()) {
+            $content = $response->json();
+            Log::warning('Invalid input or stonkam faild. ' . $content['Reason']);
+            throw new StonkamInvalidRequestException($content['Reason']);
+        }
+
+        Log::info('Update device success!!');
+    }
+    private function deleteDeviceInStonkamGroup(DeviceDto $request,$groupName,$session)
+    {
+
+        $endpoint = config('stonkam.hostname') . "/DelDeviceForGroup/100";
+
+        $data = [
+            'UserName' => config('stonkam.auth.admin.username'),
+            'DeviceId' => $request->id,
+            'GroupName' => $groupName,
+            'SessionId' => $session
+        ];
+        Log::info("Requesting stonkam server for delete device from group - $request->id");
+        $response = Http::post($endpoint, $data);
+        if (!$response->ok()) {
+            $content = $response->json();
+            Log::warning('Invalid input or stonkam faild. ' . $content['Reason']);
+            throw new StonkamInvalidRequestException($content['Reason']);
+        }
+
+        Log::info('delete device from group success!!');
+    }
+    private function deleteDeviceInStonkamUser(DeviceDto $request,$username,$session)
+    {
+
+        $endpoint = config('stonkam.hostname') . "/DelDeviceForUser/100";
+
+        $data = [
+            'ParentUserName' =>config('stonkam.auth.admin.username'),
+            'UserName' => $username,
+            'DeviceId' => $request->id,
+            'SessionId' => $session
+        ];
+        Log::info("Requesting stonkam server for delete device from user - $request->id");
+        $response = Http::post($endpoint, $data);
+        if (!$response->ok()) {
+            $content = $response->json();
+            Log::warning('Invalid input or stonkam faild. ' . $content['Reason']);
+            throw new StonkamInvalidRequestException($content['Reason']);
+        }
+
+        Log::info('delete device from user success!!');
+    }
 }
