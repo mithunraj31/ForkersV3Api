@@ -29,6 +29,8 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
         $operator->license_renewal_date = $model->licenseRenewalDate;
         $operator->license_location = $model->licenseLocation;
         $operator->phone_no = $model->phoneNo;
+        $operator->owner_id = $model->ownerId;
+        $operator->customer_id = $model->customerId;
         $operator->save();
         Log::info('Operator has been created');
     }
@@ -45,6 +47,8 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
         $operator->license_renewal_date = $model->licenseRenewalDate;
         $operator->license_location = $model->licenseLocation;
         $operator->phone_no = $model->phoneNo;
+        $operator->owner_id = $model->ownerId;
+        $operator->customer_id = $model->customerId;
         $operator->update();
         Log::info('Operator has been updated');
     }
@@ -66,7 +70,13 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
         if (($queryBuilder->unAssigned && $queryBuilder->assigned) ||
             (!$queryBuilder->unAssigned && !$queryBuilder->assigned)
         ) {
-            $operatorsData = Operator::with('rfid')->get();
+            $query =  Operator::with('rfid');
+
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+
+            $operatorsData = $query->get();
             $operatorsData->transform(function ($value) {
                 $model = $value->toArray();
                 $model['rfid'] = $model['rfid'] != null && $model['rfid']['assigned_till'] == null
@@ -74,12 +84,22 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
                 return $model;
             });
         } else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
-            $operatorsData = Operator::join('rfid_history', function ($join) {
+            $query = Operator::join('rfid_history', function ($join) {
                 $join->on('operator.id', '=', 'rfid_history.operator_id');
-            })->where('rfid_history.assigned_till', '=', null)->get(['operator.*', 'rfid_history.rfid']);
+            })->where('rfid_history.assigned_till', '=', null);
+
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+
+            $operatorsData = $query->get(['operator.*', 'rfid_history.rfid']);
+
         } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
-            $operatorsData = UnAssignedOperatorView::select("*")
-                ->get();
+            $query = UnAssignedOperatorView::select('*');
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+            $operatorsData =  $query->get();
             $operatorsData->transform(function ($value) {
                 $model = $value->toArray();
                 $model['rfid'] = null;

@@ -15,11 +15,11 @@ class CreateRoleTable extends Migration
     {
         Schema::create('role', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->nullable(false);
-            $table->string('description')->nullable(true);
+            $table->string('name');
+            $table->string('description')->nullable();
             $table->bigInteger('customer_id');
-            $table->bigInteger('owner_id')->nullable(true);
-            $table->datetime('deleted_at');
+            $table->bigInteger('owner_id')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
         });

@@ -15,9 +15,9 @@ class CreateSysRolesTable extends Migration
     {
         Schema::create('sys_roles', function (Blueprint $table) {
             $table->id();
-            $table->string('role')->nullable(false);
-            $table->bigInteger('user_id')->nullable(false);
-            $table->bigInteger('owner_id')->nullable(true);
+            $table->string('role');
+            $table->bigInteger('user_id');
+            $table->bigInteger('owner_id')->nullable();
             $table->timestamps();
         });
     }

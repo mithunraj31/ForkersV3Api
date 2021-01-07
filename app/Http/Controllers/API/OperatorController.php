@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use App\AuthValidators\AuthValidator;
 use App\Http\Controllers\Controller;
 use App\Models\DTOs\OperatorDto;
 use App\Models\DTOs\RfidHistoryDto;
 use App\Services\Interfaces\OperatorServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OperatorController extends Controller
 {
@@ -30,6 +32,17 @@ class OperatorController extends Controller
         $queryBuilder->unAssigned = filter_var($request->unAssigned, FILTER_VALIDATE_BOOLEAN);
         $queryBuilder->assigned = filter_var($request->assigned, FILTER_VALIDATE_BOOLEAN);
         $queryBuilder->perPage = $request->query('perPage');
+
+        $customerId = $request->customer_id;
+
+        if ($customerId && AuthValidator::isAdmin()) {
+            $queryBuilder->customerId = $customerId;
+        } else if (!$customerId && AuthValidator::isAdmin()) {
+            $queryBuilder->customerId = '';
+        } else {
+            $queryBuilder->customerId = Auth::user()->customer_id;
+        }
+
         $operators = $this->operatorService->findAll($queryBuilder);
         return response($operators, 200);
     }
@@ -51,6 +64,7 @@ class OperatorController extends Controller
             'license_renewal_date' => 'required',
             'license_location' => 'required',
             'phone_no' => 'required',
+            'customer_id' => ''
         ]);
         $operator = new OperatorDto();
         $operator->name = $validateOperatorData['name'];
@@ -61,8 +75,16 @@ class OperatorController extends Controller
         $operator->licenseRenewalDate = $validateOperatorData['license_renewal_date'];
         $operator->licenseLocation = $validateOperatorData['license_location'];
         $operator->phoneNo = $validateOperatorData['phone_no'];
+        $operator->ownerId = Auth::user()->id;
+
+        if (AuthValidator::isAdmin()) {
+            $operator->customerId = $validateOperatorData['customer_id'];
+        } else {
+            $operator->customerId = Auth::user()->customer_id;
+        }
+
         $this->operatorService->create($operator);
-        return response(['message' => 'Success!'], 200);
+        return response(['message' => 'Success!'], 201);
     }
 
     public function assignRfid($operatorId, $rfid)
@@ -115,6 +137,7 @@ class OperatorController extends Controller
             'license_renewal_date' => 'required',
             'license_location' => 'required',
             'phone_no' => 'required',
+            'customer_id' => ''
         ]);
         $operator = new OperatorDto();
         $operator->id = $operatorId;
@@ -126,6 +149,14 @@ class OperatorController extends Controller
         $operator->licenseRenewalDate = $validateOperatorData['license_renewal_date'];
         $operator->licenseLocation = $validateOperatorData['license_location'];
         $operator->phoneNo = $validateOperatorData['phone_no'];
+        $operator->ownerId = Auth::user()->id;
+
+        if (AuthValidator::isAdmin()) {
+            $operator->customerId = $validateOperatorData['customer_id'];
+        } else {
+            $operator->customerId = Auth::user()->customer_id;
+        }
+
         $this->operatorService->update($operator);
         return response(['message' => 'Success!'], 200);
     }
