@@ -87,6 +87,7 @@ class RfidService extends ServiceBase implements RfidServiceInterface
             $rfidData->transform(function ($value) {
                 $model = $value->toArray();
                 $model['operator_id'] = null;
+                $model['id'] = $value->rfid_id;
                 return $model;
             });
         }
