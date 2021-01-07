@@ -9,7 +9,6 @@ use App\Models\DTOs\RfidHistoryDto;
 use App\Services\Interfaces\RfidServiceInterface;
 use App\Utils\CollectionUtility;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -67,6 +66,7 @@ class RfidController extends Controller
         } else {
             $rfid->customerId = Auth::user()->customer_id;
         }
+        $rfid->ownerId = Auth::user()->id;
         $this->rfidService->create($rfid);
         return response(['message' => 'Success!'], 200);
     }
@@ -97,14 +97,12 @@ class RfidController extends Controller
     {
         $validateRfidData = $request->validate([
             'customerId' => 'required',
-            'groupId' => 'required',
 
         ]);
         $rfids = new RfidDto();
         $rfids->id = $rfid;
         $rfids->customerId = $validateRfidData['customerId'];
-        $rfids->ownerId = '1';
-        $rfids->groupId = $validateRfidData['groupId'];
+        $rfids->ownerId = Auth::user()->id;
         $this->rfidService->update($rfids);
         return response(['message' => 'Success!'], 200);
     }

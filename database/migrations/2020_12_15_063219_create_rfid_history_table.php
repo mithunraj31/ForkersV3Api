@@ -17,7 +17,7 @@ class CreateRfidHistoryTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('rfid', 45);
-            $table->string('operator_id');
+            $table->bigInteger('operator_id');
             $table->dateTime('assigned_from');
             $table->dateTime('assigned_till')->nullable();
         });

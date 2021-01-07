@@ -84,25 +84,31 @@ class OperatorService extends ServiceBase implements OperatorServiceInterface
                 return $model;
             });
         } else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
-            $query = Operator::join('rfid_history', function ($join) {
-                $join->on('operator.id', '=', 'rfid_history.operator_id');
-            })->where('rfid_history.assigned_till', '=', null);
+            $query = Operator::with('rfid')->has('rfid');
 
             if ($queryBuilder->customerId) {
                 $query->where('customer_id', $queryBuilder->customerId);
             }
 
-            $operatorsData = $query->get(['operator.*', 'rfid_history.rfid']);
-
-        } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
-            $query = UnAssignedOperatorView::select('*');
-            if ($queryBuilder->customerId) {
-                $query->where('customer_id', $queryBuilder->customerId);
-            }
-            $operatorsData =  $query->get();
+            $operatorsData = $query->get();
             $operatorsData->transform(function ($value) {
                 $model = $value->toArray();
-                $model['rfid'] = null;
+                $model['rfid'] = $model['rfid'] != null && $model['rfid']['assigned_till'] == null
+                    ? $model['rfid']['rfid']['id'] : null;
+                return $model;
+            });
+        } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
+            $query = Operator::with('rfid')->doesntHave('rfid');
+
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+
+            $operatorsData = $query->get();
+            $operatorsData->transform(function ($value) {
+                $model = $value->toArray();
+                $model['rfid'] = $model['rfid'] != null && $model['rfid']['assigned_till'] == null
+                    ? $model['rfid']['rfid']['id'] : null;
                 return $model;
             });
         }

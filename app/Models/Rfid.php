@@ -18,7 +18,8 @@ class Rfid extends Model
         'group_id'
     ];
 
-    public function getIdAttribute() {
+    public function getIdAttribute()
+    {
         return $this->attributes['id'];
     }
 
@@ -41,5 +42,4 @@ class Rfid extends Model
     {
         return $this->belongsTo("App\Models\Group", "group_id");
     }
-
 }

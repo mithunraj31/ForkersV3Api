@@ -13,8 +13,6 @@ class RfidDto extends DtoBase
 
     public $ownerId;
 
-    public $groupId;
-
     public $unAssigned;
 
     public $assigned;

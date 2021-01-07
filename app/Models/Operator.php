@@ -15,6 +15,7 @@ class Operator extends Model
         'id',
         'name',
         'dob',
+        'owner',
         'address',
         'license_no',
         'license_received_date',
@@ -26,11 +27,17 @@ class Operator extends Model
 
     public function rfid()
     {
-        return $this->hasOne('App\Models\RfidHistory', 'operator_id')->with('rfid')->latest();
+        return $this->hasOne('App\Models\RfidHistory', 'operator_id')->with('rfid')->where('assigned_till', '=', null)->latest();
     }
 
     public function rfidHistory()
     {
         return $this->hasMany('App\Models\RfidHistory', 'operator_id')->with('rfid')->latest();
+    }
+
+
+    public function Owner()
+    {
+        return $this->belongsTo("App\Models\User", "owner_id");
     }
 }
