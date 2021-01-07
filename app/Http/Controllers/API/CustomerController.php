@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdminOnly;
 use App\Http\Requests\DeleteCustomer;
 use App\Http\Requests\IndexCustomer;
 use App\Http\Requests\IndexCustomerGroup;
@@ -78,5 +79,15 @@ class CustomerController extends Controller
     public function indexGroups(IndexCustomerGroup $request, Customer $customer)
     {
         return $this->groupService->getAllByCustomer($customer, $request->query('perPage'));
+    }
+
+    public function indexDevices(AdminOnly $request, Customer $customer)
+    {
+        return $this->customerService->getAllDevices($customer, $request->query('perPage'));
+    }
+
+    public function indexVehicles(AdminOnly $request, Customer $customer)
+    {
+        return $this->customerService->getAllVehicles($customer, $request->query('perPage'));
     }
 }

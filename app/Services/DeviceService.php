@@ -13,6 +13,7 @@ use App\Models\DTOs\DeviceDto;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 class DeviceService extends ServiceBase implements DeviceServiceInterface
 {
@@ -43,6 +44,10 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
 
     public function update(DeviceDto $request, Device $device)
     {
+        if($request->customer_id && $device->assigned){
+            throw new InvalidArgumentException('Cant change the customer when assigned to a vehicle');
+        }
+
         // get required data from db
         if ($request->plate_number || $request->channel_number) {
             if (!$request->plate_number) {
@@ -96,6 +101,21 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
 
     public function delete(Device $device)
     {
+        // delete from stonkam server
+        $request = new DeviceDto();
+        $request->id = $device->id;
+        $customer = $device->customer;
+        $request->stk_user = $customer->stk_user;
+        $session = $this->stonkamService->refreshAccessToken();
+        //delete from current stonkam group
+        $this->deleteDeviceInStonkamGroup($request,$request->stk_user,$session);
+
+        //delete from current stonkam sub user
+        $this->deleteDeviceInStonkamUser($request,$request->stk_user, $session);
+
+        //delete from current stonkam admin
+        $this->deleteDeviceInStonkamUser($request,config('stonkam.auth.admin.username'), $session);
+
         return $device->delete();
     }
 

@@ -140,6 +140,12 @@ Route::group(['prefix' => 'v1'], function () {
 
         // get groups of requested customer id
         Route::get('/{customer}/groups', [CustomerController::class, 'indexGroups']);
+
+        // get vehicles of requested customer id
+        Route::get('/{customer}/vehicles', [CustomerController::class, 'indexVehicles']);
+
+        // get devices of requested customer id
+        Route::get('/{customer}/devices', [CustomerController::class, 'indexDevices']);
     });
 
     // Driver APIs

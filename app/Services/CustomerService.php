@@ -6,13 +6,17 @@ use App\AuthValidators\CustomerValidator;
 use App\Exceptions\StonkamInvalidRequestException;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\CustomerResourceCollection;
+use App\Http\Resources\DeviceResourceCollection;
 use App\Http\Resources\RoleResourceCollection;
 use App\Http\Resources\UserResourceCollection;
+use App\Http\Resources\VehicleResourceCollection;
 use App\Models\Customer;
+use App\Models\Device;
 use App\Models\DTOs\CustomerDto;
 use App\Models\Group;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Vehicle;
 use App\Services\Interfaces\CustomerServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use Illuminate\Support\Facades\Auth;
@@ -90,6 +94,15 @@ class CustomerService implements CustomerServiceInterface
     public function getAllRoles(Customer $customer,$perPage=15)
     {
         return new RoleResourceCollection(Role::where('customer_id',$customer->id)->with('owner', 'privileges')->paginate($perPage));
+    }
+
+    public function getAllDevices(Customer $customer, $perPage=15)
+    {
+        return new DeviceResourceCollection(Device::where('customer_id', $customer->id)->paginate($perPage));
+    }
+    public function getAllVehicles(Customer $customer, $perPage=15)
+    {
+        return new VehicleResourceCollection(Vehicle::where('customer_id', $customer->id)->paginate($perPage));
     }
 
     private function createUserInStonkam(CustomerDto $customer)
