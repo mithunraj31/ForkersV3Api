@@ -24,7 +24,7 @@ class Rfid extends Model
 
     public function Operator()
     {
-        return $this->hasOne('App\Models\RfidHistory', 'rfid')->with('operator')->latest();
+        return $this->hasOne('App\Models\RfidHistory', 'rfid')->with('operator')->where('assigned_till', '=', null)->latest();
     }
 
     public function Customer()
@@ -41,4 +41,5 @@ class Rfid extends Model
     {
         return $this->belongsTo("App\Models\Group", "group_id");
     }
+
 }

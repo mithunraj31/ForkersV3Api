@@ -55,30 +55,35 @@ class RfidService extends ServiceBase implements RfidServiceInterface
     public function findAll(RfidDto $queryBuilder)
     {
         $rfidData = [];
+        // get data without considering assigned or unasigned
         if (($queryBuilder->unAssigned && $queryBuilder->assigned) ||
             (!$queryBuilder->unAssigned && !$queryBuilder->assigned)
         ) {
             $query =  Rfid::with('operator', 'customer');
+            // query by customer
             if ($queryBuilder->customerId) {
                 $query->where('customer_id', $queryBuilder->customerId);
             }
             $rfidData = $query->get();
-            $rfidData->transform(function ($value) {
-                $rfid = $value->toArray();
-                $rfid['operator_id'] = $value->operator != null && $value->operator->assigned_till == null ? $value->operator->operator_id : null;
-                return $rfid;
-            });
-        } else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
-            $query = Rfid::join('rfid_history', function ($join) {
-                $join->on('rfid.id', '=', 'rfid_history.rfid');
-            })->where('rfid_history.assigned_till', '=', null);
+            // $rfidData->transform(function ($value) {
+            //     $rfid = $value->toArray();
+            //     $rfid['operator_id'] = $value->operator != null && $value->operator->assigned_till == null ? $value->operator->operator_id : null;
+            //     return $rfid;
+            // });
+        } // when query is only to get assigned rfids
+        else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
+            $query = Rfid::has('operator')->with('operator', 'customer');
+            // $query = Rfid::join('rfid_history', function ($join) {
+            //     $join->on('rfid.id', '=', 'rfid_history.rfid');
+            // })->where('rfid_history.assigned_till', '=', null);
 
             if ($queryBuilder->customerId) {
                 $query->where('customer_id', $queryBuilder->customerId);
             }
 
             $rfidData = $query->get(['rfid.*', 'rfid_history.operator_id']);
-        } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
+        } // when query is only to get unassigned rfids
+        else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
             $query = UnAssignedRfidView::select('*');
             if ($queryBuilder->customerId) {
                 $query->where('customer_id', $queryBuilder->customerId);
@@ -90,7 +95,7 @@ class RfidService extends ServiceBase implements RfidServiceInterface
                 $model['id'] = $value->rfid_id;
                 return $model;
             });
-        }
+        } // when pagination is needed
         if ($queryBuilder->perPage) {
             $result = CollectionUtility::paginate($rfidData, $queryBuilder->perPage);
             return  $result;
