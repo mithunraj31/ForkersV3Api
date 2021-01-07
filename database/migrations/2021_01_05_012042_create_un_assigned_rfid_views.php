@@ -21,10 +21,8 @@ class CreateUnAssignedRfidViews extends Migration
         `r`.`id` AS `id`,
         `r`.`created_at` AS `created_at`,
         `r`.`updated_at` AS `updated_at`,
-        `r`.`created_by` AS `created_by`,
         `r`.`customer_id` AS `customer_id`,
         `r`.`owner_id` AS `owner_id`,
-        `r`.`group_id` AS `group_id`,
         `h`.`operator_id` AS `operator_id`
     FROM
         (`rfid` `r`
