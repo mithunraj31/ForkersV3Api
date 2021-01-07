@@ -39,11 +39,7 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
         $vehicle->save();
         // assign device
         if($request->device_id){
-            $vehicleDevice = new VehicleDevice();
-            $vehicleDevice->vehicle_id = $vehicle->id;
-            $vehicleDevice->device_id = $request->device_id;
-            $vehicleDevice->owner_id = Auth::user()->id;
-            $vehicleDevice->save();
+            $this->assignDevice($request, $vehicle);
         }
     }
 
@@ -135,10 +131,17 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
         }
         // unassigned previous device
         $device = $vehicle->device;
-        if($device && $device->device_id){
-            $deviceP = Device::find($device->device_id);
+        if($device && $device->id){
+            $deviceP = Device::find($device->id);
             $deviceP->assigned = false;
             $deviceP->save();
+
+            // add null record to vehicle_device tabble
+            $vehicleDevice = new VehicleDevice();
+            $vehicleDevice->vehicle_id = null;
+            $vehicleDevice->device_id = $device->id;
+            $vehicleDevice->owner_id = Auth::user()->id;
+            $vehicleDevice->save();
         }
 
         // assign current device
