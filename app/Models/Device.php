@@ -48,4 +48,9 @@ class Device extends Model
     {
         return $this->hasOne(Location::class, 'id');
     }
+
+    public function vehicle()
+    {
+        return $this->hasOne('App\Models\VehicleDevice', 'device_id')->with('vehicle')->latest();
+    }
 }

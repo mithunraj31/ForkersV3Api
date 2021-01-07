@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use App\Exceptions\StonkamInvalidRequestException;
+use App\Http\Resources\DeviceResource;
 use App\Http\Resources\DeviceResourceCollection;
 use App\Models\Customer;
 use App\Models\Device;
@@ -40,7 +41,6 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
         $device = new Device();
         $device->id = $request->id;
         $device->customer_id = $request->customer_id;
-        $device->stk_user = $request->stk_user;
         $device->channel_number = $request->channel_number;
         $device->plate_number = $request->plate_number;
         $device->owner_id = Auth::user()->id;
@@ -52,8 +52,6 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
     {
 
         $device->customer_id = $request->customer_id;
-        $device->group_id = $request->group_id;
-        $device->stk_user = $request->stk_user;
         $device->channel_number = $request->channel_number;
         $device->plate_number = $request->plate_number;
         $device->device_type = 'DV426';
@@ -64,7 +62,7 @@ class DeviceService extends ServiceBase implements DeviceServiceInterface
 
     public function findById(Device $device)
     {
-        return $device;
+        return new DeviceResource($device->load('location, vehicle'));
     }
 
     public function getAll($perPage = 15)
