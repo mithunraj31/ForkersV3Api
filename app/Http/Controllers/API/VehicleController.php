@@ -46,6 +46,29 @@ class VehicleController extends Controller
         $vehicleRequest->name = $request->name;
         $vehicleRequest->device_id = $request->device_id;
         $vehicleRequest->group_id = $request->group_id;
+        $vehicleRequest->customer_id = $request->customer_id;
+        $vehicleRequest->vehicle_number = $request->vehicle_number;
+        $vehicleRequest->structural_method = $request->structural_method;
+        $vehicleRequest->power_type = $request->power_type;
+        $vehicleRequest->rated_load = $request->rated_load;
+        $vehicleRequest->fork_length = $request->fork_length;
+        $vehicleRequest->standard_lift = $request->standard_lift;
+        $vehicleRequest->maximum_lift = $request->maximum_lift;
+        $vehicleRequest->battery_voltage = $request->battery_voltage;
+        $vehicleRequest->battery_capacity = $request->battery_capacity;
+        $vehicleRequest->hour_meter_initial_value = $request->hour_meter_initial_value;
+        $vehicleRequest->operating_time = $request->operating_time;
+        $vehicleRequest->cumulative_uptime = $request->cumulative_uptime;
+        $vehicleRequest->introduction_date = $request->introduction_date;
+        $vehicleRequest->contract = $request->contract;
+        $vehicleRequest->key_number = $request->key_number;
+        $vehicleRequest->installation_location = $request->installation_location;
+        $vehicleRequest->option1 = $request->option1;
+        $vehicleRequest->option2 = $request->option2;
+        $vehicleRequest->option4 = $request->option4;
+        $vehicleRequest->option5 = $request->option5;
+        $vehicleRequest->remarks = $request->remarks;
+        $vehicleRequest->model_id = $request->model_id;
 
         return response($this->vehicleService->update($vehicleRequest,$vehicle), 200);
     }

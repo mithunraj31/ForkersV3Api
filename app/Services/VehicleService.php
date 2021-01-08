@@ -42,7 +42,9 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
         $vehicle->hour_meter_initial_value = $request->hour_meter_initial_value;
         $vehicle->operating_time = $request->operating_time;
         $vehicle->cumulative_uptime = $request->cumulative_uptime;
-        $vehicle->introduction_date = $request->introduction_date;
+        if($request->introduction_date){
+            $vehicle->introduction_date = $request->introduction_date;
+        }
         $vehicle->contract = $request->contract;
         $vehicle->key_number = $request->key_number;
         $vehicle->installation_location = $request->installation_location;
