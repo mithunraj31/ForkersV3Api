@@ -8,6 +8,7 @@ use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\GroupController;
+use App\Http\Controllers\API\ManufacturerController;
 use App\Http\Controllers\API\OperatorController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserController;
@@ -150,5 +151,13 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{id}', [DriverController::class, 'show']);
         Route::get('/', [DriverController::class, 'index']);
         Route::get('/{driverId}/history', [DriverController::class, 'getRegularDataByDriverId']);
+    });
+
+    Route::group(['prefix' => 'manufacturers', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [ManufacturerController::class, 'index']);
+        Route::post('/', [ManufacturerController::class, 'store']);
+        Route::get('/{id}', [ManufacturerController::class, 'show']);
+        Route::put('/{id}', [ManufacturerController::class, 'update']);
+        Route::delete('/{id}', [ManufacturerController::class, 'delete']);
     });
 });
