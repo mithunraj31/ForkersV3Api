@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRoleResourceTable extends Migration
+class CreateRfidTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,11 @@ class CreateRoleResourceTable extends Migration
      */
     public function up()
     {
-        Schema::create('role_resource', function (Blueprint $table) {
-            $table->id();
-            $table->boolean('edit');
-            $table->boolean('add');
-            $table->boolean('view');
-            $table->boolean('delete');
-
+        Schema::create('rfid', function (Blueprint $table) {
+            $table->string('id')->primary();
             $table->timestamps();
-
-            $table->string('resource');
-            $table->bigInteger('role_id');
+            $table->bigInteger('customer_id');
             $table->bigInteger('owner_id')->nullable();
-            $table->softDeletes();
         });
     }
 
@@ -36,6 +28,6 @@ class CreateRoleResourceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('role_resource');
+        Schema::dropIfExists('rfid');
     }
 }

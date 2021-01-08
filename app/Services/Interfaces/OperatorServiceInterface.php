@@ -2,15 +2,22 @@
 
 namespace App\Services\Interfaces;
 
+use App\Models\DTOs\OperatorDto;
+use App\Models\DTOs\RfidHistoryDto;
+
 interface OperatorServiceInterface
 {
-    /**
-     * the method give operator drive summery listings,
-     * each device item contains device's details.
-     * @return array
-     */
-    public function getDriveSummery($operatorId, $startTime, $endTime);
+    public function create(OperatorDto $model);
 
+    public function update(OperatorDto $model);
 
-    public function getOperatorEvents($operatorId, $startTime, $endTime);
+    public function findById($operatorId);
+
+    public function findAll(OperatorDto $queryBuilder);
+
+    public function delete($operatorId);
+
+    public function assignRfid(RfidHistoryDto $model);
+
+    public function removeRfid($operatorId, $rfid);
 }

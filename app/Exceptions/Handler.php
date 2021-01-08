@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use KeycloakGuard\Exceptions\TokenException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Translation\Exception\AlreadyUsedException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Throwable;
 
@@ -47,8 +48,10 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof NotFoundResourceException
-        || $exception instanceof ModelNotFoundException) {
+        if (
+            $exception instanceof NotFoundResourceException
+            || $exception instanceof ModelNotFoundException
+        ) {
             return response()->json(['message' => 'Data not found.'], 404);
         }
         if ($exception instanceof InvalidFormatException) {
@@ -60,17 +63,20 @@ class Handler extends ExceptionHandler
         if ($exception instanceof StonkamResultIsFailedException) {
             return response()->json(['message' => $exception->getMessage()], 500);
         }
-        if($exception instanceof TokenException && $request->wantsJson()) {
+        if ($exception instanceof AlreadyUsedException) {
+            return response()->json(['message' => 'Id Already Used'], 400);
+        }
+        if ($exception instanceof TokenException && $request->wantsJson()) {
             return response()->json(['message' => 'Token Expired'], 401);
         }
-        if($exception instanceof NotFoundHttpException && $request->wantsJson()) {
+        if ($exception instanceof NotFoundHttpException && $request->wantsJson()) {
             return response()->json(['message' => 'Url Not Found!'], 404);
         }
-        if($exception instanceof AuthorizationException && $request->wantsJson()) {
+        if ($exception instanceof AuthorizationException && $request->wantsJson()) {
             return response()->json(['message' => 'This action is unauthorized!'], 403);
         }
-        if($exception instanceof StonkamInvalidRequestException && $request->wantsJson()) {
-            return response()->json(['message' => 'stonkam->' .$exception->getMessage()], 400);
+        if ($exception instanceof StonkamInvalidRequestException && $request->wantsJson()) {
+            return response()->json(['message' => 'stonkam->' . $exception->getMessage()], 400);
         }
         return parent::render($request, $exception);
     }

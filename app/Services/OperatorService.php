@@ -2,111 +2,167 @@
 
 namespace App\Services;
 
+use App\Models\DTOs\OperatorDto;
+use App\Models\DTOs\RfidHistoryDto;
+use App\Models\Operator;
+use App\Models\RfidHistory;
 use App\Services\Interfaces\OperatorServiceInterface;
-use Illuminate\Support\Facades\DB;
+use App\Models\UnAssignedOperatorView;
+use App\Utils\CollectionUtility;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Translation\Exception\AlreadyUsedException;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
+
 
 class OperatorService extends ServiceBase implements OperatorServiceInterface
 {
-    public function getDriveSummery($operatorId, $startTime, $endTime)
+    public function create(OperatorDto $model)
     {
-        // declare types of regular
-        $stopEngine = 3;
-        $registerDriver = 4;
-        $regularData = DB::table('drive')->whereBetween('time', [$startTime, $endTime])->orderBy('time', 'asc')->get();
-
-        $driveDataArray = [];
-        for ($j = 0; count($regularData) > $j; $j++) {
-            $rData = $regularData[$j];
-            $key = $j;
-
-            // when engine start is before the context
-            if ($key == 0 && $rData->type == $stopEngine && $rData->driver_id == $operatorId) {
-                $driveData = [
-                    'drive_started_at' => null,
-                    'drive_stoped_at' => $rData->time,
-                ];
-                $prefixData = DB::table('drive')->where([['device_id', '=', $operatorId], ['time', '<', $startTime], ['type', '=', $registerDriver]])->orderBy('time', 'desc')->first();
-                if ($prefixData) {
-
-                    $rData = $prefixData;
-                    array_unshift($regularData, $prefixData);
-                } else {
-                    array_push($driveDataArray, $driveData);
-                }
-            }
-            // when engine off is after the context
-            if ($rData->type == $registerDriver && $rData->driver_id == $operatorId) {
-                $isAfterContext = true;
-                if ($key == (count($regularData) - 1)) {
-                    $isAfterContext = true;
-                } else {
-
-                    for ($j = $key + 1; $j < count($regularData); $j++) {
-                        if ($regularData[$j]->driver_id == $operatorId) {
-                            $isAfterContext = false;
-                            break;
-                        }
-                    }
-                }
-
-                if ($isAfterContext) {
-                    $driveData = [
-                        'drive_started_at' => $rData->time,
-                        'drive_stoped_at' => null
-                    ];
-                    $postfixData = DB::table('drive')->where([['driver_id', '=', $operatorId], ['time', '>', $endTime]])->orderBy('time', 'asc')->first();;
-                    if ($postfixData) {
-                        $regularData->push($postfixData);
-                    } else {
-
-                        array_push($driveDataArray, $driveData);
-                    }
-                }
-            }
-            // when engine on and off are in context
-            if ($key != (count($regularData) - 1) &&
-            ($rData->type == $registerDriver || $rData->driver_id != '')&&
-            $rData->driver_id == $operatorId) {
-                $driveData = [
-                    'drive_started_at' => $rData->time,
-                    'drive_stoped_at' => null,
-                    'device_id' => $rData->device_id
-                ];
-
-                for ($i = $key + 1; $i < count($regularData); $i++) {
-                    if ($regularData[$i]->driver_id == $operatorId) {
-                        $driveData['drive_stoped_at'] = $regularData[$i]->time;
-                        break;
-                    }
-                }
-                array_push($driveDataArray, $driveData);
-            }
-        }
-        $duration = $this->calculateDriveDuration($driveDataArray);
-        return ['data'=>$driveDataArray, 'duration'=>$duration];
-        // return $regularData;
+        Log::info('Creating Operator', $model->toArray());
+        $operator = new Operator();
+        $operator->name = $model->name;
+        $operator->dob = $model->dob;
+        $operator->address = $model->address;
+        $operator->license_no = $model->licenseNo;
+        $operator->license_received_date = $model->licenseReceivedDate;
+        $operator->license_renewal_date = $model->licenseRenewalDate;
+        $operator->license_location = $model->licenseLocation;
+        $operator->phone_no = $model->phoneNo;
+        $operator->owner_id = $model->ownerId;
+        $operator->customer_id = $model->customerId;
+        $operator->save();
+        Log::info('Operator has been created');
     }
 
-    public function getOperatorEvents($operatorId, $start, $end)
+    public function update(OperatorDto $model)
     {
-        return DB::table('event')->where([['driver_id', '=', $operatorId]])->whereBetween('time', [$start, $end])->orderBy('time', 'desc')->get();
+        Log::info('Updating Operator', $model->toArray());
+        $operator = $this->findById($model->id);
+        $operator->name = $model->name;
+        $operator->dob = $model->dob;
+        $operator->address = $model->address;
+        $operator->license_no = $model->licenseNo;
+        $operator->license_received_date = $model->licenseReceivedDate;
+        $operator->license_renewal_date = $model->licenseRenewalDate;
+        $operator->license_location = $model->licenseLocation;
+        $operator->phone_no = $model->phoneNo;
+        $operator->owner_id = $model->ownerId;
+        $operator->customer_id = $model->customerId;
+        $operator->update();
+        Log::info('Operator has been updated');
     }
 
-    private function calculateDriveDuration($drives)
+    public function findById($id)
     {
-        if ($drives && count($drives) > 0) {
-            $duration = 0;
-            foreach ($drives as $key => $drive) {
-                if ($drive['drive_started_at']&& $drive['drive_stoped_at']) {
-                    $start = strtotime($drive['drive_started_at']);
-                    $end = strtotime($drive['drive_stoped_at']);
-                    $d = $end-$start;
-                    $duration += $d;
-                 }
-            }
-            return $duration;
-        } else {
-            return 0;
+        $operator =  Operator::find($id);
+        if ($operator == null) {
+            Log::warning("Not found Operator by ID $id");
+            throw new NotFoundResourceException();
         }
+        return $operator;
+    }
+
+
+    public function findAll(OperatorDto $queryBuilder)
+    {
+        $operatorsData = [];
+        if (($queryBuilder->unAssigned && $queryBuilder->assigned) ||
+            (!$queryBuilder->unAssigned && !$queryBuilder->assigned)
+        ) {
+            $query =  Operator::with('rfid');
+
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+
+            $operatorsData = $query->get();
+            $operatorsData->transform(function ($value) {
+                $model = $value->toArray();
+                $model['rfid'] = $model['rfid'] != null && $model['rfid']['assigned_till'] == null
+                    ? $model['rfid']['rfid']['id'] : null;
+                return $model;
+            });
+        } else if (!$queryBuilder->unAssigned && $queryBuilder->assigned) {
+            $query = Operator::with('rfid')->has('rfid');
+
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+
+            $operatorsData = $query->get();
+            $operatorsData->transform(function ($value) {
+                $model = $value->toArray();
+                $model['rfid'] = $model['rfid'] != null && $model['rfid']['assigned_till'] == null
+                    ? $model['rfid']['rfid']['id'] : null;
+                return $model;
+            });
+        } else if ($queryBuilder->unAssigned && !$queryBuilder->assigned) {
+            $query = Operator::with('rfid')->doesntHave('rfid');
+
+            if ($queryBuilder->customerId) {
+                $query->where('customer_id', $queryBuilder->customerId);
+            }
+
+            $operatorsData = $query->get();
+            $operatorsData->transform(function ($value) {
+                $model = $value->toArray();
+                $model['rfid'] = $model['rfid'] != null && $model['rfid']['assigned_till'] == null
+                    ? $model['rfid']['rfid']['id'] : null;
+                return $model;
+            });
+        }
+        if ($queryBuilder->perPage) {
+            $result = CollectionUtility::paginate($operatorsData, $queryBuilder->perPage);
+            return  $result;
+        }
+        return $operatorsData;
+    }
+
+
+    public function delete($operatorId)
+    {
+        $operator = $this->findById($operatorId);
+        Log::info('Deleting Operator data', (array)  $operator);
+        $operator->delete();
+        Log::info("Deleted Operator by ID $operatorId");
+    }
+
+    public function assignRfid(RfidHistoryDto $model)
+    {
+        Log::info('Assigning Rfid ', $model->toArray());
+        $rfidHistory = new RfidHistory();
+        $rfidHistory->rfid = $model->rfid;
+        $rfidHistory->operator_id = $model->operatorId;
+        $rfidHistory->assigned_from = $model->assignedFrom;
+        $rfidHistory->assigned_till = $model->assignedTill;
+        $rfidHistory->save();
+        Log::info('Rfid has been assigned');
+    }
+
+    public function removeRfid($operatorId, $rfid)
+    {
+        Log::info('Removing rfid for Operator ');
+        $rfidHistory = $this->findCurrentAssignedRfid($operatorId, $rfid);
+        if ($rfidHistory->assigned_till != null) {
+            throw new AlreadyUsedException();
+        }
+        $rfidHistory->assigned_till = Carbon::now();
+        $rfidHistory->update();
+        Log::info('Rfid Removed for Operator');
+    }
+
+    public function findCurrentAssignedRfid($id, $rfid)
+    {
+        $rfids =  RfidHistory::where([
+            ['operator_id', '=', $id],
+            ['rfid', '=', $rfid],
+            ['assigned_till', '=', null]
+        ])->first();
+        if ($rfids == null) {
+            Log::warning("Not found Rfid by ID $id");
+            throw new NotFoundResourceException();
+        }
+        return $rfids;
     }
 }

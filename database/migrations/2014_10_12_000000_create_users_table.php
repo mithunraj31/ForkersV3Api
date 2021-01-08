@@ -20,11 +20,11 @@ class CreateUsersTable extends Migration
             $table->string('last_name');
             $table->string('username');
             $table->timestamps();
-            $table->bigInteger('customer_id')->nullable(false);
-            $table->bigInteger('role_id')->nullable(false);
-            $table->bigInteger('owner_id')->nullable(true);
-            $table->dateTime('deleted_at')->nullable(true);
-            $table->string('sys_role')->nullable(false)->default(SysRole::User);
+            $table->bigInteger('customer_id');
+            $table->bigInteger('role_id');
+            $table->bigInteger('owner_id')->nullable();
+            $table->softDeletes();
+            $table->string('sys_role')->default(SysRole::User);
         });
     }
 
