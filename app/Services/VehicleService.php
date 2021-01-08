@@ -30,6 +30,32 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
         $vehicle = new Vehicle();
         $vehicle->name = $request->name;
         $vehicle->group_id = $request->group_id;
+        $vehicle->vehicle_number = $request->vehicle_number;
+        $vehicle->structural_method = $request->structural_method;
+        $vehicle->power_type = $request->power_type;
+        $vehicle->rated_load = $request->rated_load;
+        $vehicle->fork_length = $request->fork_length;
+        $vehicle->standard_lift = $request->standard_lift;
+        $vehicle->maximum_lift = $request->maximum_lift;
+        $vehicle->battery_voltage = $request->battery_voltage;
+        $vehicle->battery_capacity = $request->battery_capacity;
+        $vehicle->hour_meter_initial_value = $request->hour_meter_initial_value;
+        $vehicle->operating_time = $request->operating_time;
+        $vehicle->cumulative_uptime = $request->cumulative_uptime;
+        if($request->introduction_date){
+            $vehicle->introduction_date = $request->introduction_date;
+        }
+        $vehicle->contract = $request->contract;
+        $vehicle->key_number = $request->key_number;
+        $vehicle->installation_location = $request->installation_location;
+        $vehicle->option1 = $request->option1;
+        $vehicle->option2 = $request->option2;
+        $vehicle->option3 = $request->option3;
+        $vehicle->option4 = $request->option4;
+        $vehicle->option5 = $request->option5;
+        $vehicle->remarks = $request->remarks;
+        $vehicle->model_id = $request->model_id;
+
         $vehicle->owner_id = Auth::user()->id;
         if($request->customer_id){
             $vehicle->customer_id = $request->customer_id;

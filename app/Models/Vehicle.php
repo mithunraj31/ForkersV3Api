@@ -26,7 +26,30 @@ class Vehicle extends Model
         'plate_number',
         'customer_id',
         'owner_id',
-        'vehicle_device_id',
+        'group_id',
+        'vehicle_number',
+        'structural_method',
+        'power_type',
+        'rated_load',
+        'fork_length',
+        'standard_lift',
+        'maximum_lift',
+        'battery_voltage',
+        'battery_capacity',
+        'hour_meter_initial_value',
+        'operating_time',
+        'cumulative_uptime',
+        'introduction_date',
+        'contract',
+        'key_number',
+        'installation_location',
+        'option1',
+        'option2',
+        'option3',
+        'option4',
+        'option5',
+        'remarks',
+        'model_id'
     ];
 
     public function VehicleDevices()
@@ -52,5 +75,10 @@ class Vehicle extends Model
     public function Group()
     {
         return $this->belongsTo("App\Models\Group", "group_id");
+    }
+
+    public function Model()
+    {
+        return $this->belongsTo(VehicleModel::class. 'model_id');
     }
 }

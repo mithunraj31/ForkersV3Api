@@ -17,6 +17,7 @@ use App\Services\Interfaces\EventServiceInterface;
 use App\Services\Interfaces\GroupServiceInterface;
 use App\Services\Interfaces\ManufacturerServiceInterface;
 use App\Services\Interfaces\OperatorServiceInterface;
+use App\Services\Interfaces\OperatorServiceInterface_backup;
 use App\Services\Interfaces\RfidServiceInterface;
 use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
@@ -26,6 +27,7 @@ use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
 use App\Services\RfidService;
 use App\Services\ManufacturerService;
+use App\Services\OperatorService_backup;
 use App\Services\RoleService;
 use App\Services\StonkamService;
 use App\Services\UserService;
@@ -65,7 +67,8 @@ class AppServiceProvider extends ServiceProvider
         RoleServiceInterface::class => RoleService::class,
         GroupServiceInterface::class => GroupService::class,
         VehicleServiceInterface::class => VehicleService::class,
-        ManufacturerServiceInterface::class => ManufacturerService::class
+        ManufacturerServiceInterface::class => ManufacturerService::class,
+        OperatorServiceInterface_backup::class => OperatorService_backup::class
 
     ];
 

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Device;
 use App\Models\Drive;
 use App\Models\Regular;
-use App\Services\Interfaces\DeviceServiceInterfaceBackup;
+use App\Services\Interfaces\DeviceServiceInterface_backup;
 use App\Services\Interfaces\StonkamServiceInterface;
 use BaoPham\DynamoDb\RawDynamoDbQuery;
 use Illuminate\Support\Collection;
@@ -14,7 +14,7 @@ use Symfony\Component\Translation\Exception\NotFoundResourceException;
 use Illuminate\Support\Facades\Log;
 use DateTime;
 
-class DeviceServiceBackuo extends ServiceBase implements DeviceServiceInterfaceBackup
+class DeviceService_backup extends ServiceBase implements DeviceServiceInterface_backup
 {
     private StonkamServiceInterface $stonkamService;
 

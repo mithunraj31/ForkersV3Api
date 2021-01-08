@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Services\Interfaces\OperatorServiceInterface_backup;
 use Illuminate\Support\Facades\DB;
 
-class OperatorService extends ServiceBase implements OperatorServiceInterface_backup
+class OperatorService_backup extends ServiceBase implements OperatorServiceInterface_backup
 {
     public function getDriveSummery($operatorId, $startTime, $endTime)
     {
