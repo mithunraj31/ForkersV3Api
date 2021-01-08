@@ -8,11 +8,19 @@ use App\Models\Device;
 use App\Models\DTOs\VehicleDto;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 
 class VehicleValidator
 {
     static function storeVehicleValidator(VehicleDto $vehicle)
     {
+        // is device in same customer
+        if($vehicle->customer_id && $vehicle->device_id){
+            $device = Device::find($vehicle->device_id);
+            if($vehicle->customer_id != $device->customer_id){
+                throw new InvalidArgumentException('Device->customer and Vehicle->customer is not the same!.');
+            }
+        }
 
         if (AuthValidator::isAdmin()) {
             return true;
@@ -24,6 +32,7 @@ class VehicleValidator
         }else{
             throw new NoPrivilageException(['Privilege not found for requested group!']);
         }
+
 
     }
 
@@ -44,6 +53,14 @@ class VehicleValidator
 
     public static function updateVehicleValidator(VehicleDto $request, Vehicle $vehicle)
     {
+        // is device in same customer
+        if($request->device_id){
+            $device = Device::find($request->device_id);
+            if($vehicle->customer_id != $device->customer_id){
+                throw new InvalidArgumentException('Device->customer and Vehicle->customer is not the same!.');
+            }
+        }
+
         if (AuthValidator::isAdmin()) {
             return true;
         }

@@ -17,30 +17,40 @@ class Device extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'plate_number',
         'scan_code',
         'channel_number',
-        'group_name',
         'device_type',
         'is_active',
         'stk_user',
-        'stk_device'
+        'customer_id',
+        'owner_id',
+        'assigned'
     ];
-
-    public function scopeGetLatestDevice($builder, $stkUser = null)
-    {
-        $optionalCondition = '';
-        if($stkUser != null) {
-            $optionalCondition = "WHERE stk_user = '$stkUser'";
-        }
-
-        // Look SQL query at /database/migrations/2020_12_09_040748_create_latest_devices_view.php
-        $devices = DB::select("select * from latest_deivces $optionalCondition");
-        return $devices;
-    }
 
     public function events()
     {
-        return $this->hasMany('App\Models\Event');
+        return $this->hasMany(Event::class, 'device_id');
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    public function location()
+    {
+        return $this->hasOne(Location::class, 'id');
+    }
+
+    public function vehicle()
+    {
+        return $this->hasOne('App\Models\VehicleDevice', 'device_id')->with('vehicle')->latest();
     }
 }

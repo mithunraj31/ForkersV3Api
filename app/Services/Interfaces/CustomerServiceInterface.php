@@ -20,4 +20,8 @@ interface CustomerServiceInterface
     public function getAllUsers(Customer $customer);
 
     public function getAllRoles(Customer $customer);
+
+    public function getAllDevices(Customer $customer);
+
+    public function getAllVehicles(Customer $customer);
 }
