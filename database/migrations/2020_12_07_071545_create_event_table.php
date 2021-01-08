@@ -33,7 +33,7 @@ class CreateEventTable extends Migration
             $table->string('video_id', 128)->nullable();
             $table->datetime('time')->nullable();
             $table->string('username')->nullable();
-            $table->datetime('deleted_at')->nullable();
+            $table->softDeletes();
         });
     }
 

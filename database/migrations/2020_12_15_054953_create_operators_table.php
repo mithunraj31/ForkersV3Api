@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDriverTable extends Migration
+class CreateOperatorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateDriverTable extends Migration
      */
     public function up()
     {
-        Schema::create('driver', function (Blueprint $table) {
+        Schema::create('operator', function (Blueprint $table) {
             $table->id();
-            $table->string('driver_id');
             $table->timestamps();
             $table->string('name');
             $table->date('dob');
@@ -25,6 +24,8 @@ class CreateDriverTable extends Migration
             $table->date('license_renewal_date');
             $table->longText('license_location');
             $table->string('phone_no');
+            $table->bigInteger('owner_id')->nullable();
+            $table->bigInteger('customer_id');
             $table->softDeletes();
         });
     }
@@ -36,6 +37,6 @@ class CreateDriverTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('driver');
+        Schema::dropIfExists('operators');
     }
 }

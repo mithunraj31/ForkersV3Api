@@ -15,12 +15,12 @@ class CreateGroupTable extends Migration
     {
         Schema::create('group', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable(false);
-            $table->longText('description')->nullable(true);
-            $table->bigInteger('parent_id')->nullable(true);
-            $table->bigInteger('owner_id')->nullable(true);
-            $table->string('customer_id')->nullable(false);
-            $table->string('deleted_at')->nullable(true);
+            $table->string('name');
+            $table->longText('description')->nullable();
+            $table->bigInteger('parent_id')->nullable();
+            $table->bigInteger('owner_id')->nullable();
+            $table->string('customer_id');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -15,7 +15,6 @@ use App\Models\Group;
 use App\Services\Interfaces\GroupServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
-use InvalidArgumentException as GlobalInvalidArgumentException;
 
 class GroupService extends ServiceBase implements GroupServiceInterface
 {
