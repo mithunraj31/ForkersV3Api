@@ -2,7 +2,7 @@
 
 namespace App\Services\Interfaces;
 
-interface DeviceServiceInterfaceBackup
+interface DeviceServiceInterface_backup
 {
     /**
      * the method give device listings,
