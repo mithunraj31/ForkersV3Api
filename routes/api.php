@@ -7,6 +7,7 @@ use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\GroupController;
+use App\Http\Controllers\API\ManufacturerController;
 use App\Http\Controllers\API\OperatorController;
 use App\Http\Controllers\API\OperatorController_backup;
 use App\Http\Controllers\API\RfidController;
@@ -141,6 +142,12 @@ Route::group(['prefix' => 'v1'], function () {
 
         // get groups of requested customer id
         Route::get('/{customer}/groups', [CustomerController::class, 'indexGroups']);
+
+        // get vehicles of requested customer id
+        Route::get('/{customer}/vehicles', [CustomerController::class, 'indexVehicles']);
+
+        // get devices of requested customer id
+        Route::get('/{customer}/devices', [CustomerController::class, 'indexDevices']);
     });
 
     // Driver APIs
@@ -164,5 +171,13 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{rfid}/assign/operator/{operatorId}', [RfidController::class, 'assignOperator']);
         Route::put('/{rfid}/remove/operator/{operatorId}', [RfidController::class, 'removeOperator']);
         Route::get('/{rfid}/history', [RfidController::class, 'findrfIdHistory']);
+    });
+
+    Route::group(['prefix' => 'manufacturers', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [ManufacturerController::class, 'index']);
+        Route::post('/', [ManufacturerController::class, 'store']);
+        Route::get('/{id}', [ManufacturerController::class, 'show']);
+        Route::put('/{id}', [ManufacturerController::class, 'update']);
+        Route::delete('/{id}', [ManufacturerController::class, 'delete']);
     });
 });

@@ -8,4 +8,5 @@ abstract class ResourceType extends BasicEnum {
     const Role = 'role';
     const Device = 'device';
     const Vehicle = 'vehicle';
+    const Manufacturer = 'manufacturer';
 }
