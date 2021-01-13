@@ -90,4 +90,17 @@ class CustomerController extends Controller
     {
         return $this->customerService->getAllVehicles($customer, $request->query('perPage'));
     }
+    public function getEventSummery(AdminOnly $request, Customer $customer)
+    {
+        $start = $request->query('start');
+        $end = $request->query('end');
+        if ($start && $end) {
+            $summary = $this->eventService->getEventSummary($start, $end,$customer->stk_user);
+            return response()->json([
+                'data' => $summary
+            ], 200);
+        } else {
+            return response(['message' => 'Invalid request'], 400);
+        }
+    }
 }

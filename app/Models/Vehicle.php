@@ -2,6 +2,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use League\Flysystem\Adapter\Local;
 
 /**
  * @property mixed id
@@ -80,5 +81,9 @@ class Vehicle extends Model
     public function Model()
     {
         return $this->belongsTo(VehicleModel::class. 'model_id');
+    }
+    public function Location()
+    {
+        return $this->hasOne(Location::class, 'vehicle_id');
     }
 }

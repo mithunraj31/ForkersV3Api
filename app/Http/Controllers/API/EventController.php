@@ -18,12 +18,17 @@ class EventController extends Controller
 
     public function getEventSummary(Request $request)
     {
-        $stkUser = $request->query('stkUser');
-        $summary = $this->eventService->getEventSummary($stkUser);
+        $start = $request->query('start');
+        $end = $request->query('end');
+        if ($start && $end) {
+            $summary = $this->eventService->getEventSummary($start, $end);
 
-        return response()->json([
-            'data' => $summary
-        ], 200);
+            return response()->json([
+                'data' => $summary
+            ], 200);
+        } else {
+            return response(['message' => 'Invalid request'], 400);
+        }
     }
 
 
