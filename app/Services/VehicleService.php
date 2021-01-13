@@ -115,7 +115,9 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
                     'customer'=>$value->customer,
                     'location'=>$value->location?[
                         "latitude"=> $value->location->latitude,
-                        "longitude"=> $value->location->longitude
+                        "longitude"=> $value->location->longitude,
+                        'created_at'=>$value->location->created_at,
+                        'updated_at'=>$value->location->updated_at,
                     ]:null,
                     'is_online'=> $value->location?($value->location->type==3?false:true):false
 
@@ -137,7 +139,9 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
                     'customer'=>$value->customer,
                     'location'=>$value->location?[
                         "latitude"=> $value->location->latitude,
-                        "longitude"=> $value->location->longitude
+                        "longitude"=> $value->location->longitude,
+                        'created_at'=>$value->location->created_at,
+                        'updated_at'=>$value->location->updated_at,
                     ]:null,
                     'is_online'=> $value->location?($value->location->type==3?false:true):false
 
