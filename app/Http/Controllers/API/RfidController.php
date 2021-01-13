@@ -56,7 +56,7 @@ class RfidController extends Controller
     {
         $validateRfidData = $request->validate([
             'id' => 'required',
-            'customer_id' => ''
+            'customer_id' => 'required|exists:App\Models\Customer,id',
         ]);
         $rfid = new RfidDto();
         $rfid->id = $validateRfidData['id'];
@@ -96,12 +96,11 @@ class RfidController extends Controller
     public function update(Request $request, $rfid)
     {
         $validateRfidData = $request->validate([
-            'customerId' => 'required',
-
+            'customer_id' => 'required|exists:App\Models\Customer,id',
         ]);
         $rfids = new RfidDto();
         $rfids->id = $rfid;
-        $rfids->customerId = $validateRfidData['customerId'];
+        $rfids->customerId = $validateRfidData['customer_id'];
         $rfids->ownerId = Auth::user()->id;
         $this->rfidService->update($rfids);
         return response(['message' => 'Success!'], 200);

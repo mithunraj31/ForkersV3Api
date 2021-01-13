@@ -7,7 +7,6 @@ use App\Models\DTOs\RfidHistoryDto;
 use App\Models\Operator;
 use App\Models\RfidHistory;
 use App\Services\Interfaces\OperatorServiceInterface;
-use App\Models\UnAssignedOperatorView;
 use App\Utils\CollectionUtility;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;

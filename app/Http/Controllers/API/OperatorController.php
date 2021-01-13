@@ -64,7 +64,7 @@ class OperatorController extends Controller
             'license_renewal_date' => 'required',
             'license_location' => 'required',
             'phone_no' => 'required',
-            'customer_id' => ''
+            'customer_id' => 'required|exists:App\Models\Customer,id'
         ]);
         $operator = new OperatorDto();
         $operator->name = $validateOperatorData['name'];
@@ -137,7 +137,7 @@ class OperatorController extends Controller
             'license_renewal_date' => 'required',
             'license_location' => 'required',
             'phone_no' => 'required',
-            'customer_id' => ''
+            'customer_id' => 'required|exists:App\Models\Customer,id'
         ]);
         $operator = new OperatorDto();
         $operator->id = $operatorId;
