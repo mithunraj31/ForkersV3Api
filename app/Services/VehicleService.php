@@ -201,6 +201,15 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
         $drives = $this->getDriveSummaryByDynamo($vehicleId, $startTime, $endTime);
         return $drives;
     }
+
+    public function getRoute($vehicleId, $start, $end)
+    {
+        $regular = new Regular();
+        $startDate = $start;
+        $endDate = $end;
+        $data = $regular->where('vehicle_id', $vehicleId)->where('lat', 'not_contains', '0.000000')->where('datetime', 'between', [$startDate, $endDate])->limit(10000)->get();
+        return ['data' => $data];
+    }
     private function getDriveSummaryByDynamo($vehicleId, $startTime, $endTime)
     {
         // declare types of regular
@@ -346,19 +355,13 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
         }
         return $driveSummary;
     }
-    private function formatDate($date)
-    {
-        $newDate = new DateTime($date);
-        $dateStr = $newDate->format('Y-m-d H:i:s');
-        $dateStr = str_replace(' ', 'T', $dateStr) . 'Z';
-        return $dateStr;
-    }
+
     private function addFormatDate($date,$seconds)
     {
         $newDate = new DateTime($date);
         $newDate->modify("+1$seconds second");
         $dateStr = $newDate->format('Y-m-d H:i:s');
-        $dateStr = str_replace(' ', 'T', $dateStr) . 'Z';
+        // $dateStr = str_replace(' ', 'T', $dateStr) . 'Z';
         return $dateStr;
     }
 }

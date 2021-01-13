@@ -134,12 +134,12 @@ class VehicleController extends Controller
         }
     }
 
-    public function getRoute(Request $request, $deviceId)
+    public function getRoute(Request $request, $vehicleId)
     {
         $start = $request->query('start');
         $end = $request->query('end');
-        if ($deviceId && $start && $end) {
-            $route = $this->deviceService->getRoute($deviceId, $start, $end);
+        if ($vehicleId && $start && $end) {
+            $route = $this->vehicleService->getRoute($vehicleId, $start, $end);
             return response($route, 200);
         } else {
             return response(['message' => 'Invalid request'], 400);
