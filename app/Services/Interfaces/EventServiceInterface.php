@@ -10,7 +10,7 @@ interface EventServiceInterface
      * @param string $stkUser (optional) count only event has an username equals the value.
      * @return mixed number of each event.
      */
-    public function getEventSummary($stkUser = null);
+    public function getEventSummary($startTime,$endTime, $stkUser = null);
 
     public function findById($eventId);
 

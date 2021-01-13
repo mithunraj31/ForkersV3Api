@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\AuthValidators\AuthValidator;
 use App\Models\DTOs\EventDto;
 use App\Models\DTOs\SensorValueDto;
 use App\Models\DTOs\VideoDto;
@@ -9,6 +10,7 @@ use App\Models\Event;
 use App\Models\VideoConverted;
 use App\Services\Interfaces\EventServiceInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -21,8 +23,11 @@ class EventService extends ServiceBase implements EventServiceInterface
      * @param string $stkUser (optional) count only event has an username equals the value.
      * @return mixed number of each event.
      */
-    public function getEventSummary($stkUser = null)
+    public function getEventSummary($startTime, $endTime, $stkUser = null)
     {
+        if(!AuthValidator::isAdmin()){
+            $stkUser = AuthValidator::getStkUser();
+        }
         Log::info('Getting Event summary of user');
         return Event::getEventSummary($stkUser);
     }
