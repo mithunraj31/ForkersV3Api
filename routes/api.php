@@ -52,7 +52,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::put('/{vehicle}', [VehicleController::class, 'update']);
         Route::post('/', [VehicleController::class, 'create']);
 
-        //        Route::get('/{deviceId}/driveSummary', [VehicleController::class, 'driveSummery']);
+        Route::get('/{vehicleId}/driveSummary', [VehicleController::class, 'driveSummery']);
         //        Route::get('/{deviceId}/route', [VehicleController::class, 'getRoute']);
         //        Route::get('/{deviceId}/cameras', [VehicleController::class, 'getCameraByDeviceId']);
         //        Route::post('/{deviceId}/switchon', [VehicleController::class, 'doWaitingQueue']);

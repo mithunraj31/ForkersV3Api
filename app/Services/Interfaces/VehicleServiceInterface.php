@@ -16,4 +16,6 @@ interface VehicleServiceInterface
     public function getAll();
 
     public function delete(Vehicle $vehicle);
+
+    public function getDriveSummary($vehicleId, $start, $end);
 }

@@ -130,12 +130,12 @@ class DeviceService_backup extends ServiceBase implements DeviceServiceInterface
 
     public function getDriveSummary($deviceId, $startTime, $endTime)
     {
-        $drives = Drive::getDriveSummary($deviceId, $startTime, $endTime);
-        $durations = $this->calculatDuration($drives);
-        return ['data' => $drives, 'duration' => $durations];
+        // $drives = Drive::getDriveSummary($deviceId, $startTime, $endTime);
+        // $durations = $this->calculatDuration($drives);
+        // return ['data' => $drives, 'duration' => $durations];
 
-        // $drives = $this->getDriveSummaryByDynamo($deviceId, $startTime, $endTime);
-        // return $drives;
+        $drives = $this->getDriveSummaryByDynamo($deviceId, $startTime, $endTime);
+        return $drives;
     }
     private function calculatDuration($drives)
     {
