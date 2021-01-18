@@ -186,10 +186,11 @@ Route::group(['prefix' => 'v1'], function () {
     // Vehicle Model APIs
     Route::group(['prefix' => 'vehicles/models', 'middleware' => 'auth:api'], function () {
 
-        Route::get('/', [VehicleModelController::class, 'index']);
-        Route::get('/{vehicle}', [VehicleModelController::class, 'show']);
-        Route::put('/{vehicle}', [VehicleModelController::class, 'update']);
-        Route::post('/', [VehicleModelController::class, 'create']);
+        Route::get('/all', [VehicleModelController::class, 'index']);
+        Route::get('/{vehicleModelId}', [VehicleModelController::class, 'show']);
+        Route::put('/{vehicleModelId}', [VehicleModelController::class, 'update']);
+        Route::post('/', [VehicleModelController::class, 'store']);
+        Route::delete('/{vehicleModelId}', [VehicleModelController::class, 'destroy']);
     });
 
     // charts APIs
