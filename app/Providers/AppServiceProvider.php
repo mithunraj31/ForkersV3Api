@@ -5,11 +5,13 @@ namespace App\Providers;
 use App\Models\DTOs\StonkamAccessTokenDto;
 use App\Services\DeviceService;
 use App\Services\CameraService;
+use App\Services\ChartService;
 use App\Services\CustomerService;
 use App\Services\DriverService;
 use App\Services\EventService;
 use App\Services\GroupService;
 use App\Services\Interfaces\CameraServiceInterface;
+use App\Services\Interfaces\ChartServiceInterface;
 use App\Services\Interfaces\CustomerServiceInterface;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\DriverServiceInterface;
@@ -22,6 +24,7 @@ use App\Services\Interfaces\RfidServiceInterface;
 use App\Services\Interfaces\RoleServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
 use App\Services\Interfaces\UserServiceInterface;
+use App\Services\Interfaces\VehicleModelServiceInterface;
 use App\Services\Interfaces\VehicleServiceInterface;
 use App\Services\OperatorService;
 use App\Services\Interfaces\VideoServiceInterface;
@@ -31,6 +34,7 @@ use App\Services\OperatorService_backup;
 use App\Services\RoleService;
 use App\Services\StonkamService;
 use App\Services\UserService;
+use App\Services\VehicleModelService;
 use App\Services\VehicleService;
 use App\Services\VideoService;
 use Illuminate\Support\ServiceProvider;
@@ -67,8 +71,10 @@ class AppServiceProvider extends ServiceProvider
         RoleServiceInterface::class => RoleService::class,
         GroupServiceInterface::class => GroupService::class,
         VehicleServiceInterface::class => VehicleService::class,
+        VehicleModelServiceInterface::class => VehicleModelService::class,
         ManufacturerServiceInterface::class => ManufacturerService::class,
-        OperatorServiceInterface_backup::class => OperatorService_backup::class
+        OperatorServiceInterface_backup::class => OperatorService_backup::class,
+        ChartServiceInterface::class => ChartService::class
 
     ];
 

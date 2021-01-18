@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\CameraController;
+use App\Http\Controllers\API\ChartsController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\VideoController;
@@ -189,5 +190,14 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{vehicle}', [VehicleModelController::class, 'show']);
         Route::put('/{vehicle}', [VehicleModelController::class, 'update']);
         Route::post('/', [VehicleModelController::class, 'create']);
+    });
+
+    // charts APIs
+    Route::group(['prefix' => 'charts', 'middleware' => 'auth:api'], function () {
+        Route::get('/', [ChartsController::class, 'index']);
+        Route::get('/{chartId}', [ChartsController::class, 'show']);
+        Route::put('/{chartId}', [ChartsController::class, 'update']);
+        Route::post('/', [ChartsController::class, 'store']);
+        Route::delete('/{chartId}', [ChartsController::class, 'destroy']);
     });
 });
