@@ -2,16 +2,19 @@
 
 namespace App\Services\Interfaces;
 
+use App\Models\Device;
+use App\Models\DTOs\DeviceDto;
+
 interface DeviceServiceInterface
 {
-    /**
-     * the method give device listings,
-     * each device item contains device's details.
-     */
-    public function getAllDevice();
+    public function create(DeviceDto $model);
 
-    public function getDriveSummary($deviceId, $start, $end);
+    public function update(DeviceDto $request,Device $device);
 
-    public function getRoute($deviceId, $start, $end);
+    public function findById(Device $device);
+
+    public function getAll($perPage);
+
+    public function delete(Device $device);
 
 }

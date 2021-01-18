@@ -24,7 +24,7 @@ class Event extends Model
      * @param $builder
      * @param string $stkUser (optional) Event's owner
      */
-    public function scopeGetEventSummary($builder, $stkUser = null)
+    public function scopeGetEventSummary($builder, $stkUser = null, $startTime, $endTime)
     {
         // declare event ids.
         $accelerate = 16;
@@ -55,7 +55,8 @@ class Event extends Model
 
         $queryBuilder = DB::table('event')
             ->select(DB::raw($rawQuery))
-            ->whereIn('type', $eventIds);
+            ->whereIn('type', $eventIds)
+            ->whereBetween('time', [$startTime, $endTime]);
 
         if ($stkUser != null) {
             $queryBuilder->where('username', '=', $stkUser);

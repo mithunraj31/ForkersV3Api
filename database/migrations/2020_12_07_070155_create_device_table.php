@@ -29,7 +29,7 @@ class CreateDeviceTable extends Migration
             $table->dateTime('update_time');
             $table->tinyInteger('is_active');
             $table->string('stk_user');
-            $table->string('deleted_at');
+            $table->softDeletes();
         });
     }
 

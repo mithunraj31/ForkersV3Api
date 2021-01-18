@@ -15,17 +15,17 @@ class CreateRoleResourceTable extends Migration
     {
         Schema::create('role_resource', function (Blueprint $table) {
             $table->id();
-            $table->boolean('edit')->nullable(false);
-            $table->boolean('add')->nullable(false);
-            $table->boolean('view')->nullable(false);
-            $table->boolean('delete')->nullable(false);
+            $table->boolean('edit');
+            $table->boolean('add');
+            $table->boolean('view');
+            $table->boolean('delete');
 
             $table->timestamps();
 
-            $table->string('resource')->nullable(false);
-            $table->bigInteger('role_id')->nullable(false);
-            $table->bigInteger('owner_id')->nullable(true);
-            $table->datetime('deleted_at')->nullable(true);
+            $table->string('resource');
+            $table->bigInteger('role_id');
+            $table->bigInteger('owner_id')->nullable();
+            $table->softDeletes();
         });
     }
 

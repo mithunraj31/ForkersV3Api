@@ -16,9 +16,9 @@ class CreateUserGroupTable extends Migration
         Schema::create('user_group', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->bigInteger('user_id')->nullable(false);
-            $table->bigInteger('group_id')->nullable(false);
-            $table->bigInteger('owner_id')->nullable(true);
+            $table->bigInteger('user_id');
+            $table->bigInteger('group_id');
+            $table->bigInteger('owner_id')->nullable();
         });
     }
 
