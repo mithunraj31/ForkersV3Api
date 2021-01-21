@@ -39,7 +39,6 @@ class EventsByOperators extends FormRequest
         return [
             'start' => 'required | date',
             'end' => 'required | date',
-            'customer_id' => 'exists:App\Models\Customer,id',
             'operator_ids' => ['exists:App\Models\Operator,id']
         ];
     }

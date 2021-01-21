@@ -18,7 +18,7 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
     {
         $this->stonkamService = $stonkamService;
     }
-    public function getEventsByOperators($start, $end, $operator_ids, $customer=null)
+    public function getEventsByOperators($start, $end, $operator_ids)
     {
         $operators = Operator::find($operator_ids);
         $summery = collect([]);
@@ -27,8 +27,6 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
             $summery->put($operator->id,
             [
                 'operator' => $operator,
-                'id'=> $operator->id,
-                'name' => $operator->name,
                 'event_summery' => [
                     'handle_left' => 0,
                     'handle_right' =>  0,

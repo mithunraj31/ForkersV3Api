@@ -31,7 +31,7 @@ class DataSummeryController extends Controller
         $start = $start->format('Y-m-d H:i:s');
         $end = $end->format('Y-m-d H:i:s');
         $operators = explode(',', $request->operator_ids);
-        $summery = $this->dataSummeryService->getEventsByOperators($start, $end, $operators,$request->customer_id);
+        $summery = $this->dataSummeryService->getEventsByOperators($start, $end, $operators);
         return response(['data' => $summery], 200);
     }
 
