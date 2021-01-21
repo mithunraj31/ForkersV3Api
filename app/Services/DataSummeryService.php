@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\Operator;
 use App\Models\OperatorStat;
+use App\Models\Vehicle;
+use App\Models\VehicleStat;
 use App\Services\Interfaces\StonkamServiceInterface;
 
 use App\Services\Interfaces\DataSummeryServiceInterface;
@@ -44,6 +46,72 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
         $summery = $this->calculateOperatorRunningTime($summery,$start,$end,$operator_ids);
 
         return $this->collectionToArray($summery);
+    }
+    public function getEventsByVehicles($start, $end, $vehicle_ids)
+    {
+        $vehicles = Vehicle::find($vehicle_ids);
+        $summery = collect([]);
+        // initialize summery collection
+        foreach($vehicles as $vehicle){
+            $summery->put($vehicle->id,
+            [
+                'vehicle' => $vehicle,
+                'event_summery' => [
+                    'handle_left' => 0,
+                    'handle_right' =>  0,
+                    'acceleration' =>  0,
+                    'deacceleration'  =>  0,
+                    'accident' =>  0,
+                    'button' => 0
+                ],
+                'running_time' => 0
+            ]);
+        }
+        // calculate count of events
+        $summery = $this->getEventCountByVehicles($summery,$vehicle_ids,$start,$end);
+        // calculate driving time
+        $summery = $this->calculateVehicleRunningTime($summery,$start,$end,$vehicle_ids);
+
+        return $this->collectionToArray($summery);
+    }
+
+    private function getEventCountByVehicles($summery,$vehicle_ids,$start,$end){
+        // declare event ids.
+        $accelerate = 16;
+        $decelerate = 17;
+        $impact = 20;
+        $turnLeft = 21;
+        $turnRight = 22;
+        $button = 14;
+
+        $events = Event::whereIn('vehicle_id',$vehicle_ids)->whereBetween('time',[$start,$end])->get();
+        foreach($summery as $key => $summ){
+            $accelerateCount = $events->where('vehicle_id',$key)->where('type',$accelerate)->count();
+            $decelerateCount = $events->where('vehicle_id',$key)->where('type',$decelerate)->count();
+            $impactCount = $events->where('vehicle_id',$key)->where('type',$impact)->count();
+            $turnLeftCount = $events->where('vehicle_id',$key)->where('type',$turnLeft)->count();
+            $turnRightCount = $events->where('vehicle_id',$key)->where('type',$turnRight)->count();
+            $buttonCount = $events->where('operator_id',$key)->where('type',$button)->count();
+
+            $summ['event_summery']['acceleration'] = $accelerateCount;
+            $summ['event_summery']['deacceleration'] = $decelerateCount;
+            $summ['event_summery']['handle_left'] = $turnLeftCount;
+            $summ['event_summery']['handle_right'] = $turnRightCount;
+            $summ['event_summery']['accident'] = $impactCount;
+            $summ['event_summery']['button'] = $buttonCount;
+            $summery->put($key,$summ);
+        }
+        return $summery;
+    }
+
+    private function calculateVehicleRunningTime($summery,$start, $end, $vehicle_ids){
+        $dailyOperatorDurations = VehicleStat::whereIn('vehicle_id',$vehicle_ids)->whereBetween('date',[$start,$end])->get();
+        foreach($summery as $key => $summ){
+            $sumOfDuration = $dailyOperatorDurations->where('vehicle_id',$key)->sum('duration');
+            $summ['running_time'] = $sumOfDuration;
+            $summery->put($key,$summ);
+        }
+        return $summery;
     }
 
     private function getEventCountByOperators($summery,$operator_ids,$start, $end){

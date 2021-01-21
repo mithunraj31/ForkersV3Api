@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DataSummery\EventsByOperators;
+use App\Http\Requests\DataSummery\EventsByVehicles;
 use App\Services\DataSummeryService;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\StonkamServiceInterface;
@@ -32,6 +33,16 @@ class DataSummeryController extends Controller
         $end = $end->format('Y-m-d H:i:s');
         $operators = explode(',', $request->operator_ids);
         $summery = $this->dataSummeryService->getEventsByOperators($start, $end, $operators);
+        return response(['data' => $summery], 200);
+    }
+    public function getEventsByVehicles(EventsByVehicles $request)
+    {
+        $start = new DateTime($request->start);
+        $end = new DateTime($request->end);
+        $start = $start->format('Y-m-d H:i:s');
+        $end = $end->format('Y-m-d H:i:s');
+        $vehicles = explode(',', $request->vehicle_ids);
+        $summery = $this->dataSummeryService->getEventsByVehicles($start, $end, $vehicles);
         return response(['data' => $summery], 200);
     }
 
