@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DataSummery\EventsByGroups;
 use App\Http\Requests\DataSummery\EventsByOperators;
 use App\Http\Requests\DataSummery\EventsByVehicles;
 use App\Services\DataSummeryService;
@@ -43,6 +44,16 @@ class DataSummeryController extends Controller
         $end = $end->format('Y-m-d H:i:s');
         $vehicles = explode(',', $request->vehicle_ids);
         $summery = $this->dataSummeryService->getEventsByVehicles($start, $end, $vehicles);
+        return response(['data' => $summery], 200);
+    }
+    public function getEventsByGroups(EventsByGroups $request)
+    {
+        $start = new DateTime($request->start);
+        $end = new DateTime($request->end);
+        $start = $start->format('Y-m-d H:i:s');
+        $end = $end->format('Y-m-d H:i:s');
+        $groups = explode(',', $request->group_ids);
+        $summery = $this->dataSummeryService->getEventsByGroups($start, $end, $groups);
         return response(['data' => $summery], 200);
     }
 

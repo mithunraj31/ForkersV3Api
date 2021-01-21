@@ -186,5 +186,6 @@ Route::group(['prefix' => 'v1'], function () {
     Route::group(['prefix' => 'data-summary', 'middleware' => 'auth:api'], function () {
         Route::get('/event/operators', [DataSummeryController::class, 'getEventsByOperators']);
         Route::get('/event/vehicles', [DataSummeryController::class, 'getEventsByVehicles']);
+        Route::get('/event/vehicle-groups', [DataSummeryController::class, 'getEventsByGroups']);
     });
 });
