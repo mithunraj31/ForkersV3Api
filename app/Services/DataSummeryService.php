@@ -156,6 +156,90 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
 
         return $summery;
     }
+    public function getAlarmsByAllVehicles($start, $end, $customerId = null)
+    {
+        // get customer
+        if (!$customerId) {
+            $customerId = Auth::user()->customer_id;
+        }
+        // generate period
+        $dayArray = $this->generateDateRange($start, $end);
+
+        $summery = collect([]);
+        // initialize summery collection
+        foreach ($dayArray as $day) {
+            $summery->put(
+                $day,
+                [
+                    'summary_date' => $day,
+                    'event_summery' => [
+                        'handle_left' => 0,
+                        'handle_right' =>  0,
+                        'acceleration' =>  0,
+                        'deacceleration'  =>  0,
+                        'accident' =>  0,
+                        'button' => 0
+                    ],
+                    'running_time' => 0
+                ]
+            );
+        }
+        //get all vehicles of customer
+        $vehicles = Vehicle::select('id')->where('customer_id',$customerId)->get();
+        $vehicle_ids = $this->getIdArray($vehicles);
+
+        // calculate count of events
+        $summery = $this->getAlarmCountByAllVehicles($summery, $start, $end, $vehicle_ids);
+        // calculate driving time
+        $summery = $this->calculateAllVehilcesRunningTime($summery, $start, $end, $vehicle_ids);
+
+        return $this->collectionToArray($summery);
+
+        return $summery;
+    }
+    private function getAlarmCountByAllVehicles($summery, $start, $end, $vehicle_ids)
+    {
+        // declare event ids.
+        $accelerate = 16;
+        $decelerate = 17;
+        $impact = 20;
+        $turnLeft = 21;
+        $turnRight = 22;
+        $button = 14;
+        $start = $this->getUTCtime($start);
+        $end = $this->getUTCtime($end);
+        $events = Event::whereIn('vehicle_id', $vehicle_ids)->whereBetween('time', [$start, $end])->get();
+
+        foreach ($summery as $key => $summ) { // key is in localtimezone
+            $day = $this->generateDayRange($key);
+
+            $accelerateCount = $events->where('type', $accelerate)->whereBetween('time', [$day['startUTC'],$day['endUTC']])->count();
+            $decelerateCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $decelerate)->count();
+            $impactCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $impact)->count();
+            $turnLeftCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $turnLeft)->count();
+            $turnRightCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $turnRight)->count();
+            $buttonCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $button)->count();
+
+            $summ['event_summery']['acceleration'] = $accelerateCount;
+            $summ['event_summery']['deacceleration'] = $decelerateCount;
+            $summ['event_summery']['handle_left'] = $turnLeftCount;
+            $summ['event_summery']['handle_right'] = $turnRightCount;
+            $summ['event_summery']['accident'] = $impactCount;
+            $summ['event_summery']['button'] = $buttonCount;
+            $summery->put($key, $summ);
+        }
+        return $summery;
+    }
+    private function calculateAllVehilcesRunningTime($summery,$start, $end, $vehicle_ids){ // start and end are in locale datetime
+
+        $dailyVehicleDurations = VehicleStat::whereIn('vehicle_id', $vehicle_ids)->whereBetween('date', [$start, $end])->get();
+        foreach ($summery as $key => $summ) { // key is localdatetime
+            $sumOfDuration = $dailyVehicleDurations->where('date', $key)->sum('duration');
+            $summ['running_time'] = $sumOfDuration;
+            $summery->put($key, $summ);
+        }
+        return $summery;
+    }
     private function getAlarmCountByAllOperators($summery, $start, $end, $operator_ids)
     {
         // declare event ids.

@@ -12,4 +12,5 @@ interface DataSummeryServiceInterface
 
     public function getAlarmsByAllOperators($start,$end, $customer=null);
 
+    public function getAlarmsByAllVehicles($start,$end, $customer=null);
 }

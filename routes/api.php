@@ -188,5 +188,6 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/event/vehicles', [DataSummeryController::class, 'getEventsByVehicles']);
         Route::get('/event/vehicle-groups', [DataSummeryController::class, 'getEventsByGroups']);
         Route::get('/alarms/operators', [DataSummeryController::class, 'getAlarmsByAllOperators']);
+        Route::get('/alarms/vehicles', [DataSummeryController::class, 'getAlarmsByAllVehicles']);
     });
 });

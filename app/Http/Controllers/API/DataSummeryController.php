@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DataSummery\AlarmsByAllOperators;
+use App\Http\Requests\DataSummery\AlarmsByAllVehicles;
 use App\Http\Requests\DataSummery\EventsByGroups;
 use App\Http\Requests\DataSummery\EventsByOperators;
 use App\Http\Requests\DataSummery\EventsByVehicles;
@@ -64,6 +65,15 @@ class DataSummeryController extends Controller
         $start = $start->format('Y-m-d H:i:s');
         $end = $end->format('Y-m-d H:i:s');
         $summery = $this->dataSummeryService->getAlarmsByAllOperators($start, $end, $request->customer_id);
+        return response(['data' => $summery], 200);
+    }
+    public function getAlarmsByAllVehicles(AlarmsByAllVehicles $request)
+    {
+        $start = new DateTime($request->start);
+        $end = new DateTime($request->end);
+        $start = $start->format('Y-m-d H:i:s');
+        $end = $end->format('Y-m-d H:i:s');
+        $summery = $this->dataSummeryService->getAlarmsByAllVehicles($start, $end, $request->customer_id);
         return response(['data' => $summery], 200);
     }
 
