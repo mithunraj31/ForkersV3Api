@@ -11,7 +11,7 @@ class OperatorStat extends Model
     protected $fillable = [
         'operator_id',
         'date',
-        'duration'
+        'duration' // seconds (秒) - integer
     ];
 
 
