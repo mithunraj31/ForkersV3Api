@@ -9,4 +9,8 @@ interface DataSummeryServiceInterface
     public function getEventsByVehicles($start,$end, $vehicles);
 
     public function getEventsByGroups($start,$end, $groups);
+
+    public function getAlarmsByAllOperators($start,$end, $customer=null);
+
+    public function getAlarmsByAllVehicles($start,$end, $customer=null);
 }
