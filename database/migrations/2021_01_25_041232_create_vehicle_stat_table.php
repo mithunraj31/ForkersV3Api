@@ -20,7 +20,7 @@ class CreateVehicleStatTable extends Migration
             $table->integer('duration');
             $table->timestamps();
 
-            $table->foreign('operator_id')->references('id')->on('vehicle');
+            $table->foreign('vehicle_id')->references('id')->on('vehicle');
         });
     }
 
