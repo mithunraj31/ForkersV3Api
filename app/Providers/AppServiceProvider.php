@@ -6,11 +6,13 @@ use App\Models\DTOs\StonkamAccessTokenDto;
 use App\Services\DeviceService;
 use App\Services\CameraService;
 use App\Services\CustomerService;
+use App\Services\DataSummeryService;
 use App\Services\DriverService;
 use App\Services\EventService;
 use App\Services\GroupService;
 use App\Services\Interfaces\CameraServiceInterface;
 use App\Services\Interfaces\CustomerServiceInterface;
+use App\Services\Interfaces\DataSummeryServiceInterface;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\DriverServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
@@ -68,7 +70,8 @@ class AppServiceProvider extends ServiceProvider
         GroupServiceInterface::class => GroupService::class,
         VehicleServiceInterface::class => VehicleService::class,
         ManufacturerServiceInterface::class => ManufacturerService::class,
-        OperatorServiceInterface_backup::class => OperatorService_backup::class
+        OperatorServiceInterface_backup::class => OperatorService_backup::class,
+        DataSummeryServiceInterface::class => DataSummeryService::class
 
     ];
 

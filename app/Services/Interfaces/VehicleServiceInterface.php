@@ -20,4 +20,6 @@ interface VehicleServiceInterface
     public function getDriveSummary($vehicleId, $start, $end);
 
     public function getRoute($vehicleId, $start, $end);
+
+    public function getRegularByTimeRange($vehicleId, $startTime, $endTime);
 }

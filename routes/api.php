@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\CameraController;
 use App\Http\Controllers\API\CustomerController;
+use App\Http\Controllers\API\DataSummeryController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\VideoController;
 use App\Http\Controllers\API\DeviceController;
@@ -179,5 +180,14 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/{id}', [ManufacturerController::class, 'show']);
         Route::put('/{id}', [ManufacturerController::class, 'update']);
         Route::delete('/{id}', [ManufacturerController::class, 'delete']);
+    });
+
+    // Data Summery APIs
+    Route::group(['prefix' => 'data-summary', 'middleware' => 'auth:api'], function () {
+        Route::get('/event/operators', [DataSummeryController::class, 'getEventsByOperators']);
+        Route::get('/event/vehicles', [DataSummeryController::class, 'getEventsByVehicles']);
+        Route::get('/event/vehicle-groups', [DataSummeryController::class, 'getEventsByGroups']);
+        Route::get('/alarms/operators', [DataSummeryController::class, 'getAlarmsByAllOperators']);
+        Route::get('/alarms/vehicles', [DataSummeryController::class, 'getAlarmsByAllVehicles']);
     });
 });
