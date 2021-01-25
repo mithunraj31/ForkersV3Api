@@ -7,12 +7,14 @@ use App\Services\DeviceService;
 use App\Services\CameraService;
 use App\Services\ChartService;
 use App\Services\CustomerService;
+use App\Services\DataSummeryService;
 use App\Services\DriverService;
 use App\Services\EventService;
 use App\Services\GroupService;
 use App\Services\Interfaces\CameraServiceInterface;
 use App\Services\Interfaces\ChartServiceInterface;
 use App\Services\Interfaces\CustomerServiceInterface;
+use App\Services\Interfaces\DataSummeryServiceInterface;
 use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\DriverServiceInterface;
 use App\Services\Interfaces\EventServiceInterface;
@@ -74,8 +76,8 @@ class AppServiceProvider extends ServiceProvider
         VehicleModelServiceInterface::class => VehicleModelService::class,
         ManufacturerServiceInterface::class => ManufacturerService::class,
         OperatorServiceInterface_backup::class => OperatorService_backup::class,
-        ChartServiceInterface::class => ChartService::class
-
+        ChartServiceInterface::class => ChartService::class,
+        DataSummeryServiceInterface::class => DataSummeryService::class
     ];
 
 

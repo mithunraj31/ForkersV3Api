@@ -274,7 +274,7 @@ class VehicleService extends ServiceBase implements VehicleServiceInterface
         }
         return $firstCollection;
     }
-    private function getRegularByTimeRange($vehicleId, $startTime, $endTime)
+    public function getRegularByTimeRange($vehicleId, $startTime, $endTime)
     {
         return Regular::where(['vehicle_id' => $vehicleId])
             ->where('datetime', 'between', [$startTime, $endTime])

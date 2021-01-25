@@ -25,7 +25,7 @@ class DeviceController extends Controller
 
     public function index(Request $request)
     {
-        $devices = $this->deviceService->getAllDevice();
+        $devices = $this->deviceService->getAll(null);
         $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
         $result = CollectionUtility::paginate($devices, $perPage);
         return response($result, 200);
