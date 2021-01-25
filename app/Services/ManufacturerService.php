@@ -17,7 +17,6 @@ class ManufacturerService implements ManufacturerServiceInterface
         $manufacturer->name = $model->name;
         $manufacturer->description = $model->description;
         $manufacturer->owner_id = $model->ownerId;
-        $manufacturer->customer_id = $model->customerId;
         $manufacturer->save();
         Log::info('Manufacturer has been created');
     }
@@ -29,7 +28,6 @@ class ManufacturerService implements ManufacturerServiceInterface
         $manufacturer->name = $model->name;
         $manufacturer->description = $model->description;
         $manufacturer->owner_id = $model->ownerId;
-        $manufacturer->customer_id = $model->customerId;
         $manufacturer->update();
         Log::info('Manufacturer has been updated');
     }
@@ -52,14 +50,7 @@ class ManufacturerService implements ManufacturerServiceInterface
         }
 
         Log::info('Getting manufacturer listings');
-        if ($model->customerId) {
-            Log::info('Getting manufacturer listings with customer ID: '. ($model->customerId));
-            $data = Manufacturer::where('customer_id', $model->customerId)
-                    ->paginate($model->perPage , ['*'], 'page', $model->page);
-        } else {
-            $data = Manufacturer::paginate($model->perPage , ['*'], 'page', $model->page);
-        }
-
+        $data = Manufacturer::paginate($model->perPage , ['*'], 'page', $model->page);
         return $data;
     }
 
