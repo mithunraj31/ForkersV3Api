@@ -41,7 +41,23 @@ class AddVehicle extends FormRequest
             'name' => 'required| max:255',
             'customer_id' => 'exists:App\Models\Vehicle,id',
             'group_id' => 'required| exists:App\Models\Group,id',
-            'device_id' => 'exists:App\Models\Device,id'
+            'device_id' => 'exists:App\Models\Device,id',
+            'introduction_date' => 'required|date',
+            'vehicle_number' => 'max:255',
+            'structural_method' => 'max:255',
+            'power_type' => 'max:255',
+            'rated_load' => 'numeric',
+            'fork_length' => 'numeric',
+            'standard_lift' => 'numeric',
+            'maximum_lift' => 'numeric',
+            'battery_voltage' => 'numeric',
+            'battery_capacity' => 'numeric',
+            'hour_meter_initial_value' => 'numeric',
+            'operating_time' => 'numeric',
+            'introduction_date' => 'numeric',
+            'contract' => 'integer',
+            'key_number' => 'max:255',
+            'model_id' => 'integer'
         ];
     }
 }

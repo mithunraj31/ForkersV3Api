@@ -25,7 +25,6 @@ class Device extends Model
 {
     use SoftDeletes;
 
-
     protected $table = 'device';
     /**
      * The attributes that are mass assignable.
@@ -36,11 +35,12 @@ class Device extends Model
         'id',
         'plate_number',
         'channel_number',
-        'group_name',
         'device_type',
         'is_active',
         'stk_user',
-        'stk_device'
+        'customer_id',
+        'owner_id',
+        'assigned'
     ];
 
     public function group()

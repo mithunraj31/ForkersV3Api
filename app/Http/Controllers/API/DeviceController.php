@@ -31,7 +31,7 @@ class DeviceController extends Controller
 
     public function show(Device $device)
     {
-        return $this->deviceService->update($device);
+        return $device;
     }
 
     public function create(Request $request)

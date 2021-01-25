@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class Event extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'event';
 
@@ -23,7 +24,7 @@ class Event extends Model
      * @param $builder
      * @param string $stkUser (optional) Event's owner
      */
-    public function scopeGetEventSummary($builder, $stkUser = null)
+    public function scopeGetEventSummary($builder, $stkUser = null, $startTime, $endTime)
     {
         // declare event ids.
         $accelerate = 16;
@@ -54,7 +55,8 @@ class Event extends Model
 
         $queryBuilder = DB::table('event')
             ->select(DB::raw($rawQuery))
-            ->whereIn('type', $eventIds);
+            ->whereIn('type', $eventIds)
+            ->whereBetween('time', [$startTime, $endTime]);
 
         if ($stkUser != null) {
             $queryBuilder->where('username', '=', $stkUser);
@@ -81,7 +83,7 @@ class Event extends Model
 
     public function device()
     {
-        return $this->belongsTo('App\Models\Device', 'device_id', 'device_id');
+        return $this->belongsTo('App\Models\Device', 'device_id', 'id');
     }
 
     public function cameras()
