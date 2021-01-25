@@ -144,7 +144,7 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
             );
         }
         //get all operators of customer
-        $operators = Operator::select('id')->where('customer_id',$customerId)->get();
+        $operators = Operator::select('id')->where('customer_id', $customerId)->get();
         $operator_ids = $this->getIdArray($operators);
 
         // calculate count of events
@@ -185,7 +185,7 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
             );
         }
         //get all vehicles of customer
-        $vehicles = Vehicle::select('id')->where('customer_id',$customerId)->get();
+        $vehicles = Vehicle::select('id')->where('customer_id', $customerId)->get();
         $vehicle_ids = $this->getIdArray($vehicles);
 
         // calculate count of events
@@ -195,6 +195,84 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
 
         return $this->collectionToArray($summery);
 
+        return $summery;
+    }
+    public function getAlarmsByGroups($start, $end, $group_ids)
+    {
+        $groups = Group::with('vehicle_ids')->whereIn('id', $group_ids)->get();
+        // generate period
+        $dayArray = $this->generateDateRange($start, $end);
+
+        $summery = collect([]);
+        // initialize summery collection
+        foreach ($dayArray as $day) {
+            $summery->put(
+                $day,
+                [
+                    'summary_date' => $day,
+                    'groups' => [],
+                ]
+            );
+        }
+
+        // calculate count of Alarms and driving time
+        $summery = $this->getAlarmCountAndDrivingTimeByGroups($summery, $start, $end, $groups);
+        // calculate driving time
+        // $summery = $this->calculateAllOperatorsRunningTime($summery, $start, $end, $groups);
+
+        return $this->collectionToArray($summery);
+    }
+    private function getAlarmCountAndDrivingTimeByGroups($summery, $start, $end, $groups)
+    {
+        // declare event ids.
+        $accelerate = 16;
+        $decelerate = 17;
+        $impact = 20;
+        $turnLeft = 21;
+        $turnRight = 22;
+        $button = 14;
+        $start = $this->getUTCtime($start);
+        $end = $this->getUTCtime($end);
+        $allVehicle_ids = $this->getVehicleIdArrayOfGroups($groups);
+        $start = $this->getUTCtime($start);
+        $end = $this->getUTCtime($end);
+        $events = Event::whereIn('vehicle_id', $allVehicle_ids)->whereBetween('time', [$start, $end])->get();
+
+        $dailyVehicleDurations = VehicleStat::whereIn('vehicle_id', $allVehicle_ids)->whereBetween('date', [$start, $end])->get();
+        foreach ($summery as $key => $summ) // key is date in local time
+        {
+            $groups_data = [];
+            $day = $this->generateDayRange($key);
+            foreach ($groups as $group) {
+                //
+                $groupObject = [];
+                $vehicle_ids = $this->getIdArray($group->vehicle_ids);
+                $accelerateCount = $events->whereIn('vehicle_id', $vehicle_ids)->where('type', $accelerate)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->count();
+                $decelerateCount = $events->whereIn('vehicle_id', $vehicle_ids)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $decelerate)->count();
+                $impactCount = $events->whereIn('vehicle_id', $vehicle_ids)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $impact)->count();
+                $turnLeftCount = $events->whereIn('vehicle_id', $vehicle_ids)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $turnLeft)->count();
+                $turnRightCount = $events->whereIn('vehicle_id', $vehicle_ids)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $turnRight)->count();
+                $buttonCount = $events->whereIn('vehicle_id', $vehicle_ids)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $button)->count();
+                $total = $accelerateCount + $decelerateCount + $impactCount + $turnLeftCount + $turnRightCount + $buttonCount;
+
+                $groupObject['event_summery']['acceleration'] = $accelerateCount;
+                $groupObject['event_summery']['deacceleration'] = $decelerateCount;
+                $groupObject['event_summery']['handle_left'] = $turnLeftCount;
+                $groupObject['event_summery']['handle_right'] = $turnRightCount;
+                $groupObject['event_summery']['accident'] = $impactCount;
+                $groupObject['event_summery']['button'] = $buttonCount;
+                $groupObject['alarm_count'] = $total;
+
+
+                $groupDuration = $dailyVehicleDurations->whereIn('vehicle_id',$vehicle_ids)->where('date', $key)->sum('duration');
+                $groupObject['group'] = $group;
+                $groupObject['running_time'] = $groupDuration;
+
+                array_push($groups_data, $groupObject);
+            }
+            $summ['groups'] = $groups_data;
+            $summery->put($key, $summ);
+        }
         return $summery;
     }
     private function getAlarmCountByAllVehicles($summery, $start, $end, $vehicle_ids)
@@ -213,12 +291,12 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
         foreach ($summery as $key => $summ) { // key is in localtimezone
             $day = $this->generateDayRange($key);
 
-            $accelerateCount = $events->where('type', $accelerate)->whereBetween('time', [$day['startUTC'],$day['endUTC']])->count();
-            $decelerateCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $decelerate)->count();
-            $impactCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $impact)->count();
-            $turnLeftCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $turnLeft)->count();
-            $turnRightCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $turnRight)->count();
-            $buttonCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $button)->count();
+            $accelerateCount = $events->where('type', $accelerate)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->count();
+            $decelerateCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $decelerate)->count();
+            $impactCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $impact)->count();
+            $turnLeftCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $turnLeft)->count();
+            $turnRightCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $turnRight)->count();
+            $buttonCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $button)->count();
 
             $summ['event_summery']['acceleration'] = $accelerateCount;
             $summ['event_summery']['deacceleration'] = $decelerateCount;
@@ -230,7 +308,8 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
         }
         return $summery;
     }
-    private function calculateAllVehilcesRunningTime($summery,$start, $end, $vehicle_ids){ // start and end are in locale datetime
+    private function calculateAllVehilcesRunningTime($summery, $start, $end, $vehicle_ids)
+    { // start and end are in locale datetime
 
         $dailyVehicleDurations = VehicleStat::whereIn('vehicle_id', $vehicle_ids)->whereBetween('date', [$start, $end])->get();
         foreach ($summery as $key => $summ) { // key is localdatetime
@@ -256,12 +335,12 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
         foreach ($summery as $key => $summ) { // key is in localtimezone
             $day = $this->generateDayRange($key);
 
-            $accelerateCount = $events->where('type', $accelerate)->whereBetween('time', [$day['startUTC'],$day['endUTC']])->count();
-            $decelerateCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $decelerate)->count();
-            $impactCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $impact)->count();
-            $turnLeftCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $turnLeft)->count();
-            $turnRightCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $turnRight)->count();
-            $buttonCount = $events->whereBetween('time', [$day['startUTC'],$day['endUTC']])->where('type', $button)->count();
+            $accelerateCount = $events->where('type', $accelerate)->whereBetween('time', [$day['startUTC'], $day['endUTC']])->count();
+            $decelerateCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $decelerate)->count();
+            $impactCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $impact)->count();
+            $turnLeftCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $turnLeft)->count();
+            $turnRightCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $turnRight)->count();
+            $buttonCount = $events->whereBetween('time', [$day['startUTC'], $day['endUTC']])->where('type', $button)->count();
 
             $summ['event_summery']['acceleration'] = $accelerateCount;
             $summ['event_summery']['deacceleration'] = $decelerateCount;
@@ -273,7 +352,8 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
         }
         return $summery;
     }
-    private function calculateAllOperatorsRunningTime($summery,$start, $end, $operator_ids){ // start and end are in locale datetime
+    private function calculateAllOperatorsRunningTime($summery, $start, $end, $operator_ids)
+    { // start and end are in locale datetime
 
         $dailyOperatorDurations = OperatorStat::whereIn('operator_id', $operator_ids)->whereBetween('date', [$start, $end])->get();
         foreach ($summery as $key => $summ) { // key is localdatetime
@@ -439,24 +519,35 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
         return $dayArray;
     }
 
-    private function generateDayRange($date){
-        $start = Carbon::create($date,'Asia/Tokyo');
-            $end = Carbon::create($date,'Asia/Tokyo');
-            $end = $end->add(1,'day');
+    private function generateDayRange($date)
+    {
+        $start = Carbon::create($date, 'Asia/Tokyo');
+        $end = Carbon::create($date, 'Asia/Tokyo');
+        $end = $end->add(1, 'day');
 
-            $startUTC = $start->setTimezone('UTC');
-            $endUTC = $end->setTimezone('UTC');
+        $startUTC = $start->setTimezone('UTC');
+        $endUTC = $end->setTimezone('UTC');
 
-            $startUTC = $start->format('Y-m-d H:i:s');
-            $endUTC = $end->format('Y-m-d H:i:s');
-            return [
-                'startUTC' => $startUTC,
-                'endUTC' =>$endUTC
-            ];
+        $startUTC = $start->format('Y-m-d H:i:s');
+        $endUTC = $end->format('Y-m-d H:i:s');
+        return [
+            'startUTC' => $startUTC,
+            'endUTC' => $endUTC
+        ];
     }
-    private function getUTCtime($date){
-        $local = Carbon::create($date,'Asia/Tokyo');
+    private function getUTCtime($date)
+    {
+        $local = Carbon::create($date, 'Asia/Tokyo');
         $local = $local->setTimezone('UTC');
         return $local->format('Y-m-d H:i:s');
+    }
+    private function getVehicleIdArrayOfGroups($groups)
+    {
+        $array = [];
+        foreach ($groups as $group) {
+            $vehicle_ids = $this->getIdArray($group->vehicle_ids);
+            $array = array_merge($array, $vehicle_ids);
+        }
+        return $array;
     }
 }

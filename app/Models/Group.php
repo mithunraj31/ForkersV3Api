@@ -52,4 +52,7 @@ class Group extends Model
     {
         return $this->hasMany('App\Models\Vehicle','group_id')->with('device');
     }
+    public function vehicle_ids(){
+        return $this->hasMany('App\Models\Vehicle','group_id')->select(['id','group_id']);
+    }
 }

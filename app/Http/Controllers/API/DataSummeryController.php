@@ -77,4 +77,15 @@ class DataSummeryController extends Controller
         return response(['data' => $summery], 200);
     }
 
+    public function getAlarmsByGroups(Request $request)
+    {
+        $start = new DateTime($request->start);
+        $end = new DateTime($request->end);
+        $start = $start->format('Y-m-d H:i:s');
+        $end = $end->format('Y-m-d H:i:s');
+        $groups = explode(',', $request->group_ids);
+        $summery = $this->dataSummeryService->getAlarmsByGroups($start, $end, $groups);
+        return response(['data' => $summery], 200);
+    }
+
 }
