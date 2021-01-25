@@ -18,6 +18,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
+use InvalidArgumentException;
 
 class DataSummeryController extends Controller
 {
@@ -80,12 +81,16 @@ class DataSummeryController extends Controller
 
     public function getAlarmsByGroups(AlarmsByGroups $request)
     {
+        if(!$request->group_ids && !$request->customer_id)
+        {
+            throw new InvalidArgumentException('Goup_ids or customer_id is required!');
+        }
         $start = new DateTime($request->start);
         $end = new DateTime($request->end);
         $start = $start->format('Y-m-d H:i:s');
         $end = $end->format('Y-m-d H:i:s');
         $groups = explode(',', $request->group_ids);
-        $summery = $this->dataSummeryService->getAlarmsByGroups($start, $end, $groups);
+        $summery = $this->dataSummeryService->getAlarmsByGroups($start, $end, $groups, $request->customer_id);
         return response(['data' => $summery], 200);
     }
 

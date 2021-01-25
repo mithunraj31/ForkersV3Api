@@ -14,5 +14,5 @@ interface DataSummeryServiceInterface
 
     public function getAlarmsByAllVehicles($start,$end, $customer=null);
 
-    public function getAlarmsByGroups($start,$end, $group_ids);
+    public function getAlarmsByGroups($start,$end, $group_ids, $customer_id);
 }

@@ -197,9 +197,15 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
 
         return $summery;
     }
-    public function getAlarmsByGroups($start, $end, $group_ids)
+    public function getAlarmsByGroups($start, $end, $group_ids = [], $customerId)
     {
-        $groups = Group::with('vehicle_ids')->whereIn('id', $group_ids)->get();
+        $groups = null;
+        if ($customerId) {
+            $groups = Group::with('vehicle_ids')->where('customer_id', $customerId)->get();
+        } else {
+
+            $groups = Group::with('vehicle_ids')->whereIn('id', $group_ids)->get();
+        }
         // generate period
         $dayArray = $this->generateDateRange($start, $end);
 
@@ -264,7 +270,7 @@ class DataSummeryService extends ServiceBase implements DataSummeryServiceInterf
                 $groupObject['alarm_count'] = $total;
 
 
-                $groupDuration = $dailyVehicleDurations->whereIn('vehicle_id',$vehicle_ids)->where('date', $key)->sum('duration');
+                $groupDuration = $dailyVehicleDurations->whereIn('vehicle_id', $vehicle_ids)->where('date', $key)->sum('duration');
                 $groupObject['group'] = $group;
                 $groupObject['running_time'] = $groupDuration;
 

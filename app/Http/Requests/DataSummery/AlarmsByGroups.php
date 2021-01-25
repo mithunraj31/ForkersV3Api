@@ -39,7 +39,8 @@ class AlarmsByGroups extends FormRequest
         return [
             'start' => 'required | date',
             'end' => 'required | date',
-            'group_ids' => ['required', 'exists:App\Models\Group,id']
+            'group_ids' => [ 'exists:App\Models\Group,id'],
+            'customer_id' => 'exists:App\Models\Customer,id'
         ];
     }
 }
