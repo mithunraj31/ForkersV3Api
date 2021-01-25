@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DataSummery\AlarmsByAllOperators;
 use App\Http\Requests\DataSummery\AlarmsByAllVehicles;
+use App\Http\Requests\DataSummery\AlarmsByGroups;
 use App\Http\Requests\DataSummery\EventsByGroups;
 use App\Http\Requests\DataSummery\EventsByOperators;
 use App\Http\Requests\DataSummery\EventsByVehicles;
@@ -77,7 +78,7 @@ class DataSummeryController extends Controller
         return response(['data' => $summery], 200);
     }
 
-    public function getAlarmsByGroups(Request $request)
+    public function getAlarmsByGroups(AlarmsByGroups $request)
     {
         $start = new DateTime($request->start);
         $end = new DateTime($request->end);
