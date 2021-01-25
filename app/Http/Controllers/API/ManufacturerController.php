@@ -39,7 +39,7 @@ class ManufacturerController extends Controller
         $model = new ManufacturerDto;
         $model->customerId = $customerId;
         $model->page = $request->query('page') ? $request->query('page') : 1;
-        $model->perPage = $request->query('perPage') ? $request->query('page') : 15;
+        $model->perPage = $request->query('perPage') ? $request->query('perPage') : 15;
         $data = $this->manufacturerService->getAll($model);
         return new ManufacturerResourceCollection($data);
     }
