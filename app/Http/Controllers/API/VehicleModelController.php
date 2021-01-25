@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\DTOs\VehicleModelDto;
 use App\Services\Interfaces\VehicleModelServiceInterface;
+use App\Utils\CollectionUtility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,10 +18,13 @@ class VehicleModelController extends Controller
         $this->vehicleModelService = $vehicleModelService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $vehicleModel = $this->vehicleModelService->getAll();
-        return response($vehicleModel, 200);
+
+        $perPage = $request->query('perPage') ? (int)$request->query('perPage') : 15;
+        $result = CollectionUtility::paginate($vehicleModel, $perPage);
+        return response($result, 200);
     }
 
     /**
@@ -35,51 +39,31 @@ class VehicleModelController extends Controller
             'manufacturer_id' => 'required',
             'series_name' => 'required',
             'model_name' => 'required',
-            'power_type' => 'required',
-            'structural_method' => 'required',
-            'engine_model' => 'required',
-            'rated_load' => 'required',
-            'fork_length' => 'required',
-            'fork_width' => 'required',
-            'standard_lift' => 'required',
-            'maximum_lift' => 'required',
-            'battery_voltage' => 'required',
-            'battery_capacity' => 'required',
-            'fuel_tank_capacity' => 'required',
-            'body_weight' => 'required',
-            'body_length' => 'required',
-            'body_width' => 'required',
-            'head_guard_height' => 'required',
-            'min_turning_radius' => 'required',
-            'ref_load_center' => 'required',
-            'tire_size_front_wheel' => 'required',
-            'tire_size_rear_wheel' => 'required',
-            'remarks' => 'required',
         ]);
         $vehicleModel = new VehicleModelDto();
         $vehicleModel->manufacturerId = $validateVehicleModelData['manufacturer_id'];
         $vehicleModel->seriesName = $validateVehicleModelData['series_name'];
         $vehicleModel->modelName = $validateVehicleModelData['model_name'];
-        $vehicleModel->powerType = $validateVehicleModelData['power_type'];
-        $vehicleModel->structuralMethod = $validateVehicleModelData['structural_method'];
-        $vehicleModel->engineModel = $validateVehicleModelData['engine_model'];
-        $vehicleModel->ratedLoad = $validateVehicleModelData['rated_load'];
-        $vehicleModel->forkLength = $validateVehicleModelData['fork_length'];
-        $vehicleModel->forkWidth = $validateVehicleModelData['fork_width'];
-        $vehicleModel->standardLift = $validateVehicleModelData['standard_lift'];
-        $vehicleModel->maximumLift = $validateVehicleModelData['maximum_lift'];
-        $vehicleModel->batteryVoltage = $validateVehicleModelData['battery_voltage'];
-        $vehicleModel->batteryCapacity = $validateVehicleModelData['battery_capacity'];
-        $vehicleModel->fuelTankCapacity = $validateVehicleModelData['fuel_tank_capacity'];
-        $vehicleModel->bodyWeight = $validateVehicleModelData['body_weight'];
-        $vehicleModel->bodyLength = $validateVehicleModelData['body_length'];
-        $vehicleModel->bodyWidth = $validateVehicleModelData['body_width'];
-        $vehicleModel->headGuardHeight = $validateVehicleModelData['head_guard_height'];
-        $vehicleModel->minTurningRadius = $validateVehicleModelData['min_turning_radius'];
-        $vehicleModel->refLoadCenter = $validateVehicleModelData['ref_load_center'];
-        $vehicleModel->tireSizeFrontWheel = $validateVehicleModelData['tire_size_front_wheel'];
-        $vehicleModel->tireSizeRearWheel = $validateVehicleModelData['tire_size_rear_wheel'];
-        $vehicleModel->remarks = $validateVehicleModelData['remarks'];
+        $vehicleModel->powerType = $request->power_type;
+        $vehicleModel->structuralMethod = $request->structural_method;
+        $vehicleModel->engineModel = $request->engine_model;
+        $vehicleModel->ratedLoad = $request->rated_load;
+        $vehicleModel->forkLength = $request->fork_length;
+        $vehicleModel->forkWidth = $request->fork_width;
+        $vehicleModel->standardLift = $request->standard_lift;
+        $vehicleModel->maximumLift = $request->maximum_lift;
+        $vehicleModel->batteryVoltage = $request->battery_voltage;
+        $vehicleModel->batteryCapacity = $request->battery_capacity;
+        $vehicleModel->fuelTankCapacity = $request->fuel_tank_capacity;
+        $vehicleModel->bodyWeight = $request->body_weight;
+        $vehicleModel->bodyLength = $request->body_length;
+        $vehicleModel->bodyWidth = $request->body_width;
+        $vehicleModel->headGuardHeight = $request->head_guard_height;
+        $vehicleModel->minTurningRadius = $request->min_turning_radius;
+        $vehicleModel->refLoadCenter = $request->ref_load_center;
+        $vehicleModel->tireSizeFrontWheel = $request->tire_size_front_wheel;
+        $vehicleModel->tireSizeRearWheel = $request->tire_size_rear_wheel;
+        $vehicleModel->remarks = $request->remarks;
         $vehicleModel->ownerId = Auth::user()->id;
         $this->vehicleModelService->create($vehicleModel);
         return response(['message' => 'Success!'], 200);
@@ -99,52 +83,32 @@ class VehicleModelController extends Controller
             'manufacturer_id' => 'required',
             'series_name' => 'required',
             'model_name' => 'required',
-            'power_type' => 'required',
-            'structural_method' => 'required',
-            'engine_model' => 'required',
-            'rated_load' => 'required',
-            'fork_length' => 'required',
-            'fork_width' => 'required',
-            'standard_lift' => 'required',
-            'maximum_lift' => 'required',
-            'battery_voltage' => 'required',
-            'battery_capacity' => 'required',
-            'fuel_tank_capacity' => 'required',
-            'body_weight' => 'required',
-            'body_length' => 'required',
-            'body_width' => 'required',
-            'head_guard_height' => 'required',
-            'min_turning_radius' => 'required',
-            'ref_load_center' => 'required',
-            'tire_size_front_wheel' => 'required',
-            'tire_size_rear_wheel' => 'required',
-            'remarks' => 'required',
         ]);
         $vehicleModel = new VehicleModelDto();
         $vehicleModel->id = $vehicleModelId;
         $vehicleModel->manufacturerId = $validateVehicleModelData['manufacturer_id'];
         $vehicleModel->seriesName = $validateVehicleModelData['series_name'];
         $vehicleModel->modelName = $validateVehicleModelData['model_name'];
-        $vehicleModel->powerType = $validateVehicleModelData['power_type'];
-        $vehicleModel->structuralMethod = $validateVehicleModelData['structural_method'];
-        $vehicleModel->engineModel = $validateVehicleModelData['engine_model'];
-        $vehicleModel->ratedLoad = $validateVehicleModelData['rated_load'];
-        $vehicleModel->forkLength = $validateVehicleModelData['fork_length'];
-        $vehicleModel->forkWidth = $validateVehicleModelData['fork_width'];
-        $vehicleModel->standardLift = $validateVehicleModelData['standard_lift'];
-        $vehicleModel->maximumLift = $validateVehicleModelData['maximum_lift'];
-        $vehicleModel->batteryVoltage = $validateVehicleModelData['battery_voltage'];
-        $vehicleModel->batteryCapacity = $validateVehicleModelData['battery_capacity'];
-        $vehicleModel->fuelTankCapacity = $validateVehicleModelData['fuel_tank_capacity'];
-        $vehicleModel->bodyWeight = $validateVehicleModelData['body_weight'];
-        $vehicleModel->bodyLength = $validateVehicleModelData['body_length'];
-        $vehicleModel->bodyWidth = $validateVehicleModelData['body_width'];
-        $vehicleModel->headGuardHeight = $validateVehicleModelData['head_guard_height'];
-        $vehicleModel->minTurningRadius = $validateVehicleModelData['min_turning_radius'];
-        $vehicleModel->refLoadCenter = $validateVehicleModelData['ref_load_center'];
-        $vehicleModel->tireSizeFrontWheel = $validateVehicleModelData['tire_size_front_wheel'];
-        $vehicleModel->tireSizeRearWheel = $validateVehicleModelData['tire_size_rear_wheel'];
-        $vehicleModel->remarks = $validateVehicleModelData['remarks'];
+        $vehicleModel->powerType = $request->power_type;
+        $vehicleModel->structuralMethod = $request->structural_method;
+        $vehicleModel->engineModel = $request->engine_model;
+        $vehicleModel->ratedLoad = $request->rated_load;
+        $vehicleModel->forkLength = $request->fork_length;
+        $vehicleModel->forkWidth = $request->fork_width;
+        $vehicleModel->standardLift = $request->standard_lift;
+        $vehicleModel->maximumLift = $request->maximum_lift;
+        $vehicleModel->batteryVoltage = $request->battery_voltage;
+        $vehicleModel->batteryCapacity = $request->battery_capacity;
+        $vehicleModel->fuelTankCapacity = $request->fuel_tank_capacity;
+        $vehicleModel->bodyWeight = $request->body_weight;
+        $vehicleModel->bodyLength = $request->body_length;
+        $vehicleModel->bodyWidth = $request->body_width;
+        $vehicleModel->headGuardHeight = $request->head_guard_height;
+        $vehicleModel->minTurningRadius = $request->min_turning_radius;
+        $vehicleModel->refLoadCenter = $request->ref_load_center;
+        $vehicleModel->tireSizeFrontWheel = $request->tire_size_front_wheel;
+        $vehicleModel->tireSizeRearWheel = $request->tire_size_rear_wheel;
+        $vehicleModel->remarks = $request->remarks;
         $vehicleModel->ownerId = Auth::user()->id;
         $this->vehicleModelService->update($vehicleModel);
         return response(['message' => 'Success!'], 200);
