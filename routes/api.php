@@ -43,7 +43,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         Route::get('/{deviceId}/driveSummary', [DeviceController::class, 'driveSummery']);
         Route::get('/{deviceId}/route', [DeviceController::class, 'getRoute']);
-        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId']);
+        Route::get('/{deviceId}/cameras', [CameraController::class, 'getCameraByDeviceId'])->withoutMiddleware(['auth:api']);
         Route::post('/{deviceId}/switchon', [DeviceController::class, 'doWaitingQueue']);
     });
 
