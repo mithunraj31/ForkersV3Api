@@ -29,7 +29,7 @@ class CreateVehicleModelTable extends Migration
             $table->double('battery_voltage')->nullable(); // v
             $table->double('battery_capacity')->nullable(); // AH
 
-            $table->double('fuel_tank_capcity')->nullable(); // L
+            $table->double('fuel_tank_capacity')->nullable(); // L
             $table->double('body_weight')->nullable(); // kg
             $table->double('body_length')->nullable(); // mm
             $table->double('body_width')->nullable(); // mm
@@ -48,8 +48,8 @@ class CreateVehicleModelTable extends Migration
             $table->unsignedBigInteger('owner_id')->nullable();
             $table->unsignedInteger('manufacturer_id');
 
-            $table->foreign('owner_id')->references('id')->on('users');
-            $table->foreign('manufacturer_id')->references('id')->on('manufacturer');
+            // $table->foreign('owner_id')->references('id')->on('users');
+            // $table->foreign('manufacturer_id')->references('id')->on('manufacturer');
         });
     }
 
