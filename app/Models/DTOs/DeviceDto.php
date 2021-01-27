@@ -19,6 +19,5 @@ class DeviceDto extends DtoBase
 
     public $assigned;
 
-    public $device_type;
-
+    public $group_id;
 }
