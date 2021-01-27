@@ -32,7 +32,7 @@ class VideoController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'device_id' => 'required|numeric|exists:device,device_id',
+            'device_id' => 'required|numeric|exists:device,id',
             'begin_datetime' => 'required|date',
             'end_datetime' => 'required|date',
             'stk_user' => 'required'
