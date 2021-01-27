@@ -30,14 +30,8 @@ class ManufacturerController extends Controller
      */
     public function index(IndexManufacturer $request)
     {
-        $customerId = $request->query('customer_id');
-
-        if (!AuthValidator::isAdmin()) {
-            $customerId = Auth::user()->customer_id;
-        }
 
         $model = new ManufacturerDto;
-        $model->customerId = $customerId;
         $model->page = $request->query('page') ? $request->query('page') : 1;
         $model->perPage = $request->query('perPage') ? $request->query('perPage') : 15;
         $data = $this->manufacturerService->getAll($model);
@@ -56,12 +50,6 @@ class ManufacturerController extends Controller
         $model->name = $request->name;
         $model->description = $request->description;
 
-        if (AuthValidator::isAdmin()) {
-            $model->customerId = $request->customer_id;
-        } else {
-            $model->customerId = Auth::user()->customer_id;
-        }
-
         $model->ownerId = Auth::user()->id;
 
         $this->manufacturerService->create($model);
@@ -78,11 +66,6 @@ class ManufacturerController extends Controller
     public function show(IndexManufacturer $request, $id)
     {
         $data = $this->manufacturerService->findById($id);
-
-        if (!AuthValidator::isAdmin()
-            && $data->customer_id != Auth::user()->customer_id) {
-            throw new ModelNotFoundException();
-        }
         return response()->json(['data' => $data], 200);
     }
 
@@ -95,23 +78,11 @@ class ManufacturerController extends Controller
      */
     public function update(UpdateManufacturer $request, $id)
     {
-        $manufacturer = $this->manufacturerService->findById($id);
-
-        if ($manufacturer->customer_id != Auth::user()->customer_id) {
-            throw new ModelNotFoundException();
-        }
 
         $model = new ManufacturerDto;
         $model->id = $id;
         $model->name = $request->name;
         $model->description = $request->description;
-
-        if (AuthValidator::isAdmin()) {
-            $model->customerId = $request->customer_id;
-        } else {
-            $model->customerId = Auth::user()->customer_id;
-        }
-
         $model->ownerId = Auth::user()->id;
 
         $this->manufacturerService->update($model);
@@ -128,11 +99,6 @@ class ManufacturerController extends Controller
     public function destroy(DeleteManufacturer $request, $id)
     {
         $manufacturer = $this->manufacturerService->findById($id);
-
-        if ($manufacturer->customer_id != Auth::user()->customer_id) {
-            throw new ModelNotFoundException();
-        }
-
         $this->manufacturerService->delete($id);
         return response()->json([], 204);
     }

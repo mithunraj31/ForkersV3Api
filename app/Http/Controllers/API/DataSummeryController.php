@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DataSummery\AlarmsByAllOperators;
 use App\Http\Requests\DataSummery\AlarmsByAllVehicles;
+use App\Http\Requests\DataSummery\AlarmsByGroups;
 use App\Http\Requests\DataSummery\EventsByGroups;
 use App\Http\Requests\DataSummery\EventsByOperators;
 use App\Http\Requests\DataSummery\EventsByVehicles;
@@ -17,6 +18,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
+use InvalidArgumentException;
 
 class DataSummeryController extends Controller
 {
@@ -74,6 +76,21 @@ class DataSummeryController extends Controller
         $start = $start->format('Y-m-d H:i:s');
         $end = $end->format('Y-m-d H:i:s');
         $summery = $this->dataSummeryService->getAlarmsByAllVehicles($start, $end, $request->customer_id);
+        return response(['data' => $summery], 200);
+    }
+
+    public function getAlarmsByGroups(AlarmsByGroups $request)
+    {
+        if(!$request->group_ids && !$request->customer_id)
+        {
+            throw new InvalidArgumentException('Goup_ids or customer_id is required!');
+        }
+        $start = new DateTime($request->start);
+        $end = new DateTime($request->end);
+        $start = $start->format('Y-m-d H:i:s');
+        $end = $end->format('Y-m-d H:i:s');
+        $groups = explode(',', $request->group_ids);
+        $summery = $this->dataSummeryService->getAlarmsByGroups($start, $end, $groups, $request->customer_id);
         return response(['data' => $summery], 200);
     }
 
