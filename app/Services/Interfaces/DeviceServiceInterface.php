@@ -7,7 +7,12 @@ use App\Models\DTOs\DeviceDto;
 
 interface DeviceServiceInterface
 {
-    public function create(DeviceDto $model);
+
+    /**
+     * the method give device listings,
+     * each device item contains device's details.
+     */
+    public function create(DeviceDto $device);
 
     public function update(DeviceDto $request,Device $device);
 

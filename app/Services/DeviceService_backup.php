@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Device;
-use App\Models\Drive;
 use App\Models\Regular;
+use App\Services\Interfaces\DeviceServiceInterface;
 use App\Services\Interfaces\DeviceServiceInterface_backup;
 use App\Services\Interfaces\StonkamServiceInterface;
 use BaoPham\DynamoDb\RawDynamoDbQuery;
@@ -131,10 +131,9 @@ class DeviceService_backup extends ServiceBase implements DeviceServiceInterface
     public function getDriveSummary($deviceId, $startTime, $endTime)
     {
         // $drives = Drive::getDriveSummary($deviceId, $startTime, $endTime);
+        $drives = $this->getDriveSummaryByDynamo($deviceId, $startTime, $endTime);
         // $durations = $this->calculatDuration($drives);
         // return ['data' => $drives, 'duration' => $durations];
-
-        $drives = $this->getDriveSummaryByDynamo($deviceId, $startTime, $endTime);
         return $drives;
     }
     private function calculatDuration($drives)
@@ -163,10 +162,15 @@ class DeviceService_backup extends ServiceBase implements DeviceServiceInterface
 
     public function getRoute($deviceId, $start, $end)
     {
-        $regular = new Regular();
+
         $startDate = $this->formatDate($start);
         $endDate = $this->formatDate($end);
-        $data = $regular->where('device', $deviceId)->where('lat', 'not_contains', '0.0')->where('datetime', 'between', [$startDate, $endDate])->limit(10000)->get();
+        $time1 = new Datetime('NOW');
+        $data = Regular::where('device', $deviceId)
+            ->where('datetime', 'between', [$startDate, $endDate])
+            ->where('lat', '!=', '0.0')
+            ->limit(10000)->toDynamoDbQuery();
+        $time2 = new Datetime('NOW');
         return ['data' => $data];
     }
 
